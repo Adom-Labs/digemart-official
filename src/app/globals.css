@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background & Foreground */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 0 0% 3.9%; /* Almost black text */
+
+    /* Card Components */
+    --card: 0 0% 100%; /* White card background */
+    --card-foreground: 0 0% 3.9%; /* Dark text on cards */
+
+    /* Interactive Elements */
+    --primary: 0 0% 9%; /* Dark primary (almost black) */
+    --primary-foreground: 0 0% 98%; /* Light text on primary */
+    --secondary: 0 0% 96.1%; /* Light gray secondary */
+    --secondary-foreground: 0 0% 9%; /* Dark text on secondary */
+
+    /* States & Feedback */
+    --muted: 0 0% 96.1%; /* Muted background (light gray) */
+    --muted-foreground: 0 0% 45.1%; /* Muted text (medium gray) */
+    --accent: 0 0% 96.1%; /* Accent background */
+    --accent-foreground: 0 0% 9%; /* Accent text */
+    --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
+    --destructive-foreground: 0 0% 98%; /* White text on destructive */
+
+    /* UI Elements */
+    --border: 0 0% 89.8%; /* Light gray borders */
+    --input: 0 0% 89.8%; /* Input backgrounds */
+    --ring: 0 0% 3.9%; /* Focus ring color */
+
+    /* Chart Colors */
+    --chart-1: 12 76% 61%; /* Orange */
+    --chart-2: 173 58% 39%; /* Teal */
+    --chart-3: 197 37% 24%; /* Dark blue */
+    --chart-4: 43 74% 66%; /* Yellow */
+    --chart-5: 27 87% 67%; /* Coral */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark Mode - Background & Foreground */
+    --background: 0 0% 3.9%; /* Dark background */
+    --foreground: 0 0% 98%; /* Light text */
+
+    /* Dark Mode - Cards */
+    --card: 0 0% 3.9%; /* Dark card background */
+    --card-foreground: 0 0% 98%; /* Light text on cards */
+
+    /* Dark Mode - Interactive Elements */
+    --primary: 0 0% 98%; /* Light primary */
+    --primary-foreground: 0 0% 9%; /* Dark text on primary */
+    --secondary: 0 0% 14.9%; /* Dark gray secondary */
+    --secondary-foreground: 0 0% 98%; /* Light text on secondary */
+
+    /* Dark Mode - States & Feedback */
+    --muted: 0 0% 14.9%; /* Dark muted background */
+    --muted-foreground: 0 0% 63.9%; /* Lighter muted text */
+    --accent: 0 0% 14.9%; /* Dark accent */
+    --accent-foreground: 0 0% 98%; /* Light accent text */
+    --destructive: 0 62.8% 30.6%; /* Darker red for dark mode */
+    --destructive-foreground: 0 0% 98%; /* Light text on destructive */
+
+    /* Dark Mode - UI Elements */
+    --border: 0 0% 14.9%; /* Dark borders */
+    --input: 0 0% 14.9%; /* Dark input backgrounds */
+    --ring: 0 0% 83.1%; /* Light focus ring */
+
+    /* Dark Mode - Chart Colors */
+    --chart-1: 220 70% 50%; /* Blue */
+    --chart-2: 160 60% 45%; /* Green */
+    --chart-3: 30 80% 55%; /* Orange */
+    --chart-4: 280 65% 60%; /* Purple */
+    --chart-5: 340 75% 55%; /* Pink */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
