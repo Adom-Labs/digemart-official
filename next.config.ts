@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   experimental: {
     browserDebugInfoInTerminal: true,
   },
+  images: {
+    domains: ["images.unsplash.com", "loremflickr.com"],
+  },
 };
 
 export default nextConfig;
