@@ -1,18 +1,25 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import HeroSearch from '@/components/FindYourPlug/HeroSearch';
+import TopCategories from '@/components/FindYourPlug/TopCategories';
+import FeaturedStores from '@/components/FindYourPlug/FeaturedStores';
+import RecentReviews from '@/components/FindYourPlug/RecentReviews';
+import StoreCTA from '@/components/FindYourPlug/StoreCTA';
+import { getPlugsLandingPageData } from './actions';
 
-const FindYourPlugPage = () => {
+export default async function FindYourPlugPage() {
+  // Fetch data on server for SEO
+  const pageData = await getPlugsLandingPageData();
+
+  const popularCategories = pageData?.data?.categories
+    ?.filter((cat) => cat.featured || cat.trending)
+    ?.slice(0, 5);
+
   return (
-    <div className="w-full h-screen flex items-center justify-center gap-4">
-      <Link href={"/findyourplug/login"}>
-        <Button variant={"outline"}>Login</Button>
-      </Link>
-      <Link href="/findyourplug/register">
-        <Button variant={"outline"}>Register</Button>
-      </Link>
-    </div>
+    <>
+      <HeroSearch popularCategories={popularCategories} />
+      <TopCategories categories={pageData?.data?.categories} />
+      <FeaturedStores stores={pageData?.data?.featuredStores} />
+      <RecentReviews reviews={pageData?.data?.recentReviews} />
+      <StoreCTA />
+    </>
   );
-};
-
-export default FindYourPlugPage;
+}

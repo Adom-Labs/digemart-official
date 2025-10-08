@@ -10,10 +10,10 @@ const config = getDefaultConfig({
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
   chains: [base],
   ssr: true,
-  appUrl: "https://app.digemart.com",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL!,
 });
 
-const Web3Provider = ({children}:{children: ReactNode}) => {
+const Web3Provider = ({ children }: { children: ReactNode }) => {
   const [client] = useState(() => new QueryClient());
   return (
     <WagmiProvider config={config}>

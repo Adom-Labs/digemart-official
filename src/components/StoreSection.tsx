@@ -1,8 +1,8 @@
-import { FeaturedStore } from "@/lib/types";
+import { StoreDiscoveryDto } from "@/lib/api";
 import WrapContent from "./WrapContent";
 import StoreGrid from "./StoreGrid";
 
-export default function StoresSection({ stores }: { stores: FeaturedStore[] }) {
+export default function StoresSection({ stores }: { stores: StoreDiscoveryDto[] }) {
   return (
     <WrapContent>
       <StoreGrid
@@ -11,6 +11,7 @@ export default function StoresSection({ stores }: { stores: FeaturedStore[] }) {
         subtitle="Explore our collection of top-rated stores with unique products"
         showViewAllButton={true}
         viewAllUrl="/findyourplug/stores"
+        showTags={'none'}
       />
     </WrapContent>
   );

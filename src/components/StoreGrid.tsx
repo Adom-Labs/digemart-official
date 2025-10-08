@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle } from "lucide-react";
-import { getStoreUrl } from "@/lib/utils";
-import { FeaturedStore } from "@/lib/types"; 
+import { StoreDiscoveryDto } from "@/lib/api";
 
 interface StoreGridProps {
-  stores: FeaturedStore[];
+  stores: StoreDiscoveryDto[];
   title?: string;
   subtitle?: string;
   showViewAllButton?: boolean;
   viewAllUrl?: string;
   className?: string;
+  showTags?: 'none' | 'both' | 'featured' | 'verified';
 }
 
 const StoreGrid = ({
@@ -20,6 +20,7 @@ const StoreGrid = ({
   showViewAllButton = false,
   viewAllUrl = "/findyourplug/stores",
   className = "",
+  showTags = 'both'
 }: StoreGridProps) => {
   return (
     <section className={`pt-8 md:pt-16 ${className}`}>
@@ -64,18 +65,18 @@ const StoreGrid = ({
           >
             <div className="relative w-full h-48">
               <Image
-                src={store.logo || "/placeholder.svg"}
+                src={store.storeLogo || store.storeCover || "/placeholder.svg"}
                 alt={store.storeName}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
               />
-              {store.featured && (
+              {store.featured && (showTags === 'both' || showTags === 'featured') && (
                 <span className="absolute top-2 left-2 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded font-semibold shadow">
                   Featured
                 </span>
               )}
-              {store.verified && (
+              {store.verified && (showTags === 'both' || showTags === 'verified') && (
                 <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold shadow">
                   <CheckCircle size={14} /> Verified
                 </span>
@@ -96,15 +97,17 @@ const StoreGrid = ({
                   )}
                 </span>
               </div>
-              <span className="inline-block text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 mb-1 w-fit">
-                {store.storeCategory.name}
-              </span>
+              {store.category && (
+                <span className="inline-block text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 mb-1 w-fit">
+                  {store.category.name}
+                </span>
+              )}
               <div className="flex items-center gap-2 text-gray-500 text-sm">
                 <MapPin size={14} />
                 <span className="truncate">{store.storeAddress}</span>
               </div>
               <Link
-                href={getStoreUrl(store.storeUrl, store.storeType)}
+                href={`/findyourplug/stores/${store.storeSlug}`}
                 className="mt-3 inline-block px-4 py-2 bg-blue-50 text-blue-700 rounded-md font-medium text-sm hover:bg-blue-100 transition-all"
               >
                 Visit Store

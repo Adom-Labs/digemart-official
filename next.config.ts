@@ -6,7 +6,12 @@ const nextConfig: NextConfig = {
     browserDebugInfoInTerminal: true,
   },
   images: {
-    domains: ["images.unsplash.com", "loremflickr.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   webpack: (config) => {
     config.resolve.fallback = {

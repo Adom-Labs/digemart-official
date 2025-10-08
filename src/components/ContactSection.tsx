@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useState } from "react";
-import { submitContactForm } from "@/lib/search/action";
+import { contactApi } from "@/lib/api";
 import Loader from "./Loader";
 import { getErrorMessage } from "@/lib/utils";
 import WrapContent from "./WrapContent";
@@ -30,12 +30,13 @@ export default function ContactSection() {
     setError(null);
 
     try {
-      const res = await submitContactForm({
+      const res = await contactApi.submitContact({
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         message: formData.message,
       });
-      if (res.success) {
+
+      if (res.statusCode === 201) {
         setIsSubmitted(true);
         setFormData({
           firstName: "",
@@ -45,7 +46,7 @@ export default function ContactSection() {
           privacy: false,
         });
       } else {
-        setError(res.error ?? "Something went wrong. Couldn't send message");
+        setError("Something went wrong. Couldn't send message");
       }
     } catch (err) {
       const msg = getErrorMessage(err);
@@ -82,10 +83,9 @@ export default function ContactSection() {
             <div
               className={`absolute inset-0 bg-white rounded-lg p-6 md:p-8 text-center
                 transition-all duration-300 ease-in-out
-                ${
-                  isSubmitted
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4 pointer-events-none"
+                ${isSubmitted
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4 pointer-events-none"
                 }
               `}
             >
@@ -106,10 +106,9 @@ export default function ContactSection() {
             <div
               className={`absolute inset-0 bg-white rounded-lg p-6 md:p-8
                 transition-all duration-300 ease-in-out
-                ${
-                  isSubmitted
-                    ? "opacity-0 -translate-y-4 pointer-events-none"
-                    : "opacity-100 translate-y-0"
+                ${isSubmitted
+                  ? "opacity-0 -translate-y-4 pointer-events-none"
+                  : "opacity-100 translate-y-0"
                 }
               `}
             >
