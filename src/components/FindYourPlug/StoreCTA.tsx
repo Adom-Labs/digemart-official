@@ -36,7 +36,7 @@ export default function StoreCTA() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
+                                    className="border-white text-blue-600 hover:bg-blue-50 hover:text-blue-600 px-8 py-4 text-lg font-semibold"
                                 >
                                     Manage Listings
                                 </Button>

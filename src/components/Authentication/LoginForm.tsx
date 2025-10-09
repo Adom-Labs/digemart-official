@@ -26,6 +26,13 @@ const getErrorMessage = (error: string) => {
   return errorMessages[error] || errorMessages.default;
 };
 
+const DigemartBenefits = [
+  "Free business directory listing",
+  "Real-time performance monitoring",
+  "Customer reviews and ratings",
+  "Business ranking and analytics",
+];
+
 const LoginForm = ({
   redirectUrl,
   initialError,
@@ -101,32 +108,14 @@ const LoginForm = ({
               all in one place.
             </p>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
+              {DigemartBenefits.map((item, index) => (
+                <div key={index} className="flex items-start space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
+                    <span className="text-green-600 text-sm">✓</span>
+                  </div>
+                  <p className="text-gray-600">{item}</p>
                 </div>
-                <p className="text-gray-600">Free business directory listing</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">
-                  Real-time performance monitoring
-                </p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">Customer reviews and ratings</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">Business ranking and analytics</p>
-              </div>
+              ))}
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
                   <span className="text-blue-600 text-sm">+</span>
