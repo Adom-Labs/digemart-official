@@ -128,6 +128,51 @@ export interface CategoryResponseDto {
   updatedAt: string;
 }
 
+// Search Types (Unified Search API)
+export interface SearchResultDto {
+  id: string;
+  name: string;
+  description: string;
+  type: 'store' | 'product' | 'category';
+  image?: string;
+  url: string;
+  rating?: number;
+  reviewCount?: number;
+  price?: number;
+  currency?: string;
+  location?: string;
+  category?: string;
+  storeName?: string;
+  verified?: boolean;
+  featured?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SearchResponseDto {
+  results: SearchResultDto[];
+  total: number;
+  count: number;
+  offset: number;
+  query: string;
+  entityType: string;
+  executionTime: number;
+}
+
+export interface SearchQueryParams {
+  query: string;
+  entityType?: 'all' | 'store' | 'product' | 'category';
+  location?: string;
+  categoryId?: number;
+  storeId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  limit?: number;
+  offset?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
 // Review Types
 export interface ReviewResponseDto {
   id: number;

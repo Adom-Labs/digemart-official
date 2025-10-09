@@ -6,9 +6,10 @@ import { useEffect, useState, useTransition } from "react";
 import * as Icons from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
+import React from "react";
 
 const SearchDialog = ({ variant = "dark" }: { variant?: "white" | "dark" }) => {
-  const [open, setOpen] = useState(false);
+  const [_open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SiteSearchItem[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -44,7 +45,8 @@ const SearchDialog = ({ variant = "dark" }: { variant?: "white" | "dark" }) => {
 
   const IconComponent = ({ name }: { name?: string }) => {
     if (!name) return <Search className="h-4 w-4" />;
-    const Icon = (Icons as any)[name] || Search;
+    const IconsRecord = Icons as unknown as Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>>;
+    const Icon = IconsRecord[name] || Search;
     return <Icon className="h-4 w-4" />;
   };
 
@@ -53,11 +55,10 @@ const SearchDialog = ({ variant = "dark" }: { variant?: "white" | "dark" }) => {
       <DialogTrigger asChild>
         <button
           aria-label="Search site"
-          className={`flex items-center gap-2 px-2 py-1 rounded-full border ${
-            variant === "white"
-              ? "text-white border-white/20 hover:bg-white/10"
-              : "text-gray-700 border-gray-200 hover:bg-gray-50"
-          }`}
+          className={`flex items-center gap-2 px-2 py-1 rounded-full border ${variant === "white"
+            ? "text-white border-white/20 hover:bg-white/10"
+            : "text-gray-700 border-gray-200 hover:bg-gray-50"
+            }`}
         >
           <Search className="h-4 w-4" />
           <span className="text-sm hidden sm:inline">Search features...</span>

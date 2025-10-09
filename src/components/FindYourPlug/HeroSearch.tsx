@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ROUTES } from '@/lib/routes';
-import { CategoryResponseDto } from '@/lib/api/types';
-import { searchApi, SearchResult } from '@/lib/api';
+import { CategoryResponseDto, SearchResultDto } from '@/lib/api/types';
+import { searchApi } from '@/lib/api';
 
 const backgroundImages = [
     '_images/cafe.avif',
@@ -24,7 +24,7 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
     const [query, setQuery] = useState('');
     const [location, setLocation] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [searchResults, setSearchResults] = useState<SearchResultDto[]>([]);
     const [backgroundImage, setBackgroundImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [entityType, setEntityType] = useState<'all' | 'store' | 'product' | 'category'>('all');
@@ -47,26 +47,16 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
         // Debounce search
         const timer = setTimeout(async () => {
             try {
-                // Use real API for search
-                const response = await searchApi.searchStores(query, {
+                // Use unified search API
+                const response = await searchApi.search({
+                    query,
+                    entityType,
+                    location: location || undefined,
                     limit: 10,
-                    state: location || undefined,
                 });
 
-                // Map store results to SearchResult format
-                const results: SearchResult[] = response.data.map((store) => ({
-                    id: store.id.toString(),
-                    name: store.storeName,
-                    category: store.category?.name || 'Uncategorized',
-                    rating: store.averageRating,
-                    reviewCount: store.totalRatings,
-                    verified: store.verified,
-                    image: store.storeLogo || store.storeCover,
-                    type: 'store' as const,
-                    url: `/findyourplug/stores/${store.storeSlug}`,
-                }));
-
-                setSearchResults(results);
+                // Use the results directly from the unified search
+                setSearchResults(response.data.results);
             } catch (error) {
                 console.error('Search failed:', error);
                 setSearchResults([]);
@@ -221,8 +211,9 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                                             <>
                                                 <div className="p-2">
                                                     {searchResults.map((result) => (
-                                                        <div
+                                                        <Link
                                                             key={`${result.type}-${result.id}`}
+                                                            href={result.url}
                                                             className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
                                                         >
                                                             {result.image ? (
@@ -253,19 +244,27 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                                                                         {result.type}
                                                                     </span>
                                                                 </div>
-                                                                <p className="text-sm text-slate-500">{result.category}</p>
+                                                                <p className="text-sm text-slate-500">{result.category || result.description}</p>
                                                                 {result.type === 'product' && result.price && (
-                                                                    <p className="text-sm font-medium text-green-600">{result.price}</p>
+                                                                    <p className="text-sm font-medium text-green-600">
+                                                                        {result.currency} {result.price}
+                                                                    </p>
+                                                                )}
+                                                                {result.location && (
+                                                                    <p className="text-xs text-slate-400 flex items-center gap-1">
+                                                                        <MapPin className="h-3 w-3" />
+                                                                        {result.location}
+                                                                    </p>
                                                                 )}
                                                             </div>
                                                             {result.type === 'store' && (
                                                                 <div className="flex items-start gap-1 text-sm">
                                                                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                                                    <span className="font-medium">{Math.round(result.rating)}</span>
+                                                                    <span className="font-medium">{Math.round(result.rating ?? 0)}</span>
                                                                     <span className="text-slate-400">({result.reviewCount})</span>
                                                                 </div>
                                                             )}
-                                                        </div>
+                                                        </Link>
                                                     ))}
                                                 </div>
                                                 <div className="p-3 border-t border-slate-100 bg-slate-50 text-center">

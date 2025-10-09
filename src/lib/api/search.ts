@@ -1,63 +1,95 @@
 /**
- * Search API Services
+ * Search API Services - Unified Search Integration
  */
 
 import apiClient from './client';
-import { ApiResponse, StoreDiscoveryDto } from './types';
-
-export interface SearchQueryParams {
-    query: string;
-    entityType?: 'all' | 'store' | 'product' | 'category';
-    location?: string;
-    limit?: number;
-}
-
-export interface SearchResult {
-    id: string;
-    name: string;
-    category: string;
-    rating: number;
-    reviewCount: number;
-    verified: boolean;
-    image?: string;
-    type: 'store' | 'product' | 'category';
-    url?: string;
-    price?: string;
-}
-
-export interface SearchResponseDto {
-    results: SearchResult[];
-    total: number;
-    query: string;
-}
+import {
+  ApiResponse,
+  SearchResponseDto,
+  SearchQueryParams,
+  StoreDiscoveryDto,
+} from './types';
 
 // Search API Services
 export const searchApi = {
-    /**
-     * Search across stores, products, and categories
-     */
-    search: async (params: SearchQueryParams): Promise<ApiResponse<SearchResponseDto>> => {
-        const response = await apiClient.get('/search', { params });
-        return response.data;
-    },
+  /**
+   * Unified search across stores, products, and categories
+   * Uses the new unified search endpoint
+   */
+  search: async (
+    params: SearchQueryParams
+  ): Promise<ApiResponse<SearchResponseDto>> => {
+    const response = await apiClient.get('/search', { params });
+    return response.data;
+  },
 
-    /**
-     * Search only stores
-     */
-    searchStores: async (query: string, params?: Record<string, unknown>): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
-        const response = await apiClient.get('/stores', {
-            params: { search: query, ...params },
-        });
-        return response.data;
-    },
+  /**
+   * Search only stores (legacy method for backward compatibility)
+   * Now uses the unified search endpoint with entityType=store
+   */
+  searchStores: async (
+    query: string,
+    params?: Record<string, unknown>
+  ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
+    const searchParams: SearchQueryParams = {
+      query,
+      entityType: 'store',
+      ...params,
+    };
 
-    /**
-     * Quick suggestions for autocomplete
-     */
-    suggestions: async (query: string): Promise<ApiResponse<SearchResult[]>> => {
-        const response = await apiClient.get('/search/suggestions', {
-            params: { q: query, limit: 10 },
-        });
-        return response.data;
-    },
+    const response = await apiClient.get('/search', { params: searchParams });
+    return response.data;
+  },
+
+  /**
+   * Search only products
+   */
+  searchProducts: async (
+    query: string,
+    params?: Record<string, unknown>
+  ): Promise<ApiResponse<SearchResponseDto>> => {
+    const searchParams: SearchQueryParams = {
+      query,
+      entityType: 'product',
+      ...params,
+    };
+
+    const response = await apiClient.get('/search', { params: searchParams });
+    return response.data;
+  },
+
+  /**
+   * Search only categories
+   */
+  searchCategories: async (
+    query: string,
+    params?: Record<string, unknown>
+  ): Promise<ApiResponse<SearchResponseDto>> => {
+    const searchParams: SearchQueryParams = {
+      query,
+      entityType: 'category',
+      ...params,
+    };
+
+    const response = await apiClient.get('/search', { params: searchParams });
+    return response.data;
+  },
+
+  /**
+   * Quick suggestions for autocomplete
+   * Uses unified search with small limit for suggestions
+   */
+  suggestions: async (
+    query: string,
+    limit = 10
+  ): Promise<ApiResponse<SearchResponseDto>> => {
+    const searchParams: SearchQueryParams = {
+      query,
+      entityType: 'all',
+      limit,
+    };
+
+    const response = await apiClient.get('/search', { params: searchParams });
+    return response.data;
+  },
 };

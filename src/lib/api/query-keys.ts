@@ -12,27 +12,43 @@ export const queryKeys = {
 
   // Discovery queries
   discovery: {
-    featuredStores: (params?: any) =>
+    featuredStores: <T = Record<string, unknown>>(params?: T) =>
       ['discovery', 'featured-stores', params] as const,
-    trendingStores: (params?: any) =>
+    trendingStores: <T = Record<string, unknown>>(params?: T) =>
       ['discovery', 'trending-stores', params] as const,
-    topVendors: (params?: any) => ['discovery', 'top-vendors', params] as const,
+    topVendors: <T = Record<string, unknown>>(params?: T) =>
+      ['discovery', 'top-vendors', params] as const,
     stats: ['discovery', 'stats'] as const,
+  },
+
+  // Search queries
+  search: {
+    unified: <T = Record<string, unknown>>(params?: T) =>
+      ['search', 'unified', params] as const,
+    stores: <T = Record<string, unknown>>(query: string, params?: T) =>
+      ['search', 'stores', query, params] as const,
+    products: <T = Record<string, unknown>>(query: string, params?: T) =>
+      ['search', 'products', query, params] as const,
+    categories: <T = Record<string, unknown>>(query: string, params?: T) =>
+      ['search', 'categories', query, params] as const,
+    suggestions: (query: string, limit?: number) =>
+      ['search', 'suggestions', query, { limit }] as const,
   },
 
   // Entry page queries
   entryPage: {
-    data: (params?: any) => ['entry-page', 'data', params] as const,
+    data: <T = Record<string, unknown>>(params?: T) =>
+      ['entry-page', 'data', params] as const,
     minimal: ['entry-page', 'minimal'] as const,
   },
 
   // Category queries
   categories: {
-    all: (params?: Record<string, unknown>) =>
+    all: <T = Record<string, unknown>>(params?: T) =>
       ['categories', 'all', params] as const,
-    featured: (params?: Record<string, unknown>) =>
+    featured: <T = Record<string, unknown>>(params?: T) =>
       ['categories', 'featured', params] as const,
-    trending: (params?: Record<string, unknown>) =>
+    trending: <T = Record<string, unknown>>(params?: T) =>
       ['categories', 'trending', params] as const,
     byId: (id: number) => ['categories', 'by-id', id] as const,
     bySlug: (slug: string) => ['categories', 'by-slug', slug] as const,
@@ -40,9 +56,9 @@ export const queryKeys = {
 
   // Store queries
   stores: {
-    all: (params?: Record<string, unknown>) =>
+    all: <T = Record<string, unknown>>(params?: T) =>
       ['stores', 'all', params] as const,
-    featured: (params?: Record<string, unknown>) =>
+    featured: <T = Record<string, unknown>>(params?: T) =>
       ['stores', 'featured', params] as const,
     byId: (id: number) => ['stores', 'by-id', id] as const,
     bySlug: (slug: string) => ['stores', 'by-slug', slug] as const,
@@ -50,12 +66,12 @@ export const queryKeys = {
 
   // Review queries
   reviews: {
-    all: (params?: Record<string, unknown>) =>
+    all: <T = Record<string, unknown>>(params?: T) =>
       ['reviews', 'all', params] as const,
     recent: (limit?: number) => ['reviews', 'recent', { limit }] as const,
-    byStore: (storeId: number, params?: Record<string, unknown>) =>
+    byStore: <T = Record<string, unknown>>(storeId: number, params?: T) =>
       ['reviews', 'by-store', storeId, params] as const,
-    byProduct: (productId: number, params?: Record<string, unknown>) =>
+    byProduct: <T = Record<string, unknown>>(productId: number, params?: T) =>
       ['reviews', 'by-product', productId, params] as const,
   },
 } as const;

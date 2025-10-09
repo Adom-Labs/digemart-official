@@ -20,6 +20,9 @@ export type {
   DiscoveryQueryParams,
   TrendingQueryParams,
   EntryPageQueryParams,
+  SearchResultDto,
+  SearchResponseDto,
+  SearchQueryParams,
 } from './types';
 
 // Service exports
@@ -33,11 +36,6 @@ export {
 
 export { landingPageApi } from './landing-page';
 export { searchApi } from './search';
-export type {
-  SearchQueryParams,
-  SearchResult,
-  SearchResponseDto,
-} from './search';
 export { contactApi } from './contact';
 export type { ContactFormData, ContactResponse } from './contact';
 
@@ -68,4 +66,9 @@ export {
   useStores,
   useStoreById,
   useStoreBySlug,
+
+  // Search hooks
+  useSearch,
+  useSearchStores,
+  useSearchSuggestions,
 } from './hooks';

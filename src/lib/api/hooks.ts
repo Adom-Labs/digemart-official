@@ -12,6 +12,7 @@ import {
   reviewApi,
   storeApi,
 } from './services';
+import { searchApi } from './search';
 import {
   StoreDiscoveryDto,
   TrendingStoreDto,
@@ -23,6 +24,8 @@ import {
   DiscoveryQueryParams,
   TrendingQueryParams,
   EntryPageQueryParams,
+  SearchResponseDto,
+  SearchQueryParams,
 } from './types';
 
 // Discovery Hooks
@@ -227,6 +230,49 @@ export const useStoreBySlug = (
     queryFn: () => storeApi.getBySlug(slug).then((res) => res.data),
     staleTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!slug,
+    ...options,
+  });
+};
+
+// Search Hooks
+export const useSearch = (
+  params: SearchQueryParams,
+  options?: UseQueryOptions<SearchResponseDto, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.search.unified(params),
+    queryFn: () => searchApi.search(params).then((res) => res.data),
+    staleTime: 1 * 60 * 1000, // 1 minute (search results change frequently)
+    enabled: !!params.query && params.query.length >= 2,
+    ...options,
+  });
+};
+
+export const useSearchStores = (
+  query: string,
+  params?: Record<string, unknown>,
+  options?: UseQueryOptions<StoreDiscoveryDto[], Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.search.stores(query, params),
+    queryFn: () =>
+      searchApi.searchStores(query, params).then((res) => res.data),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!query && query.length >= 2,
+    ...options,
+  });
+};
+
+export const useSearchSuggestions = (
+  query: string,
+  limit = 10,
+  options?: UseQueryOptions<SearchResponseDto, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.search.suggestions(query, limit),
+    queryFn: () => searchApi.suggestions(query, limit).then((res) => res.data),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!query && query.length >= 2,
     ...options,
   });
 };
