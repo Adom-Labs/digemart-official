@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import Logo from "../Logo";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -7,6 +6,8 @@ import { useLoading } from "@/app/hooks/useLoading";
 import { X } from "lucide-react";
 import EmailForm from "./EmailForm";
 import SocialButtons from "./SocialButtons";
+import {signIn} from "next-auth/react"
+
 
 const getErrorMessage = (error: string) => {
   const errorMessages: Record<string, string> = {
@@ -64,7 +65,6 @@ const LoginForm = ({
   };
 
   const handleEmailSignIn = async (email: string, password: string) => {
-    console.log(redirectUrl);
     const callbackUrl =
       redirectUrl && redirectUrl !== "null"
         ? redirectUrl
