@@ -1,5 +1,5 @@
-import { apiRequest } from "@/lib/api-request";
-import { API_ROUTES } from "@/lib/routes";
+import { apiRequest } from '@/lib/api-request';
+import { API_ROUTES } from '@/lib/routes';
 
 export const registerUser = async (userData: {
   email: string;
@@ -7,10 +7,10 @@ export const registerUser = async (userData: {
   password: string;
 }) => {
   const response = await apiRequest(API_ROUTES.auth.register, {
-    method: "POST",
+    method: 'POST',
     data: {
       ...userData,
-      purpose: "ADD_BUSINESS",
+      purpose: 'ADD_USER', // Default purpose for new users
     },
   });
 
@@ -23,7 +23,7 @@ export const loginUser = async (credentials: {
   walletAddress?: string;
 }) => {
   const response = await apiRequest(API_ROUTES.auth.login, {
-    method: "POST",
+    method: 'POST',
     data: credentials,
   });
   return response.data;
@@ -35,7 +35,7 @@ export const socialLoginUser = async (userData: {
   googleId: string;
 }) => {
   const response = await apiRequest(API_ROUTES.auth.socialLogin, {
-    method: "POST",
+    method: 'POST',
     data: userData,
   });
   console.log(response);

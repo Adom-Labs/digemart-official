@@ -6,7 +6,7 @@ import { useLoading } from "@/app/hooks/useLoading";
 import { X } from "lucide-react";
 import EmailForm from "./EmailForm";
 import SocialButtons from "./SocialButtons";
-import {signIn} from "next-auth/react"
+import { signIn } from "next-auth/react"
 
 
 const getErrorMessage = (error: string) => {
@@ -59,9 +59,13 @@ const LoginForm = ({
     }
   };
   const handleGoogleSignIn = async () => {
-    await signIn("google", {
-      callbackUrl: redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD,
-    });
+    // Redirect to backend OAuth endpoint
+    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+    const callbackUrl = redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD;
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    // Redirect to backend Google OAuth endpoint with callback URL
+    window.location.href = `${backendUrl}/auth/google?callbackUrl=${encodedCallbackUrl}`;
   };
 
   const handleEmailSignIn = async (email: string, password: string) => {
@@ -142,11 +146,15 @@ const LoginForm = ({
       {/* Right */}
       <div className="w-full lg:w-1/2 bg-white p-8 flex items-center justify-center">
         <div className="w-full max-w-md space-y-8">
+          {/* Mobile logo (shows when left marketing panel is hidden) */}
+          <div className="lg:hidden flex justify-center">
+            <Logo />
+          </div>
+
           <div>
             <h2 className="text-2xl font-semibold mb-1">Welcome Back!</h2>
             <p className="text-gray-600">
-              Don&apos;t have a business listed yet? Create a free account now
-              and start growing your reach.
+              Sign in to access your dashboard and manage your accounts.
             </p>
           </div>
 

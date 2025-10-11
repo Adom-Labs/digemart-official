@@ -1,13 +1,10 @@
-import { loginUser, socialLoginUser } from "@/services/auth";
-import { CreateUserPurpose } from "@/services/types";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { ROUTES } from "../routes";
-// import { CredentialsSignin } from "next-auth";
-import type { NextAuthOptions, User } from "next-auth";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import axios from "axios";
-import { BASE_URL } from "../api-request";
+import { loginUser } from '@/services/auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { ROUTES } from '../routes';
+import { type User } from 'next-auth';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
+import axios from 'axios';
+import { BASE_URL } from '../api-request';
 
 // Custom error classes
 // class InvalidLoginError extends CredentialsSignin {
@@ -25,11 +22,12 @@ import { BASE_URL } from "../api-request";
 // class InvalidWalletError extends CredentialsSignin {
 //   code = "Invalid wallet address";
 // }
-declare module "next-auth" {
+declare module 'next-auth' {
   interface User {
     id: string;
     token: string;
     role?: string;
+    purpose?: string;
     stores?: {
       id: string;
       storeName: string;
@@ -41,13 +39,6 @@ declare module "next-auth" {
   }
 
   interface Session {
-    token: string;
-    user: User;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
     token: string;
     user: User;
   }
@@ -65,85 +56,97 @@ interface LoginResponseData {
     storeUrl: string;
   }[];
   walletAddress?: string;
+  purpose?: string;
 }
 
-interface GoogleProfile {
-  email: string;
-  email_verified: boolean;
-  name: string;
-  picture: string;
-  sub: string;
-}
+// Google OAuth is handled by backend
 
-const authOptions: NextAuthOptions = {
+const authOptions = {
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "credentials",
+      id: 'credentials',
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "text", optional: true },
-        password: { label: "Password", type: "password", optional: true },
+        email: { label: 'Email', type: 'text', optional: true },
+        password: { label: 'Password', type: 'password', optional: true },
         walletAddress: {
-          label: "Wallet Address",
-          type: "text",
+          label: 'Wallet Address',
+          type: 'text',
           optional: true,
         },
-        signature: { label: "Signature", type: "text", optional: true },
-        role: { label: "Role", type: "text", optional: true },
+        signature: { label: 'Signature', type: 'text', optional: true },
+        role: { label: 'Role', type: 'text', optional: true },
+        token: { label: 'JWT Token', type: 'text', optional: true },
+        user: { label: 'User Data', type: 'text', optional: true },
       },
       async authorize(credentials) {
-        if (!credentials) throw new Error("Missing credentials");
+        if (!credentials) throw new Error('Missing credentials');
 
         // Determine auth type based on credentials
         const isWalletAuth = Boolean(
           credentials.signature && credentials.walletAddress
         );
         const isEmailAuth = Boolean(credentials.email && credentials.password);
+        const isOAuthToken = Boolean(credentials.token && credentials.user);
 
-        if (!isWalletAuth && !isEmailAuth) {
-          throw new Error("Invalid credentials provided");
+        if (!isWalletAuth && !isEmailAuth && !isOAuthToken) {
+          throw new Error('Invalid credentials provided');
         }
 
         try {
-          if (isWalletAuth) {
+          if (isOAuthToken) {
+            // Handle OAuth token from backend
+            const userData = JSON.parse(credentials.user as string);
+            return {
+              id: userData.id.toString(),
+              name: userData.name,
+              email: userData.email,
+              role: userData.roles?.[0] || 'USER',
+              purpose: userData.purpose || 'ADD_BUSINESS',
+              stores: userData.stores || [],
+              token: credentials.token as string,
+              authType: 'GOOGLE',
+            };
+          } else if (isWalletAuth) {
             const { data: res } = await axios.post(
-              `${BASE_URL}/api/auth/wallet/verify`,
+              `${BASE_URL}/auth/wallet/verify`,
               {
                 signature: credentials.signature,
                 walletAddress: credentials.walletAddress,
-                role: credentials.role || "USER",
+                role: credentials.role || 'USER',
               },
               {
                 timeout: 10000,
                 headers: {
-                  "Content-Type": "application/json",
-                  "X-Request-Timestamp": Date.now().toString(),
+                  'Content-Type': 'application/json',
+                  'X-Request-Timestamp': Date.now().toString(),
                 },
               }
             );
 
             if (!res?.data?.user || !res?.data?.token) {
-              throw new Error("Invalid response from server");
+              throw new Error('Invalid response from server');
             }
 
             const { user, token } = res.data;
 
             if (!user.id || !user.walletAddress) {
-              throw new Error("Invalid user data received");
+              throw new Error('Invalid user data received');
             }
 
             if (
               user.walletAddress.toLowerCase() !==
               (credentials.walletAddress as string)?.toLowerCase()
             ) {
-              throw new Error("Invalid wallet address");
+              throw new Error('Invalid wallet address');
             }
 
             return {
               ...user,
               token,
+              purpose: user.purpose || 'ADD_BUSINESS',
               walletAddress: user.walletAddress.toLowerCase(),
-              authType: "WALLET",
+              authType: 'WALLET',
             };
           } else {
             // Email/password flow
@@ -163,81 +166,36 @@ const authOptions: NextAuthOptions = {
               name: userData.name,
               email: userData.email,
               role: userData.role,
+              purpose: userData.purpose || 'ADD_BUSINESS',
               stores: userData.stores || [],
               token: userData.token,
-              authType: "EMAIL",
+              authType: 'EMAIL',
             };
           }
         } catch (error) {
           if (axios.isAxiosError(error)) {
-            if (error.code === "ECONNABORTED") {
-              throw new Error("Request timed out. Please try again.");
+            if (error.code === 'ECONNABORTED') {
+              throw new Error('Request timed out. Please try again.');
             }
-            throw new Error("Invalid identifier or password");
+            throw new Error('Invalid identifier or password');
           }
-          console.error("Auth error:", error);
-          throw new Error("Invalid identifier or password");
+          console.error('Auth error:', error);
+          throw new Error('Invalid identifier or password');
         }
       },
     }),
 
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "select_account",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
+    // Google OAuth is handled by backend at /api/auth/google
+    // No NextAuth Google provider needed
   ],
 
   callbacks: {
-    async signIn({ account, profile, user }) {
-      if (account?.provider === "google" && profile) {
-        try {
-          const googleProfile = profile as GoogleProfile;
-          if (!googleProfile.email_verified || !googleProfile.email) {
-            return false;
-          }
-
-          const userData = {
-            email: googleProfile.email,
-            name: googleProfile.name,
-            googleId: googleProfile.sub,
-            image: googleProfile.picture,
-            purpose: CreateUserPurpose.ADD_BUSINESS,
-          };
-
-          const data = (await socialLoginUser(userData)) as LoginResponseData;
-
-          if (!data) {
-            throw new Error("Invalid response from social login");
-          }
-
-          Object.assign(user, {
-            id: data.userId,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            stores: data.stores || [],
-            token: data.token,
-            image: googleProfile.picture,
-            authType: "google",
-          });
-
-          return true;
-        } catch (error) {
-          console.error("Google sign in error:", error);
-          return false;
-        }
-      }
+    async signIn() {
+      // Google OAuth is handled by backend, no special handling needed here
       return true;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         const decoded = jwtDecode<JwtPayload>((user as User).token);
         token.token = (user as User).token;
@@ -246,7 +204,7 @@ const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       const dd = (token.user as User & { expires_in: string }).expires_in;
 
       return {
@@ -263,12 +221,12 @@ const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: ROUTES.LOGIN,
-    signOut: "/api/auth/signout",
+    signOut: '/api/auth/signout',
     error: ROUTES.LOGIN,
   },
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
