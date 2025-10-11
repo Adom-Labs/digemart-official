@@ -50,7 +50,7 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
   };
 
   return (
-    <section className="relative w-full py-16 bg-gradient-to-b from-white to-gray-50">
+    <section className="relative w-full py-16 bg-linear-to-b from-white to-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         {/* Header */}
         <motion.div
