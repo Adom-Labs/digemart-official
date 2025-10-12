@@ -23,6 +23,12 @@ const getErrorMessage = (error: string) => {
     ETIMEDOUT:
       "Connection timed out. Please check your internet connection and try again.",
     Review: "You must be logged in to post a review.",
+    // Custom error codes from our auth config
+    "Invalid identifier or password": "Invalid email or password. Please check your credentials and try again.",
+    "Request timed out. Please try again.": "Connection timed out. Please check your internet connection and try again.",
+    "Invalid response from server": "Something went wrong with the authentication. Please try again.",
+    "Invalid wallet address": "Wallet address verification failed. Please try again.",
+    credentials: "Invalid email or password. Please check your credentials and try again.",
   };
   return errorMessages[error] || errorMessages.default;
 };

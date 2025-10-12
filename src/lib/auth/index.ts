@@ -1,27 +1,26 @@
-import { loginUser } from '@/services/auth';
+import { loginUser, verifyWalletSignature } from '@/services/auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { ROUTES } from '../routes';
-import { type User } from 'next-auth';
+import { CredentialsSignin, type User } from 'next-auth';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axios from 'axios';
-import { BASE_URL } from '../api-request';
 
 // Custom error classes
-// class InvalidLoginError extends CredentialsSignin {
-//   code = "Invalid identifier or password";
-// }
+class InvalidLoginError extends CredentialsSignin {
+  code = "Invalid identifier or password";
+}
 
-// class TimeoutError extends CredentialsSignin {
-//   code = "Request timed out. Please try again.";
-// }
+class TimeoutError extends CredentialsSignin {
+  code = "Request timed out. Please try again.";
+}
 
-// class InvalidResponseError extends CredentialsSignin {
-//   code = "Invalid response from server";
-// }
+class InvalidResponseError extends CredentialsSignin {
+  code = "Invalid response from server";
+}
 
-// class InvalidWalletError extends CredentialsSignin {
-//   code = "Invalid wallet address";
-// }
+class InvalidWalletError extends CredentialsSignin {
+  code = "Invalid wallet address";
+}
 declare module 'next-auth' {
   interface User {
     id: string;
@@ -59,6 +58,28 @@ interface LoginResponseData {
   purpose?: string;
 }
 
+interface WalletVerificationResponse {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: string[];
+    kyc: unknown;
+    identities?: Array<{
+      identifier: string;
+      provider: string;
+    }>;
+    purpose?: string;
+    stores?: Array<{
+      id: string;
+      storeName: string;
+      storeUrl: string;
+    }>;
+    walletAddress?: string;
+  };
+  token: string;
+}
+
 // Google OAuth is handled by backend
 
 const authOptions = {
@@ -78,19 +99,22 @@ const authOptions = {
         role: { label: 'Role', type: 'text', optional: true },
         token: { label: 'JWT Token', type: 'text', optional: true },
         user: { label: 'User Data', type: 'text', optional: true },
+        message: { label: 'SIWE Message', type: 'text', optional: true },
       },
       async authorize(credentials) {
-        if (!credentials) throw new Error('Missing credentials');
+        if (!credentials) throw new InvalidLoginError();
 
         // Determine auth type based on credentials
         const isWalletAuth = Boolean(
-          credentials.signature && credentials.walletAddress
+          credentials.signature &&
+          credentials.walletAddress &&
+          credentials.message
         );
         const isEmailAuth = Boolean(credentials.email && credentials.password);
         const isOAuthToken = Boolean(credentials.token && credentials.user);
 
         if (!isWalletAuth && !isEmailAuth && !isOAuthToken) {
-          throw new Error('Invalid credentials provided');
+          throw new InvalidLoginError();
         }
 
         try {
@@ -108,46 +132,66 @@ const authOptions = {
               authType: 'GOOGLE',
             };
           } else if (isWalletAuth) {
-            const { data: res } = await axios.post(
-              `${BASE_URL}/auth/wallet/verify`,
-              {
-                signature: credentials.signature,
-                walletAddress: credentials.walletAddress,
-                role: credentials.role || 'USER',
-              },
-              {
-                timeout: 10000,
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-Request-Timestamp': Date.now().toString(),
-                },
+            // Use SIWE verification
+            try {
+              const result = (await verifyWalletSignature(
+                credentials.walletAddress as string,
+                credentials.signature as string,
+                credentials.message as string
+              )) as WalletVerificationResponse;
+
+
+              if (!result?.user || !result?.token) {
+                throw new InvalidResponseError();
               }
-            );
 
-            if (!res?.data?.user || !res?.data?.token) {
-              throw new Error('Invalid response from server');
+              const { user, token } = result;
+
+              if (!user.id) {
+                throw new InvalidResponseError();
+              }
+
+              // Extract wallet address from identities array or use email (which contains wallet address)
+              const walletAddress =
+                user.identities?.[0]?.identifier ||
+                user.walletAddress ||
+                user.email;
+
+              if (!walletAddress) {
+                throw new InvalidResponseError();
+              }
+
+              // Verify wallet address matches
+              if (
+                walletAddress.toLowerCase() !==
+                (credentials.walletAddress as string)?.toLowerCase()
+              ) {
+                throw new InvalidWalletError();
+              }
+
+              return {
+                id: user.id.toString(),
+                name: user.name,
+                email: user.email,
+                role: user.roles?.[0] || 'USER',
+                purpose: user.purpose || 'ADD_BUSINESS',
+                stores: user.stores || [],
+                token,
+                walletAddress: walletAddress.toLowerCase(),
+                authType: 'WALLET',
+              };
+            } catch (error) {
+              // Handle wallet verification errors
+              if (error instanceof InvalidResponseError || error instanceof InvalidWalletError) {
+                throw error;
+              }
+              // Any other error from wallet verification
+              const errorMessage = error instanceof Error ? error.message : 'Wallet authentication failed';
+              if (errorMessage.includes('Signature verification failed') || errorMessage.includes('Invalid wallet')) {
+                throw new InvalidWalletError();
+              }
+              throw new InvalidResponseError();
             }
-
-            const { user, token } = res.data;
-
-            if (!user.id || !user.walletAddress) {
-              throw new Error('Invalid user data received');
-            }
-
-            if (
-              user.walletAddress.toLowerCase() !==
-              (credentials.walletAddress as string)?.toLowerCase()
-            ) {
-              throw new Error('Invalid wallet address');
-            }
-
-            return {
-              ...user,
-              token,
-              purpose: user.purpose || 'ADD_BUSINESS',
-              walletAddress: user.walletAddress.toLowerCase(),
-              authType: 'WALLET',
-            };
           } else {
             // Email/password flow
             const res = await loginUser({
@@ -175,12 +219,12 @@ const authOptions = {
         } catch (error) {
           if (axios.isAxiosError(error)) {
             if (error.code === 'ECONNABORTED') {
-              throw new Error('Request timed out. Please try again.');
+              throw new TimeoutError();
             }
-            throw new Error('Invalid identifier or password');
+            throw new InvalidLoginError();
           }
           console.error('Auth error:', error);
-          throw new Error('Invalid identifier or password');
+          throw new InvalidLoginError();
         }
       },
     }),

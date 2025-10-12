@@ -1,37 +1,37 @@
-import { Chain } from "@rainbow-me/rainbowkit";
+import { Chain } from '@rainbow-me/rainbowkit';
 
 export const ROUTES = {
   CHAINS: (chain: Chain | undefined) =>
     `https://${
       chain?.id === 8453
-        ? "basescan.org/tx/"
+        ? 'basescan.org/tx/'
         : chain?.id === 11155111
-        ? "sepolia."
-        : ""
+        ? 'sepolia.'
+        : ''
     }etherscan.io/tx/`,
-  HOME: "/",
-  DEALS: "/deals",
-  FINDYOURPLUG: "/findyourplug",
-  FINDYOURPLUG_DASHBOARD: "/findyourplug/dashboard",
-  FINDYOURPLUG_ADD_STORE: "/findyourplug/dashboard/new-listing",
-  FINDYOURPLUG_LISTINGS: "/findyourplug/dashboard/listings",
+  HOME: '/',
+  DEALS: '/deals',
+  FINDYOURPLUG: '/findyourplug',
+  FINDYOURPLUG_DASHBOARD: '/findyourplug/dashboard',
+  FINDYOURPLUG_ADD_STORE: '/findyourplug/dashboard/new-listing',
+  FINDYOURPLUG_LISTINGS: '/findyourplug/dashboard/listings',
   FINDYOURPLUG_EDIT_STORE: (id: string) =>
     `/findyourplug/dashboard/listings/edit/${id}`,
 
-  SIGNUP: "/signup",
-  CONTACT: "/contact",
-  HOW_IT_WORKS: "/how-it-works",
-  PRIVACY_POLICY: "/privacy-policy",
-  TERMS_AND_CONDITIONS: "/terms-and-conditions",
-  CATEGORIES: "/findyourplug/categories",
-  STORES: "/findyourplug/plugs",
+  SIGNUP: '/signup',
+  CONTACT: '/contact',
+  HOW_IT_WORKS: '/how-it-works',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_AND_CONDITIONS: '/terms-and-conditions',
+  CATEGORIES: '/findyourplug/categories',
+  STORES: '/findyourplug/plugs',
   STORE: (storeUrl: string) => `/findyourplug/plugs/${storeUrl}`,
   PRODUCT: (storeUrl: string, productId: string) =>
     `/findyourplug/plugs/${storeUrl}/products/${productId}`,
   CATEGORY: (slug: string) => `/findyourplug/categories/${slug}`,
-  LOGIN: "/findyourplug/login",
-  REGISTER: "/findyourplug/register",
-  EXTERNAL_LINK_TO_VENDORS: "https://vendor.digemart.com",
+  LOGIN: '/findyourplug/login',
+  REGISTER: '/findyourplug/register',
+  EXTERNAL_LINK_TO_VENDORS: 'https://vendor.digemart.com',
 } as const;
 
 // Define all API routes in one place
@@ -47,7 +47,7 @@ export const API_ROUTES = {
   },
   categories: {
     list: '/api/categories',
-    store: "/api/categories?type=STORE",
+    store: '/api/categories?type=STORE',
     detail: (id: string) => `/api/categories/${id}`,
   },
   stores: {
@@ -64,24 +64,25 @@ export const API_ROUTES = {
     verified: '/api/stores/verified',
     status: '/api/stores/status',
     url: (url: string) => `/api/stores/url/${url}`,
-    listings: '/api/stores/listings'
+    listings: '/api/stores/listings',
   },
   auth: {
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-    socialLogin: '/api/auth/social-login',
+    login: '/auth/login',
+    register: '/auth/register',
+    socialLogin: '/auth/social-login',
+    nonce: '/auth/nonce',
+    walletVerify: '/auth/wallet/verify',
   },
   search: {
     plugs: '/api/search/plugs',
     stores: '/api/search/stores',
     products: '/api/search/products',
   },
-  userData: "/api/users/me",
+  userData: '/api/users/me',
   reviews: {
     base: '/api/reviews',
     myReviews: '/api/reviews/my-reviews',
     store: '/api/stores/reviews',
     product: '/api/products/reviews',
-    
-  }
-} as const
+  },
+} as const;
