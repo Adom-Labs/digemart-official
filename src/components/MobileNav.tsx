@@ -18,7 +18,7 @@ const MobileNav = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/50 lg:hidden" onClick={onClose}>
       <div
-        className={`absolute right-0 top-0 h-full w-64 bg-gradient-to-b ${
+        className={`absolute right-0 top-0 h-full w-64 bg-linear-to-b ${
           variant === "white"
             ? "from-[#302e71] via-[#1a1a2e] to-[#0f1523]"
             : "from-slate-50 via-white to-white"

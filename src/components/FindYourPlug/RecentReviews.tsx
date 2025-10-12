@@ -76,7 +76,7 @@ export default function RecentReviews({ reviews }: { reviews: ReviewResponseDto[
                                 <div className="px-6 py-4 border-b border-slate-100">
                                     <div className="flex gap-2 overflow-x-auto">
                                         {review.images.map((image, i) => (
-                                            <div key={i} className="w-20 h-20 flex-shrink-0 rounded-lg bg-slate-100">
+                                            <div key={i} className="w-20 h-20 shrink-0 rounded-lg bg-slate-100">
                                                 <img src={image} alt={`Review image ${i}`} />
                                             </div>
                                         ))}

@@ -1,0 +1,7 @@
+export enum CreateUserPurpose {
+  ADD_BUSINESS = "ADD_BUSINESS",
+  ADD_VENDOR = "ADD_VENDOR",
+  ADD_LOGISTIC = "ADD_LOGISTIC",
+  ADD_MARKETER = "ADD_MARKETER",
+  ADD_USER = "ADD_USER",
+}

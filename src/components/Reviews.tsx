@@ -36,8 +36,8 @@ const Reviews = () => {
   return (
     <div className="bg-base-200 py-10" id="review-div">
       <WrapContent>
-        <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
-          <div className="mx-auto max-w-screen-sm">
+        <div className="py-8 px-4 mx-auto max-w-(--breakpoint-xl) text-center lg:py-16 lg:px-6">
+          <div className="mx-auto max-w-(--breakpoint-sm)">
             <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
               What Our Customers Say
             </h2>

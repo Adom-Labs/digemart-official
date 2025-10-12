@@ -7,7 +7,7 @@ import { ROUTES } from '@/lib/routes';
 
 export default function StoreCTA() {
     return (
-        <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <section className="py-20 bg-linear-to-r from-blue-600 to-purple-600">
             <div className="container mx-auto px-4">
                 <div className="max-w-4xl mx-auto text-center">
                     <motion.div
@@ -36,7 +36,7 @@ export default function StoreCTA() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
+                                    className="border-white text-blue-600 hover:bg-blue-50 hover:text-blue-600 px-8 py-4 text-lg font-semibold"
                                 >
                                     Manage Listings
                                 </Button>

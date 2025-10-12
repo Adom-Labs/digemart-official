@@ -5,17 +5,17 @@ import Image from "next/image";
 
 export default function DealsPage() {
     return (
-        <section className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+        <section className="min-h-screen bg-linear-to-b from-white to-gray-50">
             <div className="pb-20 pt-40">
                 <WrapContent>
                     <div className="text-center max-w-4xl mx-auto">
                         {/* Coming Soon Banner */}
-                        <div className="mb-8 inline-flex items-center gap-2 bg-gradient-to-r from-amber-50 to-yellow-100 text-yellow-800 px-6 py-2.5 rounded-full border border-yellow-200/50 shadow-sm">
+                        <div className="mb-8 inline-flex items-center gap-2 bg-linear-to-r from-amber-50 to-yellow-100 text-yellow-800 px-6 py-2.5 rounded-full border border-yellow-200/50 shadow-sm">
                             <Clock className="h-4 w-4" />
                             <span className="font-semibold">Coming Soon</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/80">
                             Exclusive Business Deals & Offers
                         </h1>
 
@@ -24,7 +24,7 @@ export default function DealsPage() {
                         </p>
 
                         <div className="relative mx-auto mb-16 max-w-3xl">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg transform rotate-2"></div>
+                            <div className="absolute inset-0 bg-linear-to-r from-primary/10 to-primary/5 rounded-lg transform rotate-2"></div>
                             <Image
                                 src="/_images/black-friday.png"
                                 alt="Coming Soon Illustration"
@@ -42,7 +42,7 @@ export default function DealsPage() {
                             <h2 className="text-3xl font-bold mb-8 text-gray-900">What to Expect</h2>
                             <div className="grid md:grid-cols-3 gap-8 mb-10">
                                 <div className="group hover:bg-gray-50 transition-all duration-300 rounded-lg p-6">
-                                    <div className="bg-gradient-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="bg-linear-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                                         <Tag className="text-primary h-6 w-6" />
                                     </div>
                                     <h3 className="font-bold text-xl mb-3 text-gray-900">Exclusive Discounts</h3>
@@ -51,7 +51,7 @@ export default function DealsPage() {
                                     </p>
                                 </div>
                                 <div className="group hover:bg-gray-50 transition-all duration-300 rounded-lg p-6">
-                                    <div className="bg-gradient-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="bg-linear-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                                         <ShieldCheck className="text-primary h-6 w-6" />
                                     </div>
                                     <h3 className="font-bold text-xl mb-3 text-gray-900">Verified Partners</h3>
@@ -60,7 +60,7 @@ export default function DealsPage() {
                                     </p>
                                 </div>
                                 <div className="group hover:bg-gray-50 transition-all duration-300 rounded-lg p-6">
-                                    <div className="bg-gradient-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="bg-linear-to-br from-primary/20 to-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                                         <Bell className="text-primary h-6 w-6" />
                                     </div>
                                     <h3 className="font-bold text-xl mb-3 text-gray-900">Priority Access</h3>
@@ -72,7 +72,7 @@ export default function DealsPage() {
                         </div>
 
                         {/* Newsletter Section */}
-                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-xl shadow-xl p-5 mt-12" id="newsletter">
+                        <div className="bg-linear-to-br from-gray-900 to-gray-800 text-white rounded-xl shadow-xl p-5 mt-12" id="newsletter">
                             <div className="max-w-2xl mx-auto">
                                 <NewsletterSignup />
                             </div>

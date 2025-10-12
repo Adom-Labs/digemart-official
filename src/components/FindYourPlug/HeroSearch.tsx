@@ -76,7 +76,7 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                     className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
                     style={{ backgroundImage: `url(${backgroundImage})` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/85 via-slate-900/90 to-slate-900/95 backdrop-blur-xs" />
+                <div className="absolute inset-0 bg-linear-to-b from-slate-900/85 via-slate-900/90 to-slate-900/95 backdrop-blur-xs" />
             </div>
 
             {/* Content */}
@@ -103,7 +103,7 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                         className="text-5xl md:text-6xl lg:text-7xl text-center font-bold text-white"
                     >
                         Find Your Perfect{' '}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400">
                             Online Store
                         </span>
                     </motion.h1>
@@ -217,7 +217,7 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                                                             className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
                                                         >
                                                             {result.image ? (
-                                                                <div className="w-12 h-12 rounded-lg bg-slate-100 flex-shrink-0 overflow-hidden relative">
+                                                                <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 overflow-hidden relative">
                                                                     <Image
                                                                         src={result.image}
                                                                         alt={result.name}
@@ -226,7 +226,7 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                                                                     />
                                                                 </div>
                                                             ) : (
-                                                                <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                                                <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
                                                                     {result.type === 'store' && <Store className="h-6 w-6 text-primary" />}
                                                                     {result.type === 'product' && <ShoppingBag className="h-6 w-6 text-primary" />}
                                                                     {result.type === 'category' && <Folder className="h-6 w-6 text-primary" />}
