@@ -52,7 +52,7 @@ export default function HowItWorks() {
     return (
         <main className="min-h-screen bg-white pt-24">
             {/* Hero Section */}
-            <section className="pt-24 pb-12 bg-gradient-to-b from-slate-50 to-white">
+            <section className="pt-24 pb-12 bg-linear-to-b from-slate-50 to-white">
                 <WrapContent>
                     <div className="text-center space-y-4">
                         <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
@@ -81,7 +81,7 @@ export default function HowItWorks() {
 
                                 {/* Step Card */}
                                 <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
-                                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center mb-4`}>
+                                    <div className={`w-12 h-12 rounded-lg bg-linear-to-br ${step.color} flex items-center justify-center mb-4`}>
                                         <step.icon className="w-6 h-6 text-white" />
                                     </div>
                                     <h3 className="text-xl font-semibold text-slate-900 mb-2">

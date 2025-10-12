@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import Logo from "../Logo";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -7,6 +6,8 @@ import { useLoading } from "@/app/hooks/useLoading";
 import { X } from "lucide-react";
 import EmailForm from "./EmailForm";
 import SocialButtons from "./SocialButtons";
+import { signIn } from "next-auth/react"
+
 
 const getErrorMessage = (error: string) => {
   const errorMessages: Record<string, string> = {
@@ -22,9 +23,22 @@ const getErrorMessage = (error: string) => {
     ETIMEDOUT:
       "Connection timed out. Please check your internet connection and try again.",
     Review: "You must be logged in to post a review.",
+    // Custom error codes from our auth config
+    "Invalid identifier or password": "Invalid email or password. Please check your credentials and try again.",
+    "Request timed out. Please try again.": "Connection timed out. Please check your internet connection and try again.",
+    "Invalid response from server": "Something went wrong with the authentication. Please try again.",
+    "Invalid wallet address": "Wallet address verification failed. Please try again.",
+    credentials: "Invalid email or password. Please check your credentials and try again.",
   };
   return errorMessages[error] || errorMessages.default;
 };
+
+const DigemartBenefits = [
+  "Free business directory listing",
+  "Real-time performance monitoring",
+  "Customer reviews and ratings",
+  "Business ranking and analytics",
+];
 
 const LoginForm = ({
   redirectUrl,
@@ -51,13 +65,16 @@ const LoginForm = ({
     }
   };
   const handleGoogleSignIn = async () => {
-    await signIn("google", {
-      callbackUrl: redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD,
-    });
+    // Redirect to backend OAuth endpoint
+    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+    const callbackUrl = redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD;
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+
+    // Redirect to backend Google OAuth endpoint with callback URL
+    window.location.href = `${backendUrl}/auth/google?callbackUrl=${encodedCallbackUrl}`;
   };
 
   const handleEmailSignIn = async (email: string, password: string) => {
-    console.log(redirectUrl);
     const callbackUrl =
       redirectUrl && redirectUrl !== "null"
         ? redirectUrl
@@ -101,32 +118,14 @@ const LoginForm = ({
               all in one place.
             </p>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
+              {DigemartBenefits.map((item, index) => (
+                <div key={index} className="flex items-start space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
+                    <span className="text-green-600 text-sm">✓</span>
+                  </div>
+                  <p className="text-gray-600">{item}</p>
                 </div>
-                <p className="text-gray-600">Free business directory listing</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">
-                  Real-time performance monitoring
-                </p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">Customer reviews and ratings</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-1">
-                  <span className="text-green-600 text-sm">✓</span>
-                </div>
-                <p className="text-gray-600">Business ranking and analytics</p>
-              </div>
+              ))}
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
                   <span className="text-blue-600 text-sm">+</span>
@@ -153,11 +152,15 @@ const LoginForm = ({
       {/* Right */}
       <div className="w-full lg:w-1/2 bg-white p-8 flex items-center justify-center">
         <div className="w-full max-w-md space-y-8">
+          {/* Mobile logo (shows when left marketing panel is hidden) */}
+          <div className="lg:hidden flex justify-center">
+            <Logo />
+          </div>
+
           <div>
             <h2 className="text-2xl font-semibold mb-1">Welcome Back!</h2>
             <p className="text-gray-600">
-              Don&apos;t have a business listed yet? Create a free account now
-              and start growing your reach.
+              Sign in to access your dashboard and manage your accounts.
             </p>
           </div>
 

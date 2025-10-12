@@ -5,7 +5,7 @@ import { ROUTES } from "@/lib/routes";
 
 export default function CallToAction() {
   return (
-    <div className="grid min-h-[100dvh] lg:grid-cols-2">
+    <div className="grid min-h-dvh lg:grid-cols-2">
       {/* Left Column */}
       <div className="flex flex-col justify-center gap-8 bg-primary px-6 py-12 text-white lg:px-12">
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
