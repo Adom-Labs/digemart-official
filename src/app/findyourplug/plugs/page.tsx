@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { Metadata } from 'next';
 import { useStores, useCategories, StoreDiscoveryDto, CategoryResponseDto } from '@/lib/api';
 import StoresClientPage from './StoresClientPage';
 import { getStoresPageData } from './actions';
@@ -12,11 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, Grid, List } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Discover Amazing Stores | Digemart',
-  description: 'Find the perfect products from verified stores and trusted vendors. Browse through our collection of top-rated stores and discover unique products.',
-  keywords: 'online stores, shopping, vendors, marketplace, products',
-};
+// export const metadata: Metadata = {
+//   title: 'Discover Amazing Stores | Digemart',
+//   description: 'Find the perfect products from verified stores and trusted vendors. Browse through our collection of top-rated stores and discover unique products.',
+//   keywords: 'online stores, shopping, vendors, marketplace, products',
+// };
 
 interface SearchParams {
   search?: string;
@@ -24,13 +23,13 @@ interface SearchParams {
   sortBy?: string;
 }
 
-export default async function StoresPage({
+export default function StoresPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
   // Fetch initial data server-side for SEO
-  const initialData = await getStoresPageData({
+  const initialData = getStoresPageData({
     ...(searchParams.search && { search: searchParams.search }),
     ...(searchParams.category && { categoryId: searchParams.category }),
     ...(searchParams.sortBy && { sortBy: searchParams.sortBy }),
@@ -79,8 +78,8 @@ export default async function StoresPage({
 
   return (
     <Suspense fallback={<Loader />}>
-      <StoresClientPage 
-        initialStores={initialData.data.stores} 
+      <StoresClientPage
+        initialStores={initialData.data.stores}
         initialCategories={initialData.data.categories}
         searchParams={searchParams}
       />

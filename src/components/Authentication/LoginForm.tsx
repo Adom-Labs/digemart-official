@@ -89,6 +89,9 @@ const LoginForm = ({
         callbackUrl,
       });
 
+      console.log(result);
+
+
       if (result?.error) {
         console.log(result.error);
         setError(getErrorMessage(result.error));
