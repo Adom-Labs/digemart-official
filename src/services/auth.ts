@@ -27,6 +27,7 @@ export const loginUser = async (credentials: {
     method: 'POST',
     data: credentials,
   });
+
   return response.data;
 };
 

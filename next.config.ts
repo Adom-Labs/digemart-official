@@ -3,7 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
-    browserDebugInfoInTerminal: true,
+    browserDebugInfoInTerminal: false,
+  },
+  compiler: {
+    removeConsole: false,
   },
   images: {
     remotePatterns: [

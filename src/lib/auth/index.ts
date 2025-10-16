@@ -23,7 +23,7 @@ class InvalidWalletError extends CredentialsSignin {
 }
 declare module 'next-auth' {
   interface User {
-    id: string;
+    id?: number | string;
     token: string;
     role?: string;
     purpose?: string;
@@ -43,24 +43,9 @@ declare module 'next-auth' {
   }
 }
 
-interface LoginResponseData {
-  token: string;
-  userId: string;
-  name: string;
-  email: string;
-  role: string;
-  stores: {
-    id: string;
-    storeName: string;
-    storeUrl: string;
-  }[];
-  walletAddress?: string;
-  purpose?: string;
-}
-
 interface WalletVerificationResponse {
   user: {
-    id: number;
+    id: number | string;
     name: string;
     email: string;
     roles: string[];
@@ -122,12 +107,7 @@ const authOptions = {
             // Handle OAuth token from backend
             const userData = JSON.parse(credentials.user as string);
             return {
-              id: userData.id.toString(),
-              name: userData.name,
-              email: userData.email,
-              role: userData.roles?.[0] || 'USER',
-              purpose: userData.purpose || 'ADD_BUSINESS',
-              stores: userData.stores || [],
+              ...userData,
               token: credentials.token as string,
               authType: 'GOOGLE',
             };
@@ -170,12 +150,7 @@ const authOptions = {
               }
 
               return {
-                id: user.id.toString(),
-                name: user.name,
-                email: user.email,
-                role: user.roles?.[0] || 'USER',
-                purpose: user.purpose || 'ADD_BUSINESS',
-                stores: user.stores || [],
+                ...user,
                 token,
                 walletAddress: walletAddress.toLowerCase(),
                 authType: 'WALLET',
@@ -201,17 +176,14 @@ const authOptions = {
               email: string;
               password: string;
             });
-            const userData = res as unknown as LoginResponseData;
+            const userData = res as unknown as WalletVerificationResponse;
 
             if (!userData) return null;
+            console.log(userData);
+
 
             return {
-              id: userData.userId,
-              name: userData.name,
-              email: userData.email,
-              role: userData.role,
-              purpose: userData.purpose || 'ADD_BUSINESS',
-              stores: userData.stores || [],
+              ...userData.user,
               token: userData.token,
               authType: 'EMAIL',
             };
