@@ -74,4 +74,9 @@ export const queryKeys = {
     byProduct: <T = Record<string, unknown>>(productId: number, params?: T) =>
       ['reviews', 'by-product', productId, params] as const,
   },
+
+  // Dashboard queries
+  dashboard: {
+    overview: ['dashboard', 'overview'] as const,
+  },
 } as const;

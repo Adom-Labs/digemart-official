@@ -239,3 +239,73 @@ export interface EntryPageQueryParams {
   includeStats?: boolean;
   useCache?: boolean;
 }
+
+// Dashboard Types
+// Dashboard Types - Matching backend Prisma schema
+export enum StoreType {
+  INTERNAL = 'INTERNAL', // On-platform stores (business listings)
+  EXTERNAL = 'EXTERNAL', // External stores (e-commerce)
+}
+
+export interface DashboardStoreDto {
+  id: number;
+  name: string;
+  slug: string;
+  type: StoreType;
+  views: number;
+  averageRating: number | null;
+  totalRatings: number;
+  status: string;
+  orders?: number;
+  revenue?: number;
+  products?: number;
+  trend: number;
+  likes?: number;
+}
+
+export interface StoresStatsDto {
+  totalStores: number;
+  totalListings: number;
+  totalEcommerce: number;
+  totalViews: number;
+  totalRevenue: number;
+}
+
+export interface TaskSummaryDto {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  priority: string;
+  isCompleted: boolean;
+  actionUrl: string | null;
+  createdAt: Date | string;
+}
+
+export interface TaskStatsDto {
+  total: number;
+  completed: number;
+  pending: number;
+  completionRate: number;
+}
+
+export interface NotificationSummaryDto {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: Date | string;
+  actionUrl: string | null;
+}
+
+export interface DashboardOverviewDto {
+  listings: DashboardStoreDto[];
+  ecommerce: DashboardStoreDto[];
+  storesStats: StoresStatsDto;
+  taskStats: TaskStatsDto;
+  recentTasks: TaskSummaryDto[];
+  unreadNotificationsCount: number;
+  recentNotifications: NotificationSummaryDto[];
+}
+

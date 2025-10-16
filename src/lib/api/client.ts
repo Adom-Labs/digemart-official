@@ -4,6 +4,7 @@ import axios, {
   AxiosError,
   InternalAxiosRequestConfig,
 } from 'axios';
+import { getSession, signOut } from 'next-auth/react';
 
 // Get BASE_URL from environment or use default
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050/api';
@@ -17,14 +18,20 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor
+// Request interceptor - DYNAMICALLY get token from NextAuth session
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // Add auth token if available (from localStorage or session)
+  async (config: InternalAxiosRequestConfig) => {
+    // Only run in browser environment
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('auth_token');
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      try {
+        // Get fresh session on each request
+        const session = await getSession();
+
+        if (session?.token && config.headers) {
+          config.headers.Authorization = `Bearer ${session.token}`;
+        }
+      } catch (error) {
+        console.error('[API Client] Failed to get session:', error);
       }
     }
 
@@ -50,17 +57,17 @@ apiClient.interceptors.response.use(
     }
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     // Handle common errors
     if (error.response?.status === 401) {
-      // Handle unauthorized - clear token and redirect to login
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
-        // Only redirect if not already on auth page
-        if (!window.location.pathname.includes('/login')) {
-          console.warn('[API] Unauthorized - redirecting to login');
-          // You might want to redirect here or dispatch an action
-        }
+      // Handle unauthorized - session expired or invalid
+      console.error('[API] Unauthorized - session may have expired');
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth')) {
+        // Call NextAuth signOut to clear session properly
+        await signOut({
+          callbackUrl: '/findyourplug/login',
+          redirect: true
+        });
       }
     }
 
@@ -81,6 +88,7 @@ apiClient.interceptors.response.use(
       console.error('[API] Network error - server may be down');
     }
 
+    console.error('[API Response Error]', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );

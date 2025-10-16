@@ -11,6 +11,7 @@ import {
   categoryApi,
   reviewApi,
   storeApi,
+  dashboardApi,
 } from './services';
 import { searchApi } from './search';
 import {
@@ -26,6 +27,7 @@ import {
   EntryPageQueryParams,
   SearchResponseDto,
   SearchQueryParams,
+  DashboardOverviewDto,
 } from './types';
 
 // Discovery Hooks
@@ -276,3 +278,24 @@ export const useSearchSuggestions = (
     ...options,
   });
 };
+
+// Dashboard Hooks
+export const useDashboardOverview = (
+  options?: UseQueryOptions<DashboardOverviewDto, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.dashboard.overview,
+    queryFn: () => dashboardApi.getOverview().then((res) => res.data),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    retry: (failureCount, error) => {
+      // Don't retry on auth errors (401, 403)
+      if (error?.message?.includes('401') || error?.message?.includes('403')) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    ...options,
+  });
+};
+
