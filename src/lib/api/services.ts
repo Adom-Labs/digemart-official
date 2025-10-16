@@ -16,6 +16,7 @@ import {
   DiscoveryQueryParams,
   TrendingQueryParams,
   EntryPageQueryParams,
+  DashboardOverviewDto,
 } from './types';
 
 // Discovery API Services
@@ -164,6 +165,14 @@ export const storeApi = {
 
   getBySlug: async (slug: string): Promise<ApiResponse<StoreDiscoveryDto>> => {
     const response = await apiClient.get(`/stores/slug/${slug}`);
+    return response.data;
+  },
+};
+
+// Dashboard API Services
+export const dashboardApi = {
+  getOverview: async (): Promise<ApiResponse<DashboardOverviewDto>> => {
+    const response = await apiClient.post('/dashboard/overview');
     return response.data;
   },
 };
