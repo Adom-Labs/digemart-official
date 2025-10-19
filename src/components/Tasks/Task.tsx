@@ -25,9 +25,12 @@ const Task = () => {
             <h2 className="text-3xl">Tasks</h2>
             <p>Manage and track your tasks across all stores</p>
           </div>
-          <Button className="bg-black hover:cursor-pointer hover:bg-black/80 transition-all duration-200">
+          <Button className="bg-black hover:cursor-pointer hidden md:block hover:bg-black/80 transition-all duration-200">
             <Plus />
             Create Task
+          </Button>
+          <Button className="bg-black">
+            <Plus />
           </Button>
         </div>
 

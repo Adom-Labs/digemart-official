@@ -11,7 +11,7 @@ const TaskOverviewCard = ({
 }) => {
   return (
     <article
-      className={`p-6 space-y-4 ${getColor(id)} border-2 rounded-xl h-[116px]`}
+      className={`p-6 space-y-4  ${getColor(id)} border-2 rounded-xl h-[116px]`}
     >
       <h4 className="font-semibold">{title}</h4>
       <p>{number}</p>
