@@ -17,6 +17,7 @@ import {
   TrendingQueryParams,
   EntryPageQueryParams,
   DashboardOverviewDto,
+  Store,
 } from './types';
 
 // Discovery API Services
@@ -146,7 +147,7 @@ export const reviewApi = {
 export const storeApi = {
   getAll: async (
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
+  ): Promise<ApiResponse<Store[]>> => {
     const response = await apiClient.get('/stores', { params });
     return response.data;
   },

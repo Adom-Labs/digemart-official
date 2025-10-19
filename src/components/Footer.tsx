@@ -61,7 +61,7 @@ function Footer(): JSX.Element {
                 <Link href="/about">About Us</Link>
               </li>
               <li>
-                <Link href="/findyourplug/stores">Stores</Link>
+                <Link href="/findyourplug/plugs">Stores</Link>
               </li>
               <li>
                 <Link href="/products">Products</Link>

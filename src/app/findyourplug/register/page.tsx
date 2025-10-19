@@ -1,7 +1,6 @@
 "use client";
 
 import { useLoading } from "@/app/hooks/useLoading";
-import Divider from "@/components/Authentication/Divider";
 import RegistrationForm from "@/components/Authentication/RegistrationForm";
 import SocialButtons from "@/components/Authentication/SocialButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -45,10 +44,13 @@ const RegisterPage = () => {
       startLoading("register");
 
       const {
-        confirmPassword: _confirmPassword,
-        acceptTerms: _acceptTerms,
+        confirmPassword,
+        acceptTerms,
         ...userData
-      } = data;
+      } = data; confirmPassword;
+
+      let _c = confirmPassword;
+      const _a = acceptTerms
       await registerUser(userData);
 
       const redirectParam = redirectUrl
