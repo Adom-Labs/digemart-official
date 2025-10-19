@@ -22,7 +22,11 @@ const NotificationCard = ({
   date: string;
 }) => {
   return (
-    <article className="flex flex-col sm:flex-row bg-white py-6 sm:py-10 px-4 sm:px-6 rounded-2xl gap-3 sm:gap-4">
+    <article
+      className={`flex flex-col sm:flex-row bg-white py-6 sm:py-10 px-4 sm:px-6 rounded-2xl gap-3 sm:gap-4 ${
+        status.toLowerCase() === "unread" ? "border-l-6" : ""
+      }  border-[#0301A0]`}
+    >
       <div className="bg-[#F3F4F7] h-fit p-2 rounded-xl w-fit">
         {isPending ? <Info color="#3A6AF9" /> : <CircleCheck color="#00C483" />}
       </div>
