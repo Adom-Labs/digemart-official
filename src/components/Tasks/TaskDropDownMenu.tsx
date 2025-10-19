@@ -1,30 +1,30 @@
 import { ChevronDown } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { Dispatch, SetStateAction } from "react";
 
 const TaskDropDownMenu = ({
   currentFilter,
   options,
   setFilter,
+  slxClass,
 }: {
   currentFilter: string;
   options: string[];
   setFilter: Dispatch<SetStateAction<string>>;
+  slxClass?: string;
 }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="hover:bg-accent w-72 bg-[#F3F3F5] hover:cursor-pointer flex justify-between h-fit"
+          className={`hover:bg-accent w-50 bg-[#F3F3F5] hover:cursor-pointer flex justify-between h-fit ${slxClass}`}
         >
           {currentFilter}
           <ChevronDown />

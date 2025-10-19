@@ -1,5 +1,5 @@
 "use client";
-import Task from "@/components/Task";
+import Task from "@/components/Tasks/Task";
 
 const TaskPage = () => {
   return <Task />;
