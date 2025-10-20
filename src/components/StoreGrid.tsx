@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle } from "lucide-react";
-import { Store } from "@/lib/api/types";
+import { StoreDiscoveryDto } from "@/lib/api/types";
 
 interface StoreGridProps {
-  stores: Store[];
+  stores: StoreDiscoveryDto[];
   title?: string;
   subtitle?: string;
   showViewAllButton?: boolean;
@@ -65,7 +65,7 @@ const StoreGrid = ({
           >
             <div className="relative w-full h-48">
               <Image
-                src={store.logo || store.storeCoverPhoto || "/placeholder.svg"}
+                src={store.storeLogo || store.storeCover || "/placeholder.svg"}
                 alt={store.storeName}
                 fill
                 className="object-cover"
@@ -97,9 +97,9 @@ const StoreGrid = ({
                   )}
                 </span>
               </div>
-              {store.storeCategory && (
+              {store.category && (
                 <span className="inline-block text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 mb-1 w-fit">
-                  {store.storeCategory.name}
+                  {store.category.name}
                 </span>
               )}
               <div className="flex items-center gap-2 text-gray-500 text-sm">
