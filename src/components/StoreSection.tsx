@@ -1,8 +1,8 @@
 import WrapContent from "./WrapContent";
 import StoreGrid from "./StoreGrid";
-import { Store } from "@/lib/api/types";
+import { StoreDiscoveryDto } from "@/lib/api/types";
 
-export default function StoresSection({ stores }: { stores: Store[] }) {
+export default function StoresSection({ stores }: { stores: StoreDiscoveryDto[] }) {
   return (
     <WrapContent>
       <StoreGrid
