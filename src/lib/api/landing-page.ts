@@ -5,17 +5,17 @@
  */
 
 import apiClient from './client';
-import { ApiResponse, Store, TopVendorDto, CategoryResponseDto, ReviewResponseDto } from './types';
+import { ApiResponse, StoreDiscoveryDto, TopVendorDto, CategoryResponseDto, ReviewResponseDto } from './types';
 
 // Main Landing Page Response Types
 export interface MainLandingPageData {
-  stores: Store[];
+  stores: StoreDiscoveryDto[];
   vendors: TopVendorDto[];
 }
 
 export interface PlugsLandingPageData {
   categories: CategoryResponseDto[];
-  featuredStores: Store[];
+  featuredStores: StoreDiscoveryDto[];
   recentReviews: ReviewResponseDto[];
 }
 
