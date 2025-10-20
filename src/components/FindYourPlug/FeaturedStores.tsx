@@ -1,10 +1,10 @@
 'use client';
 
 import StoreGrid from '@/components/StoreGrid';
-import { Store } from '@/lib/api/types';
+import { StoreDiscoveryDto } from '@/lib/api/types';
 import WrapContent from '@/components/WrapContent';
 
-export default function FeaturedStores({ stores }: { stores: Store[] | undefined }) {
+export default function FeaturedStores({ stores }: { stores: StoreDiscoveryDto[] | undefined }) {
     if (!stores) return null;
 
     return (
