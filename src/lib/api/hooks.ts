@@ -201,7 +201,7 @@ export const useReviewsByStore = (
 // Store Hooks
 export const useStores = (
   params?: Record<string, unknown>,
-  options?: UseQueryOptions<Store[], Error>
+  options?: UseQueryOptions<StoreDiscoveryDto[], Error>
 ) => {
   return useQuery({
     queryKey: queryKeys.stores.all(params),
