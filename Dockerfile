@@ -1,5 +1,5 @@
 # ---------- Build Stage ----------
-FROM node:20-slim AS builder
+FROM gcr.io/distroless/nodejs20 AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # ---------- Production Stage ----------
-FROM node:20-slim AS runner
+FROM gcr.io/distroless/nodejs20 AS runner
 
 WORKDIR /app
 
