@@ -147,7 +147,7 @@ export const reviewApi = {
 export const storeApi = {
   getAll: async (
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<Store[]>> => {
+  ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
     const response = await apiClient.get('/stores', { params });
     return response.data;
   },
