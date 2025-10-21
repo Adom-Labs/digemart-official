@@ -391,3 +391,45 @@ export interface DashboardOverviewDto {
   recentNotifications: NotificationSummaryDto[];
 }
 
+// Settings Types
+export interface UpdateProfileDto {
+  name?: string;
+  phone?: string;
+  address?: string;
+  state?: string;
+  lga?: string;
+  image?: string;
+  twitter?: string;
+  facebook?: string;
+  whatsapp?: string;
+}
+
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface RemoveIdentityDto {
+  verificationToken?: string;
+}
+
+export interface Identity {
+  id: number;
+  provider: 'EMAIL' | 'GOOGLE' | 'WALLET';
+  email: string;
+  isPrimary: boolean;
+  isVerified: boolean;
+  createdAt: string;
+}
+
+export interface IdentityRemovalResponse {
+  message: string;
+  identityId: number;
+}
+
+export interface RemovalConfirmationResponse {
+  message: string;
+  removedIdentityId: number;
+}
+

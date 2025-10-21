@@ -3,7 +3,7 @@
  * Following TanStack Query best practices with proper error handling and caching
  */
 
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import {
   discoveryApi,
@@ -12,6 +12,7 @@ import {
   reviewApi,
   storeApi,
   dashboardApi,
+  settingsApi,
 } from './services';
 import { searchApi } from './search';
 import {
@@ -297,6 +298,82 @@ export const useDashboardOverview = (
       return failureCount < 3;
     },
     ...options,
+  });
+};
+
+// Settings Hooks
+
+/**
+ * Hook to update user profile
+ */
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: settingsApi.updateProfile,
+    onSuccess: () => {
+      // Invalidate profile cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.settings.profile() });
+    },
+  });
+};
+
+/**
+ * Hook to change password
+ */
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: settingsApi.changePassword,
+  });
+};
+
+/**
+ * Hook to fetch user identities
+ */
+export const useUserIdentities = () => {
+  return useQuery({
+    queryKey: queryKeys.settings.identities(),
+    queryFn: settingsApi.getUserIdentities,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+};
+
+/**
+ * Hook to request identity removal
+ */
+export const useRequestRemoveIdentity = () => {
+  return useMutation({
+    mutationFn: settingsApi.requestRemoveIdentity,
+  });
+};
+
+/**
+ * Hook to confirm identity removal
+ */
+export const useConfirmRemoveIdentity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: settingsApi.confirmRemoveIdentity,
+    onSuccess: () => {
+      // Invalidate identities cache
+      queryClient.invalidateQueries({ queryKey: queryKeys.settings.identities() });
+    },
+  });
+};
+
+/**
+ * Hook to set primary identity
+ */
+export const useSetPrimaryIdentity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: settingsApi.setPrimaryIdentity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.settings.identities() });
+    },
   });
 };
 

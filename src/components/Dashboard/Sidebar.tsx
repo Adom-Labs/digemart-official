@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 
 import { ViewMode } from './ViewModeToggle';
+import Logo from '../Logo';
 
 interface SidebarProps {
     collapsed: boolean;
@@ -97,12 +98,7 @@ export function Sidebar({
                 <div className="flex flex-col h-full">
                     <div className="p-4 flex items-center justify-between min-h-[80px]">
                         {!collapsed && (
-                            <div className="flex items-center gap-3 transition-opacity duration-200">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
-                                    <StoreIcon className="text-primary-foreground" size={24} strokeWidth={2} />
-                                </div>
-                                <span className="font-semibold text-lg text-foreground">Dmart</span>
-                            </div>
+                            <Logo />
                         )}
                         <Button
                             variant="ghost"

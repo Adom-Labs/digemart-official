@@ -13,17 +13,10 @@ import {
  */
 export const testSiweMessageCreation = async (walletAddress: string) => {
   try {
-    console.log('Testing SIWE message creation...');
 
     const result = await createWalletSiweMessage(walletAddress);
-
-    console.log('✅ SIWE message created successfully:');
-    console.log('Message:', result.message);
-    console.log('Nonce:', result.nonce);
-
     return result;
   } catch (error) {
-    console.error('❌ SIWE message creation failed:', error);
     throw error;
   }
 };
@@ -47,7 +40,6 @@ export const testWalletAuthentication = async (
 
     return result;
   } catch (error) {
-    console.error('❌ Wallet authentication failed:', error);
     throw error;
   }
 };
