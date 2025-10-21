@@ -433,3 +433,35 @@ export interface RemovalConfirmationResponse {
   removedIdentityId: number;
 }
 
+
+export interface User {
+  id: number;
+  name: string;
+  phone: string;
+  address: string;
+  state: string;
+  lga: string | null;
+  image: string | null;
+  twitter: string | null;
+  facebook: string | null;
+  whatsapp: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KYC {
+  id: number;
+  activated: boolean;
+  hasStore: boolean;
+  vendorType: "EXTERNAL" | "INTERNAL" | string;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+}
+
+export interface UserProfile {
+  user: User;
+  roles: string[];
+  identities: Identity[];
+  kyc: KYC;
+}

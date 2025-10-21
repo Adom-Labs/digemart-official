@@ -30,6 +30,7 @@ import {
   SearchQueryParams,
   DashboardOverviewDto,
   Store,
+  UserProfile,
 } from './types';
 
 // Discovery Hooks
@@ -304,6 +305,18 @@ export const useDashboardOverview = (
 // Settings Hooks
 
 /**
+ * Hook to get user profile
+ */
+export const useUserProfile = (options?: UseQueryOptions<UserProfile, Error>) => {
+  return useQuery({
+    queryKey: queryKeys.auth.profile(),
+    queryFn: settingsApi.getUserProfile,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options,
+  });
+};
+
+/**
  * Hook to update user profile
  */
 export const useUpdateProfile = () => {
@@ -311,10 +324,13 @@ export const useUpdateProfile = () => {
 
   return useMutation({
     mutationFn: settingsApi.updateProfile,
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate profile cache
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile() });
       queryClient.invalidateQueries({ queryKey: queryKeys.settings.profile() });
+    },
+    onError: (error) => {
+      console.error('Profile update error:', error);
     },
   });
 };

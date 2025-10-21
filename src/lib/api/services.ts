@@ -23,6 +23,7 @@ import {
   IdentityRemovalResponse,
   RemovalConfirmationResponse,
   Store,
+  UserProfile
 } from './types';
 
 // Discovery API Services
@@ -186,14 +187,20 @@ export const dashboardApi = {
 // Settings API Services
 export const settingsApi = {
   /**
+   * Get user profile
+   */
+  getUserProfile: async () => {
+    const response = await apiClient.get<{ data: UserProfile }>('/auth/profile');
+    return response.data.data
+  },
+
+  /**
    * Update user profile
    */
   updateProfile: async (data: UpdateProfileDto) => {
     const response = await apiClient.patch('/auth/profile', data);
     return response.data;
-  },
-
-  /**
+  },  /**
    * Change user password
    */
   changePassword: async (data: ChangePasswordDto) => {
