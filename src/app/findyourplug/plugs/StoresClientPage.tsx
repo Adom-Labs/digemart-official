@@ -141,6 +141,20 @@ export default function StoresClientPage({
                   ))}
                 </select> */}
 
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={storesLoading || !Array.isArray(categories)}
+                >
+                  <option value="">All Categories</option>
+                  {Array.isArray(categories) && categories.map((category) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.name} ({category.storeCount})
+                    </option>
+                  ))}
+                </select>
+
                 {/* Sort Filter */}
                 <select
                   value={sortBy}
