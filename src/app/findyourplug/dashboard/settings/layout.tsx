@@ -7,10 +7,6 @@ import {
     User,
     Shield,
     Users,
-    Bell,
-    Settings as SettingsIcon,
-    Store,
-    AlertTriangle,
 } from 'lucide-react';
 
 const settingsSections = [
@@ -31,30 +27,6 @@ const settingsSections = [
         href: '/findyourplug/dashboard/settings/accounts',
         icon: Users,
         description: 'Manage login methods',
-    },
-    {
-        name: 'Notifications',
-        href: '/findyourplug/dashboard/settings/notifications',
-        icon: Bell,
-        description: 'Email and push notifications',
-    },
-    {
-        name: 'Preferences',
-        href: '/findyourplug/dashboard/settings/preferences',
-        icon: SettingsIcon,
-        description: 'Theme and display options',
-    },
-    {
-        name: 'Stores',
-        href: '/findyourplug/dashboard/settings/stores',
-        icon: Store,
-        description: 'Manage your stores',
-    },
-    {
-        name: 'Danger Zone',
-        href: '/findyourplug/dashboard/settings/danger',
-        icon: AlertTriangle,
-        description: 'Delete account and data',
     },
 ];
 
