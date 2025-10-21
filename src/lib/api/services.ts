@@ -22,7 +22,7 @@ import {
   Identity,
   IdentityRemovalResponse,
   RemovalConfirmationResponse,
-  Store,
+  // Store (unused here)
 } from './types';
 
 // Discovery API Services
