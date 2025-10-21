@@ -179,8 +179,6 @@ const authOptions = {
             const userData = res as unknown as WalletVerificationResponse;
 
             if (!userData) return null;
-            console.log(userData);
-
 
             return {
               ...userData.user,

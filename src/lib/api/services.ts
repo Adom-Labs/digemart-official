@@ -17,6 +17,11 @@ import {
   TrendingQueryParams,
   EntryPageQueryParams,
   DashboardOverviewDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+  Identity,
+  IdentityRemovalResponse,
+  RemovalConfirmationResponse,
 } from './types';
 
 // Discovery API Services
@@ -173,6 +178,57 @@ export const storeApi = {
 export const dashboardApi = {
   getOverview: async (): Promise<ApiResponse<DashboardOverviewDto>> => {
     const response = await apiClient.post('/dashboard/overview');
+    return response.data;
+  },
+};
+
+// Settings API Services
+export const settingsApi = {
+  /**
+   * Update user profile
+   */
+  updateProfile: async (data: UpdateProfileDto) => {
+    const response = await apiClient.patch('/auth/profile', data);
+    return response.data;
+  },
+
+  /**
+   * Change user password
+   */
+  changePassword: async (data: ChangePasswordDto) => {
+    const response = await apiClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  /**
+   * Get user identities
+   */
+  getUserIdentities: async (): Promise<Identity[]> => {
+    const response = await apiClient.get('/auth/identities');
+    return response.data;
+  },
+
+  /**
+   * Request identity removal (sends confirmation email)
+   */
+  requestRemoveIdentity: async (identityId: number): Promise<IdentityRemovalResponse> => {
+    const response = await apiClient.delete(`/auth/identity/${identityId}`);
+    return response.data;
+  },
+
+  /**
+   * Confirm identity removal with token from email
+   */
+  confirmRemoveIdentity: async (verificationToken: string): Promise<RemovalConfirmationResponse> => {
+    const response = await apiClient.post('/auth/identity/confirm-removal', { verificationToken });
+    return response.data;
+  },
+
+  /**
+   * Set primary identity
+   */
+  setPrimaryIdentity: async (identityId: number) => {
+    const response = await apiClient.patch(`/auth/identity/${identityId}/set-primary`);
     return response.data;
   },
 };

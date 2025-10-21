@@ -4,10 +4,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -21,6 +20,8 @@ const RegistrationForm = ({
   isLoading,
   error,
 }: RegistrationFormProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,7 +55,48 @@ const RegistrationForm = ({
         (item, index) => (
           <div className="space-y-2" key={index}>
             <Label htmlFor={item.id}>{item.label}</Label>
-            <Input {...item} />
+            <div className="relative">
+              <Input
+                {...item}
+                type={
+                  item.id === "password"
+                    ? showPassword
+                      ? "text"
+                      : "password"
+                    : item.id === "confirmPassword"
+                    ? showConfirmPassword
+                      ? "text"
+                      : "password"
+                    : item.type
+                }
+              />
+              {item.id === "password" && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </button>
+              )}
+              {item.id === "confirmPassword" && (
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-400" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-400" />
+                  )}
+                </button>
+              )}
+            </div>
             {item.error && (
               <p className="text-sm text-destructive">{item.error}</p>
             )}

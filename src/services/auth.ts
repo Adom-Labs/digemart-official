@@ -40,7 +40,6 @@ export const socialLoginUser = async (userData: {
     method: 'POST',
     data: userData,
   });
-  console.log(response);
 
   return response.data;
 };

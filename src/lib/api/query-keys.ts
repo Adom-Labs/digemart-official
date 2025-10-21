@@ -79,4 +79,16 @@ export const queryKeys = {
   dashboard: {
     overview: ['dashboard', 'overview'] as const,
   },
+
+  // Auth queries
+  auth: {
+    profile: () => ['auth', 'profile'] as const,
+  },
+
+  // Settings queries
+  settings: {
+    all: ['settings'] as const,
+    profile: () => ['settings', 'profile'] as const,
+    identities: () => ['settings', 'identities'] as const,
+  },
 } as const;
