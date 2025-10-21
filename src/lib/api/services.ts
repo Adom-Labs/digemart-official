@@ -206,7 +206,7 @@ export const settingsApi = {
    */
   getUserIdentities: async (): Promise<Identity[]> => {
     const response = await apiClient.get('/auth/identities');
-    return response.data;
+    return response.data.data.identities
   },
 
   /**

@@ -48,8 +48,10 @@ export function SecuritySettings() {
 
     const onSubmit = async (data: PasswordFormValues) => {
         try {
-            await changePassword.mutateAsync(data);
-            toast.success('Password changed successfully');
+            const response = await changePassword.mutateAsync(data);
+            const successMessage =
+                (response as { message?: string })?.message || 'Password changed successfully';
+            toast.success(successMessage);
             form.reset();
         } catch (error: unknown) {
             const errorMessage =

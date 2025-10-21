@@ -55,10 +55,20 @@ export function ProfileSettings() {
 
     const onSubmit = async (data: ProfileFormValues) => {
         try {
-            await updateProfile.mutateAsync(data);
-            toast.success('Profile updated successfully');
-        } catch (error) {
-            toast.error('Failed to update profile');
+            // Remove empty string values before submitting
+            const cleanedData = Object.fromEntries(
+                Object.entries(data).filter(([_, value]) => value !== '')
+            );
+
+            const response = await updateProfile.mutateAsync(cleanedData);
+            const successMessage =
+                (response as { message?: string })?.message || 'Profile updated successfully';
+            toast.success(successMessage);
+        } catch (error: unknown) {
+            const errorMessage =
+                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                'Failed to update profile';
+            toast.error(errorMessage);
             console.error(error);
         }
     };

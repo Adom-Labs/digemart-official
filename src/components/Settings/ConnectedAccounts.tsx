@@ -24,17 +24,18 @@ import {
 import { useState } from 'react';
 
 export function ConnectedAccounts() {
-    const { data: identities, isLoading } = useUserIdentities();
+    const { data: identities, isLoading, error } = useUserIdentities();
     const requestRemove = useRequestRemoveIdentity();
     const setPrimary = useSetPrimaryIdentity();
     const [identityToRemove, setIdentityToRemove] = useState<number | null>(null);
 
     const handleRemoveIdentity = async (identityId: number) => {
         try {
-            await requestRemove.mutateAsync(identityId);
-            toast.success(
-                'Confirmation email sent. Please check your email to complete the removal.'
-            );
+            const response = await requestRemove.mutateAsync(identityId);
+            const successMessage =
+                (response as { message?: string })?.message ||
+                'Confirmation email sent. Please check your email to complete the removal.';
+            toast.success(successMessage);
             setIdentityToRemove(null);
         } catch (error: unknown) {
             const errorMessage =
@@ -47,8 +48,10 @@ export function ConnectedAccounts() {
 
     const handleSetPrimary = async (identityId: number) => {
         try {
-            await setPrimary.mutateAsync(identityId);
-            toast.success('Primary identity updated');
+            const response = await setPrimary.mutateAsync(identityId);
+            const successMessage =
+                (response as { message?: string })?.message || 'Primary identity updated';
+            toast.success(successMessage);
         } catch (error: unknown) {
             const errorMessage =
                 (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
@@ -66,6 +69,23 @@ export function ConnectedAccounts() {
             >
                 <div className="flex justify-center py-8">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+            </SettingsCard>
+        );
+    }
+
+    if (error) {
+        return (
+            <SettingsCard
+                title="Connected Accounts"
+                description="Manage your login methods"
+            >
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-sm text-destructive mb-2">Failed to load connected accounts</p>
+                    <p className="text-xs text-muted-foreground">
+                        {(error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                            'An error occurred while fetching your accounts'}
+                    </p>
                 </div>
             </SettingsCard>
         );
@@ -127,10 +147,15 @@ export function ConnectedAccounts() {
                         </div>
                     ))}
 
-                    {identities?.length === 0 && (
-                        <p className="text-sm text-muted-foreground text-center py-8">
-                            No connected accounts found
-                        </p>
+                    {(!identities || identities.length === 0) && (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <p className="text-sm text-muted-foreground mb-2">
+                                No connected accounts found
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                Connect accounts to have multiple ways to sign in
+                            </p>
+                        </div>
                     )}
                 </div>
             </SettingsCard>
