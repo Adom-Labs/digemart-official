@@ -22,7 +22,7 @@ import {
   Identity,
   IdentityRemovalResponse,
   RemovalConfirmationResponse,
-  Store,
+  // Store (unused here)
 } from './types';
 
 // Discovery API Services
@@ -30,18 +30,14 @@ export const discoveryApi = {
   getFeaturedStores: async (
     params?: DiscoveryQueryParams
   ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
-    const response = await apiClient.get('/discovery/featured-stores', {
-      params,
-    });
+    const response = await apiClient.get('/discovery/featured-stores', { params });
     return response.data;
   },
 
   getTrendingStores: async (
     params?: TrendingQueryParams
   ): Promise<ApiResponse<TrendingStoreDto[]>> => {
-    const response = await apiClient.get('/discovery/trending-stores', {
-      params,
-    });
+    const response = await apiClient.get('/discovery/trending-stores', { params });
     return response.data;
   },
 
@@ -101,9 +97,7 @@ export const categoryApi = {
     return response.data;
   },
 
-  getBySlug: async (
-    slug: string
-  ): Promise<ApiResponse<CategoryResponseDto>> => {
+  getBySlug: async (slug: string): Promise<ApiResponse<CategoryResponseDto>> => {
     const response = await apiClient.get(`/categories/slug/${slug}`);
     return response.data;
   },
@@ -118,9 +112,7 @@ export const reviewApi = {
     return response.data;
   },
 
-  getRecent: async (
-    limit?: number
-  ): Promise<ApiResponse<ReviewResponseDto[]>> => {
+  getRecent: async (limit?: number): Promise<ApiResponse<ReviewResponseDto[]>> => {
     const response = await apiClient.get('/reviews/recent', {
       params: limit ? { limit } : undefined,
     });
@@ -131,9 +123,7 @@ export const reviewApi = {
     storeId: number,
     params?: Record<string, unknown>
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get(`/reviews/store/${storeId}`, {
-      params,
-    });
+    const response = await apiClient.get(`/reviews/store/${storeId}`, { params });
     return response.data;
   },
 
@@ -141,9 +131,7 @@ export const reviewApi = {
     productId: number,
     params?: Record<string, unknown>
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get(`/reviews/product/${productId}`, {
-      params,
-    });
+    const response = await apiClient.get(`/reviews/product/${productId}`, { params });
     return response.data;
   },
 };
@@ -152,7 +140,7 @@ export const reviewApi = {
 export const storeApi = {
   getAll: async (
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<Store[]>> => {
+  ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
     const response = await apiClient.get('/stores', { params });
     return response.data;
   },
@@ -206,13 +194,15 @@ export const settingsApi = {
    */
   getUserIdentities: async (): Promise<Identity[]> => {
     const response = await apiClient.get('/auth/identities');
-    return response.data.data.identities
+    return response.data.data.identities;
   },
 
   /**
    * Request identity removal (sends confirmation email)
    */
-  requestRemoveIdentity: async (identityId: number): Promise<IdentityRemovalResponse> => {
+  requestRemoveIdentity: async (
+    identityId: number
+  ): Promise<IdentityRemovalResponse> => {
     const response = await apiClient.delete(`/auth/identity/${identityId}`);
     return response.data;
   },
@@ -220,8 +210,12 @@ export const settingsApi = {
   /**
    * Confirm identity removal with token from email
    */
-  confirmRemoveIdentity: async (verificationToken: string): Promise<RemovalConfirmationResponse> => {
-    const response = await apiClient.post('/auth/identity/confirm-removal', { verificationToken });
+  confirmRemoveIdentity: async (
+    verificationToken: string
+  ): Promise<RemovalConfirmationResponse> => {
+    const response = await apiClient.post('/auth/identity/confirm-removal', {
+      verificationToken,
+    });
     return response.data;
   },
 

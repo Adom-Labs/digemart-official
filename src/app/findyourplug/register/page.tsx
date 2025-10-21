@@ -49,7 +49,7 @@ const RegisterPage = () => {
         ...userData
       } = data; confirmPassword;
 
-      let _c = confirmPassword;
+      const _c = confirmPassword;
       const _a = acceptTerms
       await registerUser(userData);
 

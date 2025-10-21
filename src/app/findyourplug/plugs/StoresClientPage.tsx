@@ -2,24 +2,32 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { getStoresPageData } from './actions';
+import { useStores, useCategories } from '@/lib/api';
 import StoreGrid from '@/components/StoreGrid';
 import WrapContent from '@/components/WrapContent';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, Grid, List, MapPin } from 'lucide-react';
-// import Loader from '@/components/Loader';
-import { CategoryResponseDto } from '@/lib/api';
+import Loader from '@/components/Loader';
 
-export default function StoresClientPage() {
+interface StoresClientPageProps {
+  searchParams: {
+    search?: string;
+    category?: string;
+    sortBy?: string;
+  };
+}
+
+export default function StoresClientPage({
+  searchParams
+}: StoresClientPageProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const _urlSearchParams = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [searchQuery, setSearchQuery] = useState(searchParams.search || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.category || '');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'featured');
+  const [sortBy, setSortBy] = useState(searchParams.sortBy || 'averageRating');
 
   // Build query parameters
   const queryParams = {
@@ -29,39 +37,31 @@ export default function StoresClientPage() {
     limit: 20,
   };
 
-  // Fetch stores + categories directly
-  const {
-    data: storeData,
-    isLoading: storesLoading,
-    isError: storesError,
-  } = useQuery({
-    queryKey: ['stores', queryParams],
-    queryFn: () => getStoresPageData(queryParams),
-    enabled: true,
-  });
+  // Fetch data using the established API hooks
+  const { data: stores, isLoading: storesLoading, error: storesError } = useStores(queryParams);
 
-  const stores = storeData?.data?.stores || [];
-  const categories = storeData?.data?.categories || [];
+  const { data: categories } = useCategories(undefined);
 
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('search', searchQuery);
     if (selectedCategory) params.set('category', selectedCategory);
-    if (sortBy !== 'featured') params.set('sortBy', sortBy);
+    if (sortBy !== 'averageRating') params.set('sortBy', sortBy);
 
     const newUrl = params.toString() ? `?${params.toString()}` : '';
-    router.replace(newUrl, { scroll: false });
+    router.replace(`/findyourplug/plugs${newUrl}`, { scroll: false });
   }, [searchQuery, selectedCategory, sortBy, router]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    // The search will automatically trigger via the useStores hook and URL update
   };
 
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('');
-    setSortBy('featured');
+    setSortBy('averageRating');
   };
 
   if (storesError) {
@@ -78,8 +78,7 @@ export default function StoresClientPage() {
     );
   }
 
-  // if (storesLoading) return <Loader />;
-  console.log("Stores loading:", storesLoading, storeData);
+  console.log(categories)
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24">
@@ -129,14 +128,27 @@ export default function StoresClientPage() {
             {/* Filters Row */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                {/* Category Filter */}
-                <select
+                {/* <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">All Categories</option>
                   {categories?.map((category: CategoryResponseDto) => (
+                    <option key={category.id} value={category.id.toString()}>
+                      {category.name} ({category.storeCount})
+                    </option>
+                  ))}
+                </select> */}
+
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={storesLoading || !Array.isArray(categories)}
+                >
+                  <option value="">All Categories</option>
+                  {Array.isArray(categories) && categories.map((category) => (
                     <option key={category.id} value={category.id.toString()}>
                       {category.name} ({category.storeCount})
                     </option>
@@ -149,14 +161,15 @@ export default function StoresClientPage() {
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="featured">Featured</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest First</option>
-                  <option value="name">Name A-Z</option>
+                  <option value="averageRating">Highest Rated</option>
+                  <option value="createdAt">Newest First</option>
+                  <option value="updatedAt">Recently Updated</option>
+                  <option value="views">Most Viewed</option>
+                  <option value="storeName">Name A-Z</option>
                 </select>
 
                 {/* Clear Filters */}
-                {(searchQuery || selectedCategory || sortBy !== 'featured') && (
+                {(searchQuery || selectedCategory || sortBy !== 'averageRating') && (
                   <Button variant="outline" onClick={clearFilters} className="text-sm">
                     Clear Filters
                   </Button>
@@ -195,20 +208,20 @@ export default function StoresClientPage() {
                 {searchQuery ? `Search Results for "${searchQuery}"` : 'All Stores'}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                {`${stores?.length || 0} stores found`}
+                {storesLoading ? 'Loading...' : `${stores?.length || 0} stores found`}
               </p>
             </div>
           </div>
 
           {/* Loading State */}
-          {/* {storesLoading && (
+          {storesLoading && (
             <div className="flex justify-center py-12">
               <Loader />
             </div>
-          )} */}
+          )}
 
           {/* Empty State */}
-          {(!stores || stores.length === 0) && (
+          {!storesLoading && (!stores || stores.length === 0) && (
             <div className="text-center py-12">
               <div className="max-w-md mx-auto">
                 <div className="mb-4">
@@ -222,7 +235,7 @@ export default function StoresClientPage() {
                     ? 'Try adjusting your search criteria or filters'
                     : 'No stores are currently available'}
                 </p>
-                {(searchQuery || selectedCategory || sortBy !== 'featured') && (
+                {(searchQuery || selectedCategory || sortBy !== 'averageRating') && (
                   <Button variant="outline" onClick={clearFilters}>
                     Clear Filters
                   </Button>
@@ -232,7 +245,7 @@ export default function StoresClientPage() {
           )}
 
           {/* Stores Grid */}
-          {stores && stores.length > 0 && (
+          {!storesLoading && stores && stores.length > 0 && (
             <StoreGrid
               stores={stores}
               showViewAllButton={false}
