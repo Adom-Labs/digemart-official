@@ -2,6 +2,7 @@
 import React, { JSX } from "react";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const Logo = ({
@@ -30,12 +31,12 @@ const Logo = ({
 
   return (
     <Link className="min-h-[50px] flex items-center" href={link}>
-      <img
+      <Image
         alt={altText}
-        height={height}
+        height={parseInt(height)}
         src={SRC}
         style={{ objectFit: "contain" }}
-        width={width}
+        width={parseInt(width)}
         className={cn(clx, className)}
       />
       {text}

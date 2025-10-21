@@ -65,7 +65,7 @@ export const createWalletSiweMessage = async (
   chainId: number = 8453
 ) => {
   // Fetch nonce from backend
-  const nonceResponse = (await fetchNonce(walletAddress)) as any;
+  const nonceResponse = (await fetchNonce(walletAddress)) as { nonce?: string; error?: string };
 
   if (nonceResponse.error) {
     throw new Error(nonceResponse.error);
@@ -74,7 +74,7 @@ export const createWalletSiweMessage = async (
   const { nonce } = nonceResponse;
 
   // Create SIWE message
-  const siweMessage = createSiweMessage(walletAddress, nonce, chainId);
+  const siweMessage = createSiweMessage(walletAddress, nonce as string, chainId);
 
   // Prepare message for signing
   const messageToSign = prepareSiweMessage(siweMessage);

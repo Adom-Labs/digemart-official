@@ -1,10 +1,10 @@
 'use client';
 
 import StoreGrid from '@/components/StoreGrid';
-import { StoreDiscoveryDto } from '@/lib/api/types';
+import { Store } from '@/lib/api/types';
 import WrapContent from '@/components/WrapContent';
 
-export default function FeaturedStores({ stores }: { stores: StoreDiscoveryDto[] | undefined }) {
+export default function FeaturedStores({ stores }: { stores: Store[] | undefined }) {
     if (!stores) return null;
 
     return (
@@ -14,7 +14,7 @@ export default function FeaturedStores({ stores }: { stores: StoreDiscoveryDto[]
                 title="Featured Stores"
                 subtitle="Discover our top-rated and trusted stores"
                 showViewAllButton={true}
-                viewAllUrl="/findyourplug/stores"
+                viewAllUrl="/findyourplug/plugs"
                 showTags={'none'}
             />
         </WrapContent>

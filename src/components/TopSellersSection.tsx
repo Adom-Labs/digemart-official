@@ -21,7 +21,7 @@ const TopSellersSection = ({ vendors }: { vendors: TopVendorDto[] }) => {
                 />
               </div>
               <h3 className="text-lg font-semibold">{vendor.owner.firstName} {vendor.owner.lastName}</h3>
-              <Link href={`/findyourplug/stores/${vendor.storeSlug}`}>
+              <Link href={`/findyourplug/plugs/${vendor.storeSlug}`}>
                 <p className="text-muted-foreground mb-3 underline decoration-dotted decoration-gray-300 decoration-2 hover:decoration-gray-500 transition-colors">
                   {vendor.storeName}
                 </p>

@@ -29,6 +29,7 @@ import {
   SearchResponseDto,
   SearchQueryParams,
   DashboardOverviewDto,
+  Store,
 } from './types';
 
 // Discovery Hooks
@@ -201,7 +202,7 @@ export const useReviewsByStore = (
 // Store Hooks
 export const useStores = (
   params?: Record<string, unknown>,
-  options?: UseQueryOptions<StoreDiscoveryDto[], Error>
+  options?: UseQueryOptions<Store[], Error>
 ) => {
   return useQuery({
     queryKey: queryKeys.stores.all(params),

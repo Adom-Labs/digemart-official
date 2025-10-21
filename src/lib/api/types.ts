@@ -83,6 +83,88 @@ export interface TopVendorDto extends StoreDiscoveryDto {
   };
 }
 
+
+export interface Store {
+  id: number;
+  email: string;
+  phone: string;
+  storeName: string;
+  storeSlug: string;
+  storeAddress: string;
+  storeLocationState: string;
+  storeLocationCity: string;
+  storeTimeOpen: string;
+  storeTimeClose: string;
+  storeWeekOpen: string;
+  storeWeekClose: string;
+  logo: string | null;
+  storeHeroHeadline: string | null;
+  storeHeroTagline: string | null;
+  storeHeroImage: string | null;
+  storeCoverPhoto: string | null;
+  storeLayout: string | null;
+  storeHeroLayout: string | null;
+  storeMobileNav: string | null;
+  storeDescription: string;
+  storeUrl: string | null;
+  storeType: 'EXTERNAL' | 'INTERNAL';
+  createdAt: string;
+  updatedAt: string;
+  mintingStatus: 'NOT_ATTEMPTED' | 'PENDING' | 'SUCCESS' | 'FAILED';
+  mintTransactionHash: string | null;
+  mintedAt: string | null;
+  nftContractAddress: string | null;
+  nftTokenId: string | null;
+  storeCategoryId: number;
+  userId: number;
+  userImageId: string | null;
+  verified: boolean;
+  featured: boolean;
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  averageRating: number;
+  totalRatings: number;
+  ratingBreakdown: Record<'1' | '2' | '3' | '4' | '5', number>;
+  views: number;
+  lastActive: string;
+  socialLinks: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  businessHours: Record<string, any>;
+  likes: number;
+  owner: {
+    id: number;
+    name: string;
+    image: string | null;
+    phone: string;
+    identities: { email: string }[];
+  };
+  storeCategory: {
+    id: number;
+    name: string;
+    description: string;
+    categoryType: string;
+    categoryImage: string | null;
+    createdAt: string;
+    updatedAt: string;
+    slug: string;
+    icon: string;
+    featured: boolean;
+    trending: boolean;
+    displayOrder: number;
+    storeCount: number;
+    productCount: number;
+    parentId: number | null;
+    level: number;
+    metadata: Record<string, any>;
+  };
+  _count: {
+    products: number;
+    reviews: number;
+  };
+}
+
+
 export interface MarketplaceStatsDto {
   stores: {
     total: number;

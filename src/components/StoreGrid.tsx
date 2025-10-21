@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle } from "lucide-react";
-import { StoreDiscoveryDto } from "@/lib/api";
+import { Store } from "@/lib/api/types";
 
 interface StoreGridProps {
-  stores: StoreDiscoveryDto[];
+  stores: Store[];
   title?: string;
   subtitle?: string;
   showViewAllButton?: boolean;
@@ -18,7 +18,7 @@ const StoreGrid = ({
   title,
   subtitle,
   showViewAllButton = false,
-  viewAllUrl = "/findyourplug/stores",
+  viewAllUrl = "/findyourplug/plugs",
   className = "",
   showTags = 'both'
 }: StoreGridProps) => {
@@ -65,7 +65,7 @@ const StoreGrid = ({
           >
             <div className="relative w-full h-48">
               <Image
-                src={store.storeLogo || store.storeCover || "/placeholder.svg"}
+                src={store.logo || store.storeCoverPhoto || "/placeholder.svg"}
                 alt={store.storeName}
                 fill
                 className="object-cover"
@@ -97,9 +97,9 @@ const StoreGrid = ({
                   )}
                 </span>
               </div>
-              {store.category && (
+              {store.storeCategory && (
                 <span className="inline-block text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 mb-1 w-fit">
-                  {store.category.name}
+                  {store.storeCategory.name}
                 </span>
               )}
               <div className="flex items-center gap-2 text-gray-500 text-sm">
@@ -107,7 +107,7 @@ const StoreGrid = ({
                 <span className="truncate">{store.storeAddress}</span>
               </div>
               <Link
-                href={`/findyourplug/stores/${store.storeSlug}`}
+                href={`/findyourplug/plugs/${store.storeSlug}`}
                 className="mt-3 inline-block px-4 py-2 bg-blue-50 text-blue-700 rounded-md font-medium text-sm hover:bg-blue-100 transition-all"
               >
                 Visit Store

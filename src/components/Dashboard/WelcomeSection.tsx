@@ -13,10 +13,6 @@ export function WelcomeSection() {
 
     const getGradientClass = () => {
         switch (userIntent) {
-            case 'business-listings':
-                return 'bg-gradient-to-r from-green-500 to-green-600';
-            case 'ecommerce':
-                return 'bg-gradient-to-r from-orange-500 to-orange-600';
             case 'mixed':
                 return 'bg-gradient-to-r from-indigo-500 to-indigo-600';
             default:
@@ -26,11 +22,7 @@ export function WelcomeSection() {
 
     const getMessage = () => {
         switch (userIntent) {
-            case 'business-listings':
-                return 'Grow your business presence across the web';
-            case 'ecommerce':
-                return 'Scale your online store with powerful tools';
-            case 'mixed':
+        case 'mixed':
                 return 'Managing your stores effortlessly';
             default:
                 return 'Welcome to your dashboard';

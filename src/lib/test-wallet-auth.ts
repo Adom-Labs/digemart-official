@@ -36,6 +36,8 @@ export const testWalletAuthentication = async (
       signature,
       message
     );
+
+
     return result;
   } catch (error) {
     throw error;
