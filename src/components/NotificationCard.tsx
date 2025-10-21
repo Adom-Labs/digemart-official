@@ -1,5 +1,6 @@
 import { Check, CircleCheck, Info, Trash2 } from "lucide-react";
-import React from "react";
+import { motion } from "framer-motion";
+import { once } from "events";
 
 function formatDate(date: string) {
   const formattedDate = new Date(date);
@@ -14,18 +15,24 @@ const NotificationCard = ({
   details,
   status,
   date,
+  index,
 }: {
   isPending: boolean;
   title: string;
   details: string;
   status: string;
   date: string;
+  index: number;
 }) => {
   return (
-    <article
+    <motion.article
       className={`flex flex-col sm:flex-row bg-white py-6 sm:py-10 px-4 sm:px-6 rounded-2xl gap-3 sm:gap-4 ${
         status.toLowerCase() === "unread" ? "border-l-6" : ""
       }  border-[#0301A0]`}
+      initial={{ opacity: 0, x: -250 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.5 * index }}
     >
       <div className="bg-[#F3F4F7] h-fit p-2 rounded-xl w-fit">
         {isPending ? <Info color="#3A6AF9" /> : <CircleCheck color="#00C483" />}
@@ -68,7 +75,7 @@ const NotificationCard = ({
           </div>
         </div>
       </section>
-    </article>
+    </motion.article>
   );
 };
 
