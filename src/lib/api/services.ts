@@ -17,6 +17,12 @@ import {
   TrendingQueryParams,
   EntryPageQueryParams,
   DashboardOverviewDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+  Identity,
+  IdentityRemovalResponse,
+  RemovalConfirmationResponse,
+  Store,
 } from './types';
 
 // Discovery API Services
@@ -24,18 +30,14 @@ export const discoveryApi = {
   getFeaturedStores: async (
     params?: DiscoveryQueryParams
   ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
-    const response = await apiClient.get('/discovery/featured-stores', {
-      params,
-    });
+    const response = await apiClient.get('/discovery/featured-stores', { params });
     return response.data;
   },
 
   getTrendingStores: async (
     params?: TrendingQueryParams
   ): Promise<ApiResponse<TrendingStoreDto[]>> => {
-    const response = await apiClient.get('/discovery/trending-stores', {
-      params,
-    });
+    const response = await apiClient.get('/discovery/trending-stores', { params });
     return response.data;
   },
 
@@ -95,9 +97,7 @@ export const categoryApi = {
     return response.data;
   },
 
-  getBySlug: async (
-    slug: string
-  ): Promise<ApiResponse<CategoryResponseDto>> => {
+  getBySlug: async (slug: string): Promise<ApiResponse<CategoryResponseDto>> => {
     const response = await apiClient.get(`/categories/slug/${slug}`);
     return response.data;
   },
@@ -112,9 +112,7 @@ export const reviewApi = {
     return response.data;
   },
 
-  getRecent: async (
-    limit?: number
-  ): Promise<ApiResponse<ReviewResponseDto[]>> => {
+  getRecent: async (limit?: number): Promise<ApiResponse<ReviewResponseDto[]>> => {
     const response = await apiClient.get('/reviews/recent', {
       params: limit ? { limit } : undefined,
     });
@@ -125,9 +123,7 @@ export const reviewApi = {
     storeId: number,
     params?: Record<string, unknown>
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get(`/reviews/store/${storeId}`, {
-      params,
-    });
+    const response = await apiClient.get(`/reviews/store/${storeId}`, { params });
     return response.data;
   },
 
@@ -135,9 +131,7 @@ export const reviewApi = {
     productId: number,
     params?: Record<string, unknown>
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get(`/reviews/product/${productId}`, {
-      params,
-    });
+    const response = await apiClient.get(`/reviews/product/${productId}`, { params });
     return response.data;
   },
 };
@@ -173,6 +167,63 @@ export const storeApi = {
 export const dashboardApi = {
   getOverview: async (): Promise<ApiResponse<DashboardOverviewDto>> => {
     const response = await apiClient.post('/dashboard/overview');
+    return response.data;
+  },
+};
+
+// Settings API Services
+export const settingsApi = {
+  /**
+   * Update user profile
+   */
+  updateProfile: async (data: UpdateProfileDto) => {
+    const response = await apiClient.patch('/auth/profile', data);
+    return response.data;
+  },
+
+  /**
+   * Change user password
+   */
+  changePassword: async (data: ChangePasswordDto) => {
+    const response = await apiClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  /**
+   * Get user identities
+   */
+  getUserIdentities: async (): Promise<Identity[]> => {
+    const response = await apiClient.get('/auth/identities');
+    return response.data.data.identities;
+  },
+
+  /**
+   * Request identity removal (sends confirmation email)
+   */
+  requestRemoveIdentity: async (
+    identityId: number
+  ): Promise<IdentityRemovalResponse> => {
+    const response = await apiClient.delete(`/auth/identity/${identityId}`);
+    return response.data;
+  },
+
+  /**
+   * Confirm identity removal with token from email
+   */
+  confirmRemoveIdentity: async (
+    verificationToken: string
+  ): Promise<RemovalConfirmationResponse> => {
+    const response = await apiClient.post('/auth/identity/confirm-removal', {
+      verificationToken,
+    });
+    return response.data;
+  },
+
+  /**
+   * Set primary identity
+   */
+  setPrimaryIdentity: async (identityId: number) => {
+    const response = await apiClient.patch(`/auth/identity/${identityId}/set-primary`);
     return response.data;
   },
 };
