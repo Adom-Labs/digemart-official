@@ -2,36 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useStores, useCategories, StoreDiscoveryDto, CategoryResponseDto } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { getStoresPageData } from './actions';
 import StoreGrid from '@/components/StoreGrid';
 import WrapContent from '@/components/WrapContent';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, Grid, List, MapPin } from 'lucide-react';
-import Loader from '@/components/Loader';
+// import Loader from '@/components/Loader';
+import { CategoryResponseDto } from '@/lib/api';
 
-interface StoresClientPageProps {
-  initialStores: StoreDiscoveryDto[];
-  initialCategories: CategoryResponseDto[];
-  searchParams: {
-    search?: string;
-    category?: string;
-    sortBy?: string;
-  };
-}
-
-export default function StoresClientPage({ 
-  initialStores, 
-  initialCategories, 
-  searchParams 
-}: StoresClientPageProps) {
+export default function StoresClientPage() {
   const router = useRouter();
-  const urlSearchParams = useSearchParams();
-  
-  const [searchQuery, setSearchQuery] = useState(searchParams.search || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.category || '');
+  const searchParams = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState(searchParams.sortBy || 'featured');
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'featured');
 
   // Build query parameters
   const queryParams = {
@@ -41,19 +29,19 @@ export default function StoresClientPage({
     limit: 20,
   };
 
-  // Fetch data using the established API hooks with initial data
-  const { data: stores, isLoading: storesLoading, error: storesError } = useStores(
-    queryParams,
-    {
-      initialData: initialStores,
-      queryKey: ['stores', queryParams],
-    }
-  );
-  
-  const { data: categories } = useCategories(undefined, {
-    initialData: initialCategories,
-    queryKey: ['categories'],
+  // Fetch stores + categories directly
+  const {
+    data: storeData,
+    isLoading: storesLoading,
+    isError: storesError,
+  } = useQuery({
+    queryKey: ['stores', queryParams],
+    queryFn: () => getStoresPageData(queryParams),
+    enabled: true,
   });
+
+  const stores = storeData?.data?.stores || [];
+  const categories = storeData?.data?.categories || [];
 
   // Update URL when filters change
   useEffect(() => {
@@ -61,14 +49,13 @@ export default function StoresClientPage({
     if (searchQuery) params.set('search', searchQuery);
     if (selectedCategory) params.set('category', selectedCategory);
     if (sortBy !== 'featured') params.set('sortBy', sortBy);
-    
+
     const newUrl = params.toString() ? `?${params.toString()}` : '';
-    router.replace(`/findyourplug/plugs${newUrl}`, { scroll: false });
+    router.replace(newUrl, { scroll: false });
   }, [searchQuery, selectedCategory, sortBy, router]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // The search will automatically trigger via the useStores hook and URL update
   };
 
   const clearFilters = () => {
@@ -91,6 +78,9 @@ export default function StoresClientPage({
     );
   }
 
+  // if (storesLoading) return <Loader />;
+  console.log("Stores loading:", storesLoading, storeData);
+
   return (
     <main className="min-h-screen bg-gray-50 pt-24">
       <WrapContent>
@@ -103,7 +93,7 @@ export default function StoresClientPage({
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Find the perfect products from verified stores and trusted vendors in your area
             </p>
-            
+
             {/* Stats */}
             <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500">
               <div className="flex items-center gap-1">
@@ -205,20 +195,20 @@ export default function StoresClientPage({
                 {searchQuery ? `Search Results for "${searchQuery}"` : 'All Stores'}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                {storesLoading ? 'Loading...' : `${stores?.length || 0} stores found`}
+                {`${stores?.length || 0} stores found`}
               </p>
             </div>
           </div>
 
           {/* Loading State */}
-          {storesLoading && (
+          {/* {storesLoading && (
             <div className="flex justify-center py-12">
               <Loader />
             </div>
-          )}
+          )} */}
 
           {/* Empty State */}
-          {!storesLoading && (!stores || stores.length === 0) && (
+          {(!stores || stores.length === 0) && (
             <div className="text-center py-12">
               <div className="max-w-md mx-auto">
                 <div className="mb-4">
@@ -242,7 +232,7 @@ export default function StoresClientPage({
           )}
 
           {/* Stores Grid */}
-          {!storesLoading && stores && stores.length > 0 && (
+          {stores && stores.length > 0 && (
             <StoreGrid
               stores={stores}
               showViewAllButton={false}

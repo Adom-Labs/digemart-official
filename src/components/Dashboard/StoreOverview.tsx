@@ -9,10 +9,10 @@ interface StoreOverviewProps {
     viewMode?: ViewMode;
     listings: DashboardStoreDto[];
     ecommerce: DashboardStoreDto[];
-    stats: StoresStatsDto;
+    stats: StoresStatsDto
 }
 
-export function StoreOverview({ viewMode = 'all', listings, ecommerce, stats }: StoreOverviewProps) {
+export function StoreOverview({ viewMode = 'all', listings, ecommerce }: StoreOverviewProps) {
     const showListings = viewMode === 'all' || viewMode === 'listings';
     const showEcommerce = viewMode === 'all' || viewMode === 'ecommerce';
 
