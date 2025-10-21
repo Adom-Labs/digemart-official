@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useStores, useCategories, StoreDiscoveryDto, CategoryResponseDto } from '@/lib/api';
+import { useStores, useCategories } from '@/lib/api';
 import StoreGrid from '@/components/StoreGrid';
 import WrapContent from '@/components/WrapContent';
 import { Input } from '@/components/ui/input';
@@ -18,16 +18,16 @@ interface StoresClientPageProps {
   };
 }
 
-export default function StoresClientPage({ 
-  searchParams 
+export default function StoresClientPage({
+  searchParams
 }: StoresClientPageProps) {
   const router = useRouter();
-  const urlSearchParams = useSearchParams();
-  
+  const _urlSearchParams = useSearchParams();
+
   const [searchQuery, setSearchQuery] = useState(searchParams.search || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.category || '');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState(searchParams.sortBy || 'featured');
+  const [sortBy, setSortBy] = useState(searchParams.sortBy || 'averageRating');
 
   // Build query parameters
   const queryParams = {
@@ -39,7 +39,7 @@ export default function StoresClientPage({
 
   // Fetch data using the established API hooks
   const { data: stores, isLoading: storesLoading, error: storesError } = useStores(queryParams);
-  
+
   const { data: categories } = useCategories(undefined);
 
   // Update URL when filters change
@@ -47,8 +47,8 @@ export default function StoresClientPage({
     const params = new URLSearchParams();
     if (searchQuery) params.set('search', searchQuery);
     if (selectedCategory) params.set('category', selectedCategory);
-    if (sortBy !== 'featured') params.set('sortBy', sortBy);
-    
+    if (sortBy !== 'averageRating') params.set('sortBy', sortBy);
+
     const newUrl = params.toString() ? `?${params.toString()}` : '';
     router.replace(`/findyourplug/plugs${newUrl}`, { scroll: false });
   }, [searchQuery, selectedCategory, sortBy, router]);
@@ -61,7 +61,7 @@ export default function StoresClientPage({
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('');
-    setSortBy('featured');
+    setSortBy('averageRating');
   };
 
   if (storesError) {
@@ -78,6 +78,8 @@ export default function StoresClientPage({
     );
   }
 
+  console.log(categories)
+
   return (
     <main className="min-h-screen bg-gray-50 pt-24">
       <WrapContent>
@@ -90,7 +92,7 @@ export default function StoresClientPage({
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Find the perfect products from verified stores and trusted vendors in your area
             </p>
-            
+
             {/* Stats */}
             <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500">
               <div className="flex items-center gap-1">
@@ -126,8 +128,7 @@ export default function StoresClientPage({
             {/* Filters Row */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                {/* Category Filter */}
-                <select
+                {/* <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -138,7 +139,7 @@ export default function StoresClientPage({
                       {category.name} ({category.storeCount})
                     </option>
                   ))}
-                </select>
+                </select> */}
 
                 {/* Sort Filter */}
                 <select
@@ -146,14 +147,15 @@ export default function StoresClientPage({
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="featured">Featured</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest First</option>
-                  <option value="name">Name A-Z</option>
+                  <option value="averageRating">Highest Rated</option>
+                  <option value="createdAt">Newest First</option>
+                  <option value="updatedAt">Recently Updated</option>
+                  <option value="views">Most Viewed</option>
+                  <option value="storeName">Name A-Z</option>
                 </select>
 
                 {/* Clear Filters */}
-                {(searchQuery || selectedCategory || sortBy !== 'featured') && (
+                {(searchQuery || selectedCategory || sortBy !== 'averageRating') && (
                   <Button variant="outline" onClick={clearFilters} className="text-sm">
                     Clear Filters
                   </Button>
@@ -219,7 +221,7 @@ export default function StoresClientPage({
                     ? 'Try adjusting your search criteria or filters'
                     : 'No stores are currently available'}
                 </p>
-                {(searchQuery || selectedCategory || sortBy !== 'featured') && (
+                {(searchQuery || selectedCategory || sortBy !== 'averageRating') && (
                   <Button variant="outline" onClick={clearFilters}>
                     Clear Filters
                   </Button>

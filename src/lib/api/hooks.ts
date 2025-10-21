@@ -28,7 +28,6 @@ import {
   SearchResponseDto,
   SearchQueryParams,
   DashboardOverviewDto,
-  Store,
 } from './types';
 
 // Discovery Hooks

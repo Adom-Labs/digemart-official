@@ -156,6 +156,7 @@ export interface Store {
     productCount: number;
     parentId: number | null;
     level: number;
+    // eslint-disable-next-line
     metadata: Record<string, any>;
   };
   _count: {

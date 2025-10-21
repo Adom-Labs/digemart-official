@@ -17,7 +17,6 @@ import {
   TrendingQueryParams,
   EntryPageQueryParams,
   DashboardOverviewDto,
-  Store,
 } from './types';
 
 // Discovery API Services
