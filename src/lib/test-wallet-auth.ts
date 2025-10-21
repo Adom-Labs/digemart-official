@@ -37,7 +37,6 @@ export const testWalletAuthentication = async (
   message: string
 ) => {
   try {
-    console.log('Testing wallet authentication...');
 
     const result = await verifyWalletSignature(
       walletAddress,
@@ -45,9 +44,6 @@ export const testWalletAuthentication = async (
       message
     );
 
-    console.log('✅ Wallet authentication successful:');
-    console.log('User:', result.user);
-    console.log('Token:', result.token);
 
     return result;
   } catch (error) {

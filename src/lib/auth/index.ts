@@ -211,7 +211,7 @@ const authOptions = {
       return true;
     },
 
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }: { token: Record<string, unknown>; user: User | undefined }) {
       if (user) {
         const decoded = jwtDecode<JwtPayload>((user as User).token);
         token.token = (user as User).token;
@@ -220,15 +220,15 @@ const authOptions = {
       return token;
     },
 
-    async session({ session, token }: { session: any; token: any }) {
-      const dd = (token.user as User & { expires_in: string }).expires_in;
+    async session({ session, token }: { session: Record<string, unknown>; token: Record<string, unknown> }) {
+      const dd = ((token.user as unknown as User & { expires_in: string }).expires_in);
 
       return {
         ...session,
         token: token.token,
         expires: new Date(Number(dd) * 1000).toISOString(),
         user: {
-          ...session.user,
+          ...session.user as User,
           ...(token.user as User),
         },
       };

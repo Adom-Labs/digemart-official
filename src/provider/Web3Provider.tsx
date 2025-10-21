@@ -7,7 +7,7 @@ import { base } from "wagmi/chains";
 
 const config = getDefaultConfig({
   appName: "Digemart",
-  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
+  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '683e017bfc5a1d5c24a88589bf38316e',
   chains: [base],
   ssr: true,
   appUrl: process.env.NEXT_PUBLIC_APP_URL!,

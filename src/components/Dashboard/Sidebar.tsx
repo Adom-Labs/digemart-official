@@ -19,7 +19,6 @@ import {
     FileTextIcon,
     BellIcon,
     CheckSquareIcon,
-    UserIcon,
 } from 'lucide-react';
 
 import { ViewMode } from './ViewModeToggle';

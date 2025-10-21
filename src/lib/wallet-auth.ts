@@ -20,7 +20,7 @@ export const authenticateWithWallet = async ({
 }: WalletAuthParams) => {
   try {
     // Step 1: Create SIWE message with nonce from backend
-    const { message, siweMessage, nonce } = await createWalletSiweMessage(
+    const { message } = await createWalletSiweMessage(
       walletAddress,
       chainId
     );
@@ -37,7 +37,7 @@ export const authenticateWithWallet = async ({
       walletAddress,
       signature,
       message
-    );
+    ) as { user: unknown; token: string };
 
     if (!result?.user || !result?.token) {
       throw new Error('Authentication failed');
