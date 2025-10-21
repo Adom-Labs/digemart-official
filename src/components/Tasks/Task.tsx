@@ -21,14 +21,16 @@ const Task = () => {
     <>
       <header className="space-y-6">
         <div className="flex justify-between">
-          <div>
-            <h2 className="text-3xl">Tasks</h2>
+          <div className="flex-1">
+            <h1 className="text-3xl">Tasks</h1>
             <p>Manage and track your tasks across all stores</p>
           </div>
-          <Button className="bg-black hover:cursor-pointer hidden md:block hover:bg-black/80 transition-all duration-200">
+
+          <Button className="bg-black md:flex hover:cursor-pointer hidden hover:bg-black/80 transition-all duration-400">
             <Plus />
             Create Task
           </Button>
+
           <Button className="bg-black">
             <Plus />
           </Button>
@@ -62,19 +64,24 @@ const Task = () => {
         </div>
       </header>
       <section>
-        <header className="grid grid-cols-2 lg:grid-cols-4 gap-4 space-y-4">
-          {taskCategories.map((item) => (
-            <TaskOverviewCard key={item.id} {...item} />
+        <header className="grid grid-cols-2 lg:grid-cols-4 gap-4 space-y-6">
+          {taskCategories.map((item, index) => (
+            <TaskOverviewCard key={item.id} {...item} index={index} />
           ))}
         </header>
-        <section className="grid md:grid-cols-3 gap-4 grid-rows-3">
-          {tasks.map((item) => (
-            <div key={item.category} className="space-y-2">
-              <TaskColumnHeader {...item} slxClass="sticky top-0 md:static" />
+        <section className="grid md:grid-cols-3 md:grid-rows-1 gap-4 grid-rows-3">
+          {tasks.map((item, index) => (
+            <div key={item.category} className="space-y-4">
+              <TaskColumnHeader
+                {...item}
+                slxClass="sticky top-0 md:static"
+                index={index}
+              />
               <div className="space-y-4">
                 {item.tasks.map((taskItem, index) => (
                   <TaskCard
                     key={index}
+                    index={index}
                     {...taskItem}
                     category={item.category}
                   />

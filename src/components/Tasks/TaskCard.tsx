@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "../ui/input";
 import { CheckCircle2, Clock, Info } from "lucide-react";
 import { getPriorityColor } from "./utils";
+import { motion } from "framer-motion";
 
 function formatTime(time: string) {
   const formattedTime = new Date(time);
@@ -16,6 +17,7 @@ const TaskCard = ({
   time,
   tag,
   category,
+  index,
 }: {
   title: string;
   details: string;
@@ -23,9 +25,14 @@ const TaskCard = ({
   time?: string;
   tag: string;
   category: string;
+  index: number;
 }) => {
   return (
-    <article
+    <motion.article
+      initial={{ opacity: 0, y: -50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.6 * index }}
       className={`flex gap-4 ${
         category === "completed" ? "bg-[#FDFDFD]" : "bg-white"
       }  p-4 min-h-40 rounded-2xl border border-[#E5E5E5]`}
@@ -72,7 +79,7 @@ const TaskCard = ({
           </p>
         </div>
       </section>
-    </article>
+    </motion.article>
   );
 };
 
