@@ -30,7 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${montserrat.variable} ${lato.variable}`}>
-        <Toaster />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: '#1e3a8a',
+              color: '#ffffff',
+              borderRadius: '8px',
+              padding: '16px',
+            },
+            duration: 5000,
+          }}
+        />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

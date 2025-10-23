@@ -13,6 +13,10 @@ import {
   storeApi,
   dashboardApi,
   settingsApi,
+  cartApi,
+  wishlistApi,
+  productApi,
+  auditApi,
 } from './services';
 import { searchApi } from './search';
 import {
@@ -31,6 +35,15 @@ import {
   DashboardOverviewDto,
   Store,
   UserProfile,
+  Cart,
+  AddToCartDto,
+  UpdateCartItemDto,
+  ShareCartDto,
+  WishlistType,
+  WishlistResponse,
+  AddToWishlistDto,
+  IsInWishlistResponse,
+  MoveToCartDto,
 } from './types';
 
 // Discovery Hooks
@@ -112,7 +125,7 @@ export const useMinimalEntryPageData = (
 // Category Hooks
 export const useCategories = (
   params?: Record<string, unknown>,
-  options?: UseQueryOptions<CategoryResponseDto[], Error>
+  options?: UseQueryOptions<{ data: CategoryResponseDto[] }, Error>
 ) => {
   return useQuery({
     queryKey: queryKeys.categories.all(params),
@@ -393,3 +406,342 @@ export const useSetPrimaryIdentity = () => {
   });
 };
 
+// ============================================
+// CART HOOKS
+// ============================================
+
+/**
+ * Get all user carts across stores
+ * Only fetches if user is authenticated
+ */
+export const useUserCarts = (options?: UseQueryOptions<Cart[], Error> & { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: queryKeys.cart.userCarts(),
+    queryFn: () => cartApi.getUserCarts().then((res) => res.data),
+    staleTime: 1 * 60 * 1000, // 1 minute
+    enabled: options?.enabled !== false, // Allow explicit disabling
+    retry: false, // Don't retry on auth failures
+    ...options,
+  });
+};
+
+/**
+ * Get cart for specific store
+ * Only fetches if user is authenticated and storeId is provided
+ */
+export const useStoreCart = (
+  storeId: number,
+  options?: UseQueryOptions<Cart, Error> & { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.cart.storeCart(storeId),
+    queryFn: () => cartApi.getStoreCart(storeId).then((res) => res.data),
+    staleTime: 30 * 1000, // 30 seconds
+    enabled: !!storeId && (options?.enabled !== false),
+    retry: false, // Don't retry on auth failures
+    ...options,
+  });
+};
+
+/**
+ * Add item to cart
+ */
+export const useAddToCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeId, data }: { storeId: number; data: AddToCartDto }) =>
+      cartApi.addToCart(storeId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.storeCart(variables.storeId) });
+    },
+  });
+};
+
+/**
+ * Update cart item quantity
+ */
+export const useUpdateCartItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ itemId, data }: { itemId: number; data: UpdateCartItemDto }) =>
+      cartApi.updateCartItem(itemId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+    },
+  });
+};
+
+/**
+ * Remove item from cart
+ */
+export const useRemoveFromCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (itemId: number) => cartApi.removeFromCart(itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+    },
+  });
+};
+
+/**
+ * Clear entire cart
+ */
+export const useClearCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (cartId: number) => cartApi.clearCart(cartId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+    },
+  });
+};
+
+/**
+ * Share cart via link
+ */
+export const useShareCart = () => {
+  return useMutation({
+    mutationFn: ({ cartId, data }: { cartId: number; data: ShareCartDto }) =>
+      cartApi.shareCart(cartId, data),
+  });
+};
+
+/**
+ * Get shared cart (public)
+ */
+export const useSharedCart = (
+  shareId: string,
+  options?: UseQueryOptions<any, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.cart.sharedCart(shareId),
+    queryFn: () => cartApi.getSharedCart(shareId).then((res) => res.data),
+    enabled: !!shareId,
+    retry: false,
+    ...options,
+  });
+};
+
+/**
+ * Merge guest cart to user cart
+ */
+export const useMergeGuestCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (guestCartData: any[]) => cartApi.mergeGuestCart(guestCartData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+    },
+  });
+};
+
+// ============================================
+// WISHLIST HOOKS
+// ============================================
+
+/**
+ * Get user wishlist
+ * Only fetches if user is authenticated
+ */
+export const useWishlist = (
+  type?: WishlistType,
+  options?: UseQueryOptions<WishlistResponse, Error> & { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.wishlist.byType(type),
+    queryFn: () => wishlistApi.getWishlist(type).then((res) => res.data),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: options?.enabled !== false,
+    retry: false, // Don't retry on auth failures
+    ...options,
+  });
+};
+
+/**
+ * Get wishlist count
+ * Only fetches if user is authenticated
+ */
+export const useWishlistCount = (options?: UseQueryOptions<{ count: number }, Error> & { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: queryKeys.wishlist.count(),
+    queryFn: () => wishlistApi.getWishlistCount().then((res) => res.data),
+    staleTime: 1 * 60 * 1000, // 1 minute
+    enabled: options?.enabled !== false,
+    retry: false, // Don't retry on auth failures
+    ...options,
+  });
+};
+
+/**
+ * Check if item is in wishlist
+ * Only fetches if user is authenticated and itemId is provided
+ */
+export const useIsInWishlist = (
+  type: WishlistType,
+  itemId: number,
+  options?: UseQueryOptions<IsInWishlistResponse, Error> & { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.wishlist.check(type, itemId),
+    queryFn: () => wishlistApi.isInWishlist(type, itemId).then((res) => res.data),
+    enabled: !!itemId && (options?.enabled !== false),
+    retry: false, // Don't retry on auth failures
+    ...options,
+  });
+};
+
+/**
+ * Add item to wishlist
+ */
+export const useAddToWishlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: AddToWishlistDto) => wishlistApi.addToWishlist(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.count() });
+    },
+  });
+};
+
+/**
+ * Remove item from wishlist
+ */
+export const useRemoveFromWishlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (wishlistId: number) => wishlistApi.removeFromWishlist(wishlistId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.count() });
+    },
+  });
+};
+
+/**
+ * Move wishlist items to cart
+ */
+export const useMoveToCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: MoveToCartDto) => wishlistApi.moveToCart(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
+    },
+  });
+};
+
+// ============================================================================
+// Product Management Hooks
+// ============================================================================
+
+/**
+ * Toggle product status (active/inactive)
+ */
+export const useToggleProductStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeId, productId, active }: { storeId: number; productId: number; active: boolean }) =>
+      productApi.toggleProductStatus(storeId, productId, active),
+    onSuccess: (_, { storeId }) => {
+      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+    },
+  });
+};
+
+/**
+ * Toggle product featured status
+ */
+export const useToggleFeaturedStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeId, productId, featured }: { storeId: number; productId: number; featured: boolean }) =>
+      productApi.toggleFeaturedStatus(storeId, productId, featured),
+    onSuccess: (_, { storeId }) => {
+      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+    },
+  });
+};
+
+/**
+ * Delete product
+ */
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeId, productId }: { storeId: number; productId: number }) =>
+      productApi.deleteProduct(storeId, productId),
+    onSuccess: (_, { storeId }) => {
+      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+    },
+  });
+};
+
+/**
+ * Get single product
+ */
+export const useProduct = (
+  storeId: number,
+  productId: number,
+  options?: UseQueryOptions<any, Error>
+) => {
+  return useQuery({
+    queryKey: ['stores', storeId, 'products', productId],
+    queryFn: () => productApi.getProduct(storeId, productId).then((res) => res.data),
+    enabled: !!storeId && !!productId,
+    ...options,
+  });
+};
+
+/**
+ * Update product
+ */
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ storeId, productId, data }: { storeId: number; productId: number; data: any }) =>
+      productApi.updateProduct(storeId, productId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate product query
+      queryClient.invalidateQueries({ queryKey: ['stores', variables.storeId, 'products', variables.productId] });
+      // Invalidate store products list
+      queryClient.invalidateQueries({ queryKey: ['stores', variables.storeId, 'products'] });
+    },
+  });
+};
+
+// ============================================================================
+// Audit Log Hooks
+// ============================================================================
+
+/**
+ * Get recent store activity logs
+ */
+export const useStoreRecentActivity = (
+  storeId: number,
+  limit: number = 10,
+  options?: UseQueryOptions<any, Error>
+) => {
+  return useQuery({
+    queryKey: ['audit', 'store', storeId, 'recent', limit],
+    queryFn: () => auditApi.getStoreRecentActivity(storeId, limit).then((res) => res),
+    enabled: !!storeId,
+    staleTime: 30 * 1000, // 30 seconds - activities should be fairly fresh
+    ...options,
+  });
+};
