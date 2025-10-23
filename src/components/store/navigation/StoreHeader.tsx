@@ -121,11 +121,11 @@ export function StoreHeader({
             )}
 
             {/* Cart Button with Integrated Cart Drawer */}
-            <MiniCart onOpenCart={() => setCartOpen(true)} />
+            <MiniCart onOpenCart={() => setCartOpen(true)} storeId={store.id} />
           </div>
 
           {/* Cart Drawer */}
-          <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+          <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} storeId={store.id} />
 
           {/* Authentication Modal */}
           <StoreAuthModal

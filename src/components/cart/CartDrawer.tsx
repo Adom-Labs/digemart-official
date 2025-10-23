@@ -2,32 +2,44 @@
 
 import { ShoppingCart, X, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useUserCarts, useUpdateCartItem, useRemoveFromCart } from "@/lib/api/hooks";
-import { Cart as CartType } from "@/lib/api/types";
+import { useUserCarts, useStoreCart, useUpdateCartItem, useRemoveFromCart } from "@/lib/api/hooks";
+import { Cart, Cart as CartType } from "@/lib/api/types";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
-import { getTotalGuestCartItems, getGuestCarts } from "@/lib/utils/guest-cart";
+import { getTotalGuestCartItems, getGuestCarts, getGuestCart, getGuestCartItemCount } from "@/lib/utils/guest-cart";
 
 interface MiniCartProps {
     onOpenCart?: () => void;
+    storeId?: number; // Optional: if provided, show only this store's cart
 }
 
-export function MiniCart({ onOpenCart }: MiniCartProps) {
-    const { data: session, status } = useSession();
+export function MiniCart({ onOpenCart, storeId }: MiniCartProps) {
+    const { status } = useSession();
     const isAuthenticated = status === "authenticated";
     const [guestItemCount, setGuestItemCount] = useState(0);
 
-    const { data: carts, isLoading } = useUserCarts({
-        enabled: isAuthenticated,
-    });
+    // Use store-specific cart if storeId provided, otherwise get all carts
+    const storeCartEnabled = isAuthenticated && !!storeId;
+    const allCartsEnabled = isAuthenticated && !storeId;
+
+    const { data: storeCart } = useStoreCart(storeId || 0, { enabled: storeCartEnabled });
+    const { data: allCarts } = useUserCarts({ enabled: allCartsEnabled });
+
+    const carts = storeId ? (storeCart ? [storeCart.data] : []) : allCarts;
 
     // Update guest cart count when component mounts or localStorage changes
     useEffect(() => {
         if (!isAuthenticated) {
             const updateGuestCount = () => {
-                setGuestItemCount(getTotalGuestCartItems());
+                if (storeId) {
+                    // Get count for specific store
+                    setGuestItemCount(getGuestCartItemCount(storeId));
+                } else {
+                    // Get total count across all stores
+                    setGuestItemCount(getTotalGuestCartItems());
+                }
             };
 
             updateGuestCount();
@@ -42,10 +54,10 @@ export function MiniCart({ onOpenCart }: MiniCartProps) {
                 window.removeEventListener('guestCartUpdated', updateGuestCount);
             };
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, storeId]);
 
     const totalItems = isAuthenticated
-        ? (carts?.reduce((sum, cart) => sum + (cart.totals?.itemCount || 0), 0) || 0)
+        ? (Array.isArray(carts) ? carts.reduce((sum, cart) => sum + (cart.cartItems.length || 0), 0) : 0)
         : guestItemCount;
 
     return (
@@ -69,35 +81,53 @@ export function MiniCart({ onOpenCart }: MiniCartProps) {
 interface CartDrawerProps {
     open: boolean;
     onClose: () => void;
+    storeId?: number; // Optional: if provided, show only this store's cart
 }
 
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
-    const { data: session, status } = useSession();
+export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
+    const { status } = useSession();
     const isAuthenticated = status === "authenticated";
     const [guestCarts, setGuestCarts] = useState<any[]>([]);
 
-    const { data: carts, isLoading } = useUserCarts({
-        enabled: isAuthenticated && open,
-    });
+    // Use store-specific cart if storeId provided, otherwise get all carts
+    const storeCartEnabled = isAuthenticated && open && !!storeId;
+    const allCartsEnabled = isAuthenticated && open && !storeId;
+
+    const { data: storeCart } = useStoreCart(storeId || 0, { enabled: storeCartEnabled });
+    const { data: allCarts, isLoading } = useUserCarts({ enabled: allCartsEnabled });
+    // eslint-diasble-next-line will fix refrence type
+    const carts = storeId ? (storeCart ? [storeCart.data] : []) : allCarts;
+
     const updateCartItem = useUpdateCartItem();
     const removeFromCart = useRemoveFromCart();
 
     // Load guest carts when not authenticated
     useEffect(() => {
         if (!isAuthenticated && open) {
-            const loadedGuestCarts = getGuestCarts();
-            setGuestCarts(loadedGuestCarts);
+            if (storeId) {
+                // Get specific store cart
+                const storeCart = getGuestCart(storeId);
+                setGuestCarts(storeCart ? [storeCart] : []);
+            } else {
+                // Get all guest carts
+                const loadedGuestCarts = getGuestCarts();
+                setGuestCarts(loadedGuestCarts);
+            }
         }
-    }, [isAuthenticated, open]);
+    }, [isAuthenticated, open, storeId]);
+
 
     const cart = isAuthenticated ? carts?.[0] : null;
+
+    console.log("Cart:", cart);
+
     const hasItems = isAuthenticated
         ? (cart?.cartItems?.length || 0) > 0
-        : guestCarts.some(c => c.items.length > 0);
+        : Array.isArray(guestCarts) && guestCarts.some(c => c.items.length > 0);
 
     const totalItems = isAuthenticated
         ? (cart?.totals?.itemCount || 0)
-        : guestCarts.reduce((sum, c) => sum + c.items.reduce((s: number, i: any) => s + i.quantity, 0), 0);
+        : Array.isArray(guestCarts) ? guestCarts.reduce((sum, c) => sum + c.items.reduce((s: number, i: any) => s + i.quantity, 0), 0) : 0;
 
     const handleUpdateQuantity = async (itemId: number, quantity: number) => {
         try {
@@ -263,16 +293,16 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <div className="space-y-2">
                             <div className="flex justify-between text-sm">
                                 <span>Subtotal</span>
-                                <span>${cart.totals?.subtotal.toFixed(2)}</span>
+                                <span>${cart.cartItems.reduce((acc: number, item: Cart['cartItems'][number]) => acc + item.product.price * item.quantity, 0).toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
+                            {/* <div className="flex justify-between text-sm">
                                 <span>Tax</span>
                                 <span>${cart.totals?.tax.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between text-lg font-bold border-t pt-2">
+                            </div> */}
+                            {/* <div className="flex justify-between text-lg font-bold border-t pt-2">
                                 <span>Total</span>
                                 <span>${cart.totals?.total.toFixed(2)}</span>
-                            </div>
+                            </div> */}
                         </div>
 
                         <Button className="w-full" size="lg">

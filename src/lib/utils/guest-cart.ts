@@ -184,10 +184,12 @@ export function getGuestCartItemCount(storeId: number): number {
  */
 export function getTotalGuestCartItems(): number {
   const carts = getGuestCarts();
-  return carts.reduce(
+  console.log(carts);
+
+  return (carts || []).reduce(
     (total, cart) =>
       total +
-      cart.items.reduce((cartTotal, item) => cartTotal + item.quantity, 0),
+      (cart.items || []).reduce((cartTotal, item) => cartTotal + item.quantity, 0),
     0
   );
 }

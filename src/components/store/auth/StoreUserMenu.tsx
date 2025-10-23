@@ -22,8 +22,6 @@ import {
   LogOut,
   Package,
   MapPin,
-  Bell,
-  CreditCard,
   ChevronDown,
 } from "lucide-react";
 import { useStoreAuth } from "./StoreAuthProvider";

@@ -154,7 +154,9 @@ const getStatusColor = (status: StoreOrder["status"]) => {
   }
 };
 
-export function StoreOrderHistory({ storeId }: StoreOrderHistoryProps) {
+export function StoreOrderHistory({
+  storeId: _storeId,
+}: StoreOrderHistoryProps) {
   const [selectedOrder, setSelectedOrder] = useState<StoreOrder | null>(null);
 
   // Mock loading state - replace with actual loading from API

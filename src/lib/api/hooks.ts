@@ -414,14 +414,13 @@ export const useSetPrimaryIdentity = () => {
  * Get all user carts across stores
  * Only fetches if user is authenticated
  */
-export const useUserCarts = (options?: UseQueryOptions<Cart[], Error> & { enabled?: boolean }) => {
+export const useUserCarts = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: queryKeys.cart.userCarts(),
     queryFn: () => cartApi.getUserCarts().then((res) => res.data),
     staleTime: 1 * 60 * 1000, // 1 minute
     enabled: options?.enabled !== false, // Allow explicit disabling
     retry: false, // Don't retry on auth failures
-    ...options,
   });
 };
 
@@ -431,7 +430,7 @@ export const useUserCarts = (options?: UseQueryOptions<Cart[], Error> & { enable
  */
 export const useStoreCart = (
   storeId: number,
-  options?: UseQueryOptions<Cart, Error> & { enabled?: boolean }
+  options?: { enabled?: boolean }
 ) => {
   return useQuery({
     queryKey: queryKeys.cart.storeCart(storeId),
@@ -439,7 +438,6 @@ export const useStoreCart = (
     staleTime: 30 * 1000, // 30 seconds
     enabled: !!storeId && (options?.enabled !== false),
     retry: false, // Don't retry on auth failures
-    ...options,
   });
 };
 

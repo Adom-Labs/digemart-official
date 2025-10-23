@@ -318,7 +318,8 @@ export const cartApi = {
    */
   getUserCarts: async (): Promise<ApiResponse<Cart[]>> => {
     const response = await apiClient.get('/cart');
-    return response.data;
+    // Backend returns array directly, not wrapped
+    return { success: true, data: Array.isArray(response.data) ? response.data : [] };
   },
 
   /**
@@ -326,7 +327,7 @@ export const cartApi = {
    */
   getStoreCart: async (storeId: number): Promise<ApiResponse<Cart>> => {
     const response = await apiClient.get(`/cart/store/${storeId}`);
-    return response.data;
+    return { success: true, data: response.data };
   },
 
   /**

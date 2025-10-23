@@ -499,6 +499,7 @@ export interface CartTotals {
 }
 
 export interface Cart {
+  data: any;
   id: number;
   userId: number;
   storeId: number;

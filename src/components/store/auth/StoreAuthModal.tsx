@@ -28,6 +28,12 @@ import {
 import Image from "next/image";
 import { useStore } from "../StoreProvider";
 import LoginWithWallet from "@/components/Authentication/LoginWithWallet";
+import { setStoreAuthContext } from "@/lib/utils/store-auth-context";
+
+// Import debug utilities in development
+if (process.env.NODE_ENV === "development") {
+  import("@/lib/utils/debug-store-auth");
+}
 
 interface StoreAuthModalProps {
   isOpen: boolean;
@@ -186,6 +192,23 @@ export function StoreAuthModal({
   };
 
   const handleGoogleSignIn = async () => {
+    const storeContext = {
+      storeSubdomain: store.subdomain || store.storeSlug,
+      storeName: store.storeName,
+      redirectUrl: redirectUrl || window.location.href,
+    };
+
+    // Set store context before OAuth redirect
+    setStoreAuthContext(storeContext);
+
+    // Debug logging in development
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "🏪 Setting store auth context before Google OAuth:",
+        storeContext
+      );
+    }
+
     const backendUrl =
       process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
     const callbackUrl = redirectUrl || window.location.href;

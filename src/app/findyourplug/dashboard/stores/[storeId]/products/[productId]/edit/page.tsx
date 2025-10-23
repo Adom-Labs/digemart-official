@@ -76,12 +76,11 @@ interface ProductFormData {
     const [isSaving, setIsSaving] = useState(false);
     const [images, setImages] = useState<any[]>([]);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [hasUploadedImage, setHasUploadedImage] = useState<boolean>(false);
     const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
 
     const { data: productData, isLoading, error } = useProduct(storeId, productId);
     const updateProductMutation = useUpdateProduct();
-
-    console.log(productData);
 
 
     // Initialize form data when product loads
@@ -114,6 +113,8 @@ interface ProductFormData {
             if (product.images && Array.isArray(product.images)) {
                 setImages(product.images);
             }
+            // Reset upload flag when product data loads
+            setHasUploadedImage(false);
         }
     }, [productData]);
 
@@ -142,10 +143,21 @@ interface ProductFormData {
                 metaTitle: product.metaTitle || undefined,
                 metaDescription: product.metaDescription || undefined,
             };
-            const hasChanges = JSON.stringify(formData) !== JSON.stringify(originalData);
+
+            // Check if form data has changed
+            const formDataChanged = JSON.stringify(formData) !== JSON.stringify(originalData);
+
+            // Check if images have changed (compare length and IDs)
+            const originalImages = product.images || [];
+            const imagesChanged =
+                images.length !== originalImages.length ||
+                JSON.stringify(images.map((img: any) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order }))) !==
+                JSON.stringify(originalImages.map((img: any) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order })));
+
+            const hasChanges = formDataChanged || imagesChanged || hasUploadedImage;
             setHasUnsavedChanges(hasChanges);
         }
-    }, [formData, productData]);
+    }, [formData, productData, images, hasUploadedImage]);
 
     const handleInputChange = (field: keyof ProductFormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -153,17 +165,36 @@ interface ProductFormData {
 
     const handleSave = async () => {
         setIsSaving(true);
+
         try {
+            // Prepare payload
+            const payload = {
+                ...formData,
+                images: images, // Include images in the payload
+            };
+
+            // Early validation - throw error if images array is not properly structured
+            if (!Array.isArray(images)) {
+                throw new Error('Images must be an array');
+            }
+
+            // Check if any image is missing required fields
+            const invalidImages = images.filter(img => !img.url);
+            if (invalidImages.length > 0) {
+                throw new Error(`${invalidImages.length} image(s) missing URL`);
+            }
+
             await updateProductMutation.mutateAsync({
                 storeId,
                 productId,
-                data: formData,
+                data: payload,
             });
             toast.success("Product updated successfully");
             setHasUnsavedChanges(false);
+            setHasUploadedImage(false); // Reset upload flag after save
         } catch (error) {
             toast.error("Failed to update product");
-            console.error(error);
+
         } finally {
             setIsSaving(false);
         }
@@ -235,6 +266,7 @@ interface ProductFormData {
             if (uploadedImages.length > 0) {
                 setImages((prev) => [...prev, ...uploadedImages]);
                 toast.success(`${uploadedImages.length} image(s) uploaded successfully`);
+                setHasUploadedImage(true);
             }
 
             if (failedUploads.length > 0) {
@@ -258,6 +290,7 @@ interface ProductFormData {
                 isPrimary: img.id === imageId,
             }))
         );
+        setHasUploadedImage(true); // Mark as changed
         toast.success("Primary image updated");
     };
 
@@ -270,6 +303,7 @@ interface ProductFormData {
             }
             return filtered;
         });
+        setHasUploadedImage(true); // Mark as changed
         toast.success("Image removed");
     };
 

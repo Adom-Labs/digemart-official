@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth";
 import { StoreAccountDashboard } from "@/components/store/account/StoreAccountDashboard";
 import { StorePageSkeleton } from "@/components/store/StorePageSkeleton";
 import { getStoreBySubdomain } from "../actions";
+import { auth } from "@/auth";
 
 interface StoreAccountPageProps {
   params: Promise<{ subdomain: string }>;
@@ -14,7 +13,10 @@ export default async function StoreAccountPage({
   params,
 }: StoreAccountPageProps) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth()
+
+    console.log(session);
+
 
     // Redirect to sign in if not authenticated
     if (!session?.user) {
