@@ -433,3 +433,158 @@ export interface RemovalConfirmationResponse {
   removedIdentityId: number;
 }
 
+
+export interface User {
+  id: number;
+  name: string;
+  phone: string;
+  address: string;
+  state: string;
+  lga: string | null;
+  image: string | null;
+  twitter: string | null;
+  facebook: string | null;
+  whatsapp: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KYC {
+  id: number;
+  activated: boolean;
+  hasStore: boolean;
+  vendorType: "EXTERNAL" | "INTERNAL" | string;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+}
+
+export interface UserProfile {
+  user: User;
+  roles: string[];
+  identities: Identity[];
+  kyc: KYC;
+}
+
+// ============================================
+// CART & WISHLIST TYPES
+// ============================================
+
+export interface ProductImage {
+  url: string;
+  alt?: string;
+}
+
+export interface CartItem {
+  id: number;
+  cartId: number;
+  productId: number;
+  quantity: number;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+    images: ProductImage[];
+    inventory: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CartTotals {
+  subtotal: number;
+  itemCount: number;
+  tax: number;
+  total: number;
+}
+
+export interface Cart {
+  data: any;
+  id: number;
+  userId: number;
+  storeId: number;
+  cartItems: CartItem[];
+  store: {
+    id: number;
+    storeName: string;
+    storeSlug: string;
+    storeLogo?: string;
+  };
+  totals?: CartTotals;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddToCartDto {
+  productId: number;
+  quantity: number;
+  variantId?: number;
+}
+
+export interface UpdateCartItemDto {
+  quantity: number;
+}
+
+export interface ShareCartDto {
+  email?: string;
+  message?: string;
+  expiresIn?: number;
+}
+
+export interface CartShareResponse {
+  shareLink: string;
+  shareId: string;
+  expiresAt: string;
+}
+
+export type WishlistType = 'PRODUCT' | 'STORE';
+
+export interface WishlistItem {
+  id: number;
+  userId: number;
+  type: WishlistType;
+  productId?: number;
+  storeId?: number;
+  product?: {
+    id: number;
+    name: string;
+    price: number;
+    images: ProductImage[];
+    inventory: number;
+    store: {
+      id: number;
+      storeName: string;
+      storeSlug: string;
+    };
+  };
+  store?: {
+    id: number;
+    storeName: string;
+    storeSlug: string;
+    storeLogo?: string;
+    storeTagline?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WishlistResponse {
+  items: WishlistItem[];
+  count: number;
+  productCount: number;
+  storeCount: number;
+}
+
+export interface AddToWishlistDto {
+  type: WishlistType;
+  itemId: number;
+}
+
+export interface IsInWishlistResponse {
+  inWishlist: boolean;
+  wishlistId?: number;
+}
+
+export interface MoveToCartDto {
+  wishlistIds: number[];
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,10 +16,10 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useUpdateProfile } from '@/lib/api/hooks';
+import { useUpdateProfile, useUserProfile } from '@/lib/api/hooks';
 import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const profileSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').optional(),
@@ -36,22 +37,41 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export function ProfileSettings() {
     const { data: session } = useSession();
+    const { data: profile, isLoading } = useUserProfile();
+
     const updateProfile = useUpdateProfile();
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            name: session?.user?.name || '',
-            phone: '',
-            address: '',
-            state: '',
-            lga: '',
-            image: '',
-            twitter: '',
-            facebook: '',
-            whatsapp: '',
+            name: profile?.user?.name || session?.user?.name || '',
+            phone: profile?.user?.phone || '',
+            address: profile?.user?.address || '',
+            state: profile?.user?.state || '',
+            lga: profile?.user?.lga || '',
+            image: profile?.user?.image || '',
+            twitter: profile?.user?.twitter || '',
+            facebook: profile?.user?.facebook || '',
+            whatsapp: profile?.user?.whatsapp || '',
         },
     });
+
+    // Update form values when profile data loads
+    React.useEffect(() => {
+        if (profile?.user) {
+            form.reset({
+                name: profile.user.name || '',
+                phone: profile.user.phone || '',
+                address: profile.user.address || '',
+                state: profile.user.state || '',
+                lga: profile.user.lga || '',
+                image: profile.user.image || '',
+                twitter: profile.user.twitter || '',
+                facebook: profile.user.facebook || '',
+                whatsapp: profile.user.whatsapp || '',
+            });
+        }
+    }, [profile, form]);
 
     const onSubmit = async (data: ProfileFormValues) => {
         try {
@@ -72,6 +92,19 @@ export function ProfileSettings() {
             console.error(error);
         }
     };
+
+    if (isLoading) {
+        return (
+            <SettingsCard
+                title="Profile Information"
+                description="Update your personal information and contact details"
+            >
+                <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+            </SettingsCard>
+        );
+    }
 
     return (
         <SettingsCard

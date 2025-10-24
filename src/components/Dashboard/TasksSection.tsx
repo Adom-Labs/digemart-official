@@ -1,8 +1,12 @@
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2Icon, ClockIcon, FileTextIcon, StoreIcon, BarChart3Icon } from 'lucide-react';
+import { CheckCircle2Icon, ClockIcon, FileTextIcon, StoreIcon, BarChart3Icon, Loader2 } from 'lucide-react';
 import { TaskSummaryDto, TaskStatsDto } from '@/lib/api/types';
+import { useCompleteTask } from '@/lib/api/hooks/tasks';
+import { useRouter } from 'next/navigation';
 
 interface TasksSectionProps {
     recentTasks: TaskSummaryDto[];
@@ -10,6 +14,17 @@ interface TasksSectionProps {
 }
 
 export function TasksSection({ recentTasks, stats }: TasksSectionProps) {
+    const router = useRouter();
+    const completeTaskMutation = useCompleteTask();
+
+    const handleCompleteTask = async (taskId: string) => {
+        try {
+            await completeTaskMutation.mutateAsync(taskId);
+        } catch (error) {
+            console.error('Error completing task:', error);
+        }
+    };
+
     const getTaskIcon = (type: string) => {
         switch (type.toLowerCase()) {
             case 'listing':
@@ -94,11 +109,21 @@ export function TasksSection({ recentTasks, stats }: TasksSectionProps) {
                                             {!task.isCompleted && (
                                                 <Button
                                                     size="sm"
-                                                    onClick={() => console.log('Complete task', task.id)}
-                                                    className="bg-green-500 text-white hover:bg-green-600"
+                                                    onClick={() => handleCompleteTask(task.id)}
+                                                    disabled={completeTaskMutation.isPending}
+                                                    className="bg-green-500 text-white hover:bg-green-600 disabled:opacity-50"
                                                 >
-                                                    <CheckCircle2Icon className="mr-2" size={16} strokeWidth={2} />
-                                                    Complete
+                                                    {completeTaskMutation.isPending ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Completing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <CheckCircle2Icon className="mr-2" size={16} strokeWidth={2} />
+                                                            Complete
+                                                        </>
+                                                    )}
                                                 </Button>
                                             )}
                                             {task.actionUrl && (
@@ -108,11 +133,11 @@ export function TasksSection({ recentTasks, stats }: TasksSectionProps) {
                                                     className="hover:bg-accent"
                                                     onClick={() => {
                                                         if (task.actionUrl) {
-                                                            window.location.href = task.actionUrl;
+                                                            router.push(task.actionUrl);
                                                         }
                                                     }}
                                                 >
-                                                    View Details
+                                                    Go to Task
                                                 </Button>
                                             )}
                                         </div>

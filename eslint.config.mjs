@@ -18,18 +18,17 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "**.tsx"
     ],
-    overrides: [
-      {
-        files: ["*.ts", "*.tsx"],
-        rules: {
-          "@typescript-eslint/no-unused-vars": [
-            "error",
-            { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-          ],
-        },
-      },
-    ],
+  },
+  {
+    files: ["*.ts", "*.tsx"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
   },
 ];
 
