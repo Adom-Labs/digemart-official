@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useStore } from '@/lib/api/hooks/stores';
 import { BasicInfoTab } from '@/components/dashboard/stores/settings/BasicInfoTab';
 import { LocationTab } from '@/components/dashboard/stores/settings/LocationTab';
+import { BrandingTab } from '@/components/dashboard/stores/settings/BrandingTab';
 
 interface StoreSettingsPageProps {
   params: {
@@ -18,7 +19,7 @@ interface StoreSettingsPageProps {
 export default function StoreSettingsPage({ params }: StoreSettingsPageProps) {
   const router = useRouter();
   const storeId = parseInt(params.storeId);
-  
+
   const { data: store, isLoading, error } = useStore(storeId);
 
   if (isNaN(storeId)) {
@@ -75,7 +76,7 @@ export default function StoreSettingsPage({ params }: StoreSettingsPageProps) {
             Back to Store
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Settings className="w-8 h-8 text-gray-600" />
           <div>
@@ -89,8 +90,9 @@ export default function StoreSettingsPage({ params }: StoreSettingsPageProps) {
 
       {/* Settings Tabs */}
       <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="location">Location & Hours</TabsTrigger>
           <TabsTrigger value="subdomain">Subdomain</TabsTrigger>
           <TabsTrigger value="social">Social Links</TabsTrigger>
@@ -98,6 +100,10 @@ export default function StoreSettingsPage({ params }: StoreSettingsPageProps) {
 
         <TabsContent value="basic">
           <BasicInfoTab store={store} />
+        </TabsContent>
+
+        <TabsContent value="branding">
+          <BrandingTab store={store} />
         </TabsContent>
 
         <TabsContent value="location">

@@ -77,9 +77,12 @@ export interface CreateStoreData {
   storeTimeClose?: string;
   storeWeekOpen?: string;
   storeWeekClose?: string;
+  logo?: string;
+  storeCoverPhoto?: string;
+  storeHeroImage?: string;
 }
 
-export interface UpdateStoreData extends Partial<CreateStoreData> {}
+export interface UpdateStoreData extends Partial<CreateStoreData> { }
 
 export interface StoreQuery {
   search?: string;

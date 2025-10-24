@@ -160,6 +160,75 @@ export const queryKeys = {
       ["store-products", storeId, "low-stock", { threshold }] as const,
   },
 
+  // Checkout queries
+  checkout: {
+    // Base key for all checkout queries
+    all: ["checkout"] as const,
+
+    // Checkout sessions
+    sessions: () => ["checkout", "session"] as const,
+    session: (sessionId: string) => ["checkout", "session", sessionId] as const,
+
+    // Checkout validation and calculations
+    validation: (storeId: number, params?: Record<string, unknown>) =>
+      ["checkout", "validation", storeId, params] as const,
+    totals: (storeId: number, params?: Record<string, unknown>) =>
+      ["checkout", "totals", storeId, params] as const,
+
+    // Store checkout configuration
+    storeConfig: (storeId: number) =>
+      ["checkout", "store-config", storeId] as const,
+
+    // Shipping and tax calculations
+    shippingOptions: (storeId: number, params?: Record<string, unknown>) =>
+      ["checkout", "shipping-options", storeId, params] as const,
+    taxEstimate: (storeId: number, params?: Record<string, unknown>) =>
+      ["checkout", "tax-estimate", storeId, params] as const,
+
+    // Coupon and discount queries
+    couponValidation: (couponCode: string, storeId: number) =>
+      ["checkout", "coupon", couponCode, storeId] as const,
+
+    // Inventory validation
+    inventoryCheck: (storeId: number, items: Record<string, unknown>) =>
+      ["checkout", "inventory", storeId, items] as const,
+  },
+
+  // Payment queries
+  payments: {
+    // Base key for all payment queries
+    all: ["payments"] as const,
+
+    // Payment status and tracking
+    status: (reference: string) => ["payments", "status", reference] as const,
+    verification: (reference: string) =>
+      ["payments", "verify", reference] as const,
+
+    // Payment methods and gateways
+    methods: () => ["payments", "methods"] as const,
+    gateways: (storeId?: number) => ["payments", "gateways", storeId] as const,
+
+    // Payment history
+    history: (orderId?: number) => ["payments", "history", orderId] as const,
+  },
+
+  // Order tracking queries
+  orderTracking: {
+    // Base key for order tracking
+    all: ["order-tracking"] as const,
+
+    // Order tracking by number
+    byOrderNumber: (orderNumber: string) =>
+      ["order-tracking", "order-number", orderNumber] as const,
+
+    // Order tracking by ID
+    byOrderId: (orderId: number) =>
+      ["order-tracking", "order-id", orderId] as const,
+
+    // Tracking events
+    events: (orderId: number) => ["order-tracking", "events", orderId] as const,
+  },
+
   // Store customer management queries
   storeCustomers: {
     // Base key for all store customer queries
@@ -237,4 +306,13 @@ export const QUERY_KEYS = {
   PRODUCT_VARIANTS: "product-variants",
   INVENTORY: "inventory",
   STORE_CUSTOMERS: "store-customers",
+
+  // Orders and tracking
+  orders: () => ["orders"] as const,
+  order: (id: number) => ["orders", id] as const,
+  orderHistory: () => ["orders", "history"] as const,
+  storeOrders: (storeId: number) => ["orders", "store", storeId] as const,
+  orderTracking: (orderId: number) => ["orders", orderId, "tracking"] as const,
+  guestOrderTracking: (orderId: number, email: string) =>
+    ["orders", orderId, "tracking", "guest", email] as const,
 } as const;
