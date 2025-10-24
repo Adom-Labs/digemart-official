@@ -50,7 +50,7 @@ export default function CreateProductPage({ params }: CreateProductPageProps) {
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Store Not Found</h1>
           <p className="text-gray-600 mb-4">
-            The store you're looking for doesn't exist or you don't have access to it.
+            The store you&apos;`re looking for doesn&apos;`t exist or you don&apos;`t have access to it.
           </p>
           <Button onClick={() => router.push('/findyourplug/dashboard/stores')}>
             Back to Stores

@@ -3,7 +3,7 @@
 import { ShoppingCart, X, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserCarts, useStoreCart, useUpdateCartItem, useRemoveFromCart } from "@/lib/api/hooks";
-import { Cart, Cart as CartType } from "@/lib/api/types";
+import { Cart, CartItem, Cart as CartType } from "@/lib/api/types";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -88,6 +88,7 @@ interface CartDrawerProps {
 export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
     const { status } = useSession();
     const isAuthenticated = status === "authenticated";
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [guestCarts, setGuestCarts] = useState<any[]>([]);
     const router = useRouter();
     const pathname = usePathname();
@@ -130,7 +131,7 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
 
     const totalItems = isAuthenticated
         ? (cart?.totals?.itemCount || 0)
-        : Array.isArray(guestCarts) ? guestCarts.reduce((sum, c) => sum + c.items.reduce((s: number, i: any) => s + i.quantity, 0), 0) : 0;
+        : Array.isArray(guestCarts) ? guestCarts.reduce((sum, c) => sum + c.items.reduce((s: number, i: CartItem) => s + i.quantity, 0), 0) : 0;
 
     const handleUpdateQuantity = async (itemId: number, quantity: number) => {
         try {
@@ -238,7 +239,7 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
                                 </p>
                             </div>
                             {guestCarts.map((guestCart) =>
-                                guestCart.items.map((item: any) => (
+                                guestCart.items.map((item: CartItem) => (
                                     <div key={`${guestCart.storeId}-${item.productId}`} className="flex gap-4 p-3 border rounded-lg">
                                         <div className="flex-1">
                                             <p className="font-medium">Product ID: {item.productId}</p>
@@ -251,7 +252,7 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {cart.cartItems.map((item) => (
+                            {cart.cartItems.map((item: CartItem) => (
                                 <div key={item.id} className="flex gap-4 p-3 border rounded-lg">
                                     {/* Product Image */}
                                     <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border">

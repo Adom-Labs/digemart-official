@@ -9,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { useStoreAuth } from "../auth/StoreAuthProvider";
 import { StoreUserMenu } from "../auth/StoreUserMenu";
-import { StoreAuthModal } from "../auth/StoreAuthModal";
+import { setStoreAuthContext } from "@/lib/utils/store-auth-context";
+import { useRouter } from "next/navigation";
+import { getDOmain } from "@/lib/utils/get_domain";
 
 interface StoreHeaderProps {
   store: StoreSubdomainData;
@@ -21,8 +23,8 @@ export function StoreHeader({
   headerStyle = "modern",
 }: StoreHeaderProps) {
   const [cartOpen, setCartOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { isAuthenticated, isLoading, user } = useStoreAuth();
+  const router = useRouter();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -32,7 +34,14 @@ export function StoreHeader({
   ];
 
   const handleSignInClick = () => {
-    setAuthModalOpen(true);
+    const storeContext = {
+      storeSubdomain: store.subdomain || store.storeSlug,
+      storeName: store.storeName,
+      redirectUrl: window.location.href || window.location.href,
+      fullUrl: window.location.href,
+    };
+    setStoreAuthContext(storeContext);
+    router.push(getDOmain() + "/findyourplug/login");
   };
 
   return (
@@ -127,14 +136,6 @@ export function StoreHeader({
           {/* Cart Drawer */}
           <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} storeId={store.id} />
 
-          {/* Authentication Modal */}
-          <StoreAuthModal
-            isOpen={authModalOpen}
-            onClose={() => setAuthModalOpen(false)}
-            redirectUrl={
-              typeof window !== "undefined" ? window.location.pathname : "/"
-            }
-          />
         </div>
       </div>
     </header>

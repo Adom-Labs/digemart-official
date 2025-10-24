@@ -74,6 +74,7 @@ interface ProductFormData {
     const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [images, setImages] = useState<any[]>([]);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [hasUploadedImage, setHasUploadedImage] = useState<boolean>(false);
@@ -151,14 +152,25 @@ interface ProductFormData {
             const originalImages = product.images || [];
             const imagesChanged =
                 images.length !== originalImages.length ||
-                JSON.stringify(images.map((img: any) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order }))) !==
-                JSON.stringify(originalImages.map((img: any) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order })));
+                JSON.stringify(images.map((img: {
+                    id: number;
+                    order: number
+                    isPrimary: boolean
+                }) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order }))) !==
+                JSON.stringify(originalImages.map((img:
+                    {
+                        id: number;
+                        order: number
+                        isPrimary: boolean
+                    }
+                ) => ({ id: img.id, isPrimary: img.isPrimary, order: img.order })));
 
             const hasChanges = formDataChanged || imagesChanged || hasUploadedImage;
             setHasUnsavedChanges(hasChanges);
         }
     }, [formData, productData, images, hasUploadedImage]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleInputChange = (field: keyof ProductFormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
@@ -192,7 +204,7 @@ interface ProductFormData {
             toast.success("Product updated successfully");
             setHasUnsavedChanges(false);
             setHasUploadedImage(false); // Reset upload flag after save
-        } catch (error) {
+        } catch {
             toast.error("Failed to update product");
 
         } finally {
@@ -206,7 +218,19 @@ interface ProductFormData {
         if (!files || files.length === 0) return;
 
         setIsUploadingImage(true);
-        const uploadedImages: any[] = [];
+        const uploadedImages: {
+            id: number;
+            url: string;
+            altText: string;
+            order: number;
+            isPrimary: boolean;
+            publicId: string;
+            width: number;
+            height: number;
+            format: string;
+            bytes: number;
+            originalFilename: string;
+        }[] = [];
         const failedUploads: string[] = [];
 
         try {

@@ -17,7 +17,7 @@ interface StoreProductsPageProps {
 export default function StoreProductsPage({ params }: StoreProductsPageProps) {
   const router = useRouter();
   const storeId = parseInt(params.storeId);
-  
+
   const { data: store, isLoading, error } = useStore(storeId);
 
   if (isNaN(storeId)) {
@@ -50,7 +50,7 @@ export default function StoreProductsPage({ params }: StoreProductsPageProps) {
       <div className="container mx-auto px-4 py-6">
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Store Not Found</h1>
-          <p className="text-gray-600 mb-4">The store you're looking for doesn't exist or you don't have access to it.</p>
+          <p className="text-gray-600 mb-4">The store you&apos;`re looking for doesn&apos;`t exist or you don&apos;`t have access to it.</p>
           <Button onClick={() => router.push('/findyourplug/dashboard/stores')}>
             Back to Stores
           </Button>
@@ -74,7 +74,7 @@ export default function StoreProductsPage({ params }: StoreProductsPageProps) {
             Back to Store
           </Button>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Package className="w-8 h-8 text-gray-600" />
@@ -85,7 +85,7 @@ export default function StoreProductsPage({ params }: StoreProductsPageProps) {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button asChild>
               <Link href={`/findyourplug/dashboard/stores/${storeId}/products/create`}>

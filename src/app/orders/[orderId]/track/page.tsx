@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Loader } from "@/components/Loader";
 import {
   useOrderTracking,
   useGuestOrderTracking,
@@ -17,7 +15,7 @@ import {
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "NGN",
   }).format(amount);
 };
 import {
@@ -29,10 +27,11 @@ import {
   Clock,
   AlertCircle,
   Mail,
-  Phone,
+  LucideIcon,
 } from "lucide-react";
+import Loader from "@/components/Loader";
 
-const statusIcons = {
+const statusIcons: Record<string, LucideIcon> = {
   PENDING: Clock,
   PROCESSING: Package,
   TRANSIT: Truck,
@@ -42,7 +41,7 @@ const statusIcons = {
   RETURNED: AlertCircle,
 };
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-800",
   PROCESSING: "bg-blue-100 text-blue-800",
   TRANSIT: "bg-purple-100 text-purple-800",
@@ -203,14 +202,12 @@ export default function OrderTrackingPage() {
                     <div key={event.id} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div
-                          className={`p-2 rounded-full ${
-                            isLatest ? "bg-blue-100" : "bg-gray-100"
-                          }`}
+                          className={`p-2 rounded-full ${isLatest ? "bg-blue-100" : "bg-gray-100"
+                            }`}
                         >
                           <EventIcon
-                            className={`h-4 w-4 ${
-                              isLatest ? "text-blue-600" : "text-gray-600"
-                            }`}
+                            className={`h-4 w-4 ${isLatest ? "text-blue-600" : "text-gray-600"
+                              }`}
                           />
                         </div>
                         {index < tracking.timeline.length - 1 && (
@@ -220,9 +217,8 @@ export default function OrderTrackingPage() {
                       <div className="flex-1 pb-4">
                         <div className="flex items-center gap-2 mb-1">
                           <h3
-                            className={`font-medium ${
-                              isLatest ? "text-blue-600" : "text-gray-900"
-                            }`}
+                            className={`font-medium ${isLatest ? "text-blue-600" : "text-gray-900"
+                              }`}
                           >
                             {event.description}
                           </h3>

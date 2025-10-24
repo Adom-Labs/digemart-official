@@ -76,7 +76,7 @@ export async function generateMetadata({
         ],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: "Checkout",
       description: "Complete your purchase",

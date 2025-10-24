@@ -43,7 +43,7 @@ export function useOptimisticUpdate<T>(initialData: T) {
       try {
         // Execute API call
         const result = await action.apiCall(params);
-        
+
         // Update with real data
         setState(prev => ({
           ...prev,
@@ -171,7 +171,7 @@ export const checkoutOptimisticActions = {
   removeItem: {
     optimisticUpdate: (current: CheckoutData, params: { itemId: number }) => {
       const updatedItems = current.items.filter(item => item.id !== params.itemId);
-      
+
       // Recalculate totals
       const subtotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const shipping = updatedItems.length > 0 ? current.totals.shipping : 0;
@@ -317,35 +317,4 @@ export interface OptimisticFeedbackProps {
   error: string | null;
   children: React.ReactNode;
   className?: string;
-}
-
-export function OptimisticFeedback({
-  isOptimistic,
-  isPending,
-  error,
-  children,
-  className = '',
-}: OptimisticFeedbackProps) {
-  const feedbackClass = [
-    className,
-    isOptimistic && 'opacity-70 transition-opacity',
-    isPending && 'pointer-events-none',
-    error && 'border-red-200 bg-red-50',
-  ].filter(Boolean).join(' ');
-
-  return (
-    <div className={feedbackClass}>
-      {children}
-      {isPending && (
-        <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
-        </div>
-      )}
-      {error && (
-        <div className="mt-2 text-sm text-red-600">
-          {error}
-        </div>
-      )}
-    </div>
-  );
 }

@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Palette, Eye, Save } from 'lucide-react';
+import { ArrowLeft, Palette, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useStore } from '@/lib/api/hooks/stores';
 import { StoreAppearanceManager } from '@/components/dashboard/stores/appearance/StoreAppearanceManager';
 
@@ -17,7 +16,7 @@ interface StoreAppearancePageProps {
 export default function StoreAppearancePage({ params }: StoreAppearancePageProps) {
   const router = useRouter();
   const storeId = parseInt(params.storeId);
-  
+
   const { data: store, isLoading, error } = useStore(storeId);
 
   if (isNaN(storeId)) {
@@ -50,7 +49,7 @@ export default function StoreAppearancePage({ params }: StoreAppearancePageProps
       <div className="container mx-auto px-4 py-6">
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Store Not Found</h1>
-          <p className="text-gray-600 mb-4">The store you're looking for doesn't exist or you don't have access to it.</p>
+          <p className="text-gray-600 mb-4">The store you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
           <Button onClick={() => router.push('/findyourplug/dashboard/stores')}>
             Back to Stores
           </Button>
@@ -59,7 +58,7 @@ export default function StoreAppearancePage({ params }: StoreAppearancePageProps
     );
   }
 
-  const storeUrl = store.subdomain 
+  const storeUrl = store.subdomain
     ? `${window.location.protocol}//${store.subdomain}.${window.location.host.split('.').slice(-2).join('.')}`
     : store.storeUrl;
 
@@ -78,7 +77,7 @@ export default function StoreAppearancePage({ params }: StoreAppearancePageProps
             Back to Store
           </Button>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Palette className="w-8 h-8 text-gray-600" />
@@ -89,7 +88,7 @@ export default function StoreAppearancePage({ params }: StoreAppearancePageProps
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {storeUrl && (
               <Button variant="outline" asChild>

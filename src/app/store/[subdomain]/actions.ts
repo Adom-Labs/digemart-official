@@ -1,8 +1,7 @@
 "use server";
 
 import { createServerClient } from "@/lib/api/server-client";
-import { subdomainApi } from "@/lib/api/subdomain";
-import { storeApi } from "@/lib/api/services";
+
 
 export async function getStoreBySubdomain(subdomain: string) {
   try {

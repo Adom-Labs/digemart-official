@@ -13,8 +13,6 @@ import { Separator } from "@/components/ui/separator";
 import {
     Package,
     Truck,
-
-
     Clock,
     Loader2,
     AlertTriangle,
@@ -267,7 +265,7 @@ export default function ProductViewPage() {
                                             <Badge>{product.category.name}</Badge>
                                         </div>
                                     )}
-                                    {product.productCollections && product.productCollections.length > 0 && (
+                                    {/* {product.productCollections && product.productCollections.length > 0 && (
                                         <div>
                                             <p className="text-sm text-gray-600 mb-1">Collections</p>
                                             <div className="flex flex-wrap gap-1">
@@ -278,7 +276,7 @@ export default function ProductViewPage() {
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
                                     {product.tags && product.tags.length > 0 && (
                                         <div>
                                             <p className="text-sm text-gray-600 mb-1">Tags</p>

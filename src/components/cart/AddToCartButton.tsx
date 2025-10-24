@@ -62,7 +62,9 @@ export function AddToCartButton({
                 data: { productId, quantity },
             });
             toast.success("Added to cart");
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
+
             const message = error?.response?.data?.message || "Failed to add to cart";
             toast.error(message);
         }
