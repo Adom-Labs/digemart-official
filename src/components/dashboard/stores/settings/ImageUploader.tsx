@@ -34,7 +34,7 @@ export function ImageUploader({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const aspectRatioClasses = {
-        '1:1': 'aspect-square',
+        '1:1': 'aspect-square max-h-64',
         '16:9': 'aspect-video',
         '21:9': 'aspect-[21/9]',
         'free': 'min-h-[200px]',

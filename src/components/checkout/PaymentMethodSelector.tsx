@@ -9,14 +9,13 @@ import {
   Lock,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export interface PaymentMethod {
-  type: "card" | "bank_transfer" | "wallet";
-  gateway: "paystack" | "flutterwave" | "basepay";
+  type: "card" | "bank_transfer" | "wallet" | "basepay";
+  gateway: "paystack" | "flutterwave" | "basepay" | "wallet";
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -53,7 +52,7 @@ const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     icon: CreditCard,
     fees: "No additional fees",
     processingTime: "Instant",
-    enabled: true,
+    enabled: false,
     minAmount: 100,
   },
   {
@@ -64,7 +63,7 @@ const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     icon: Building2,
     fees: "No additional fees",
     processingTime: "1-2 business days",
-    enabled: true,
+    enabled: false,
     minAmount: 500,
   },
   {
@@ -75,14 +74,26 @@ const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     icon: CreditCard,
     fees: "Standard processing fees",
     processingTime: "Instant",
-    enabled: false, // Disabled by default as per backend implementation
+    enabled: false,
     minAmount: 100,
   },
   {
-    type: "wallet",
+    type: "basepay",
     gateway: "basepay",
+    title: "BasePay",
+    description: "Pay with your Coinbase Wallet via BasePay",
+    icon: Smartphone,
+    fees: "Network fees apply",
+    processingTime: "5-15 minutes",
+    enabled: true,
+    minAmount: 50,
+    maxAmount: 100000,
+  },
+  {
+    type: "wallet",
+    gateway: "wallet",
     title: "Crypto Wallet",
-    description: "Pay with cryptocurrency via BasePay",
+    description: "Pay with your crypto wallet via Digemart SmartContract",
     icon: Smartphone,
     fees: "Network fees apply",
     processingTime: "5-15 minutes",
@@ -100,51 +111,14 @@ export function PaymentMethodSelector({
   error,
   disabled = false,
 }: PaymentMethodSelectorProps) {
-  const [availableMethods, setAvailableMethods] = useState<PaymentMethod[]>([]);
+  const [availableMethods] = useState<PaymentMethod[]>(DEFAULT_PAYMENT_METHODS.filter((method) => method.enabled));
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Filter and validate payment methods based on store configuration and order amount
   useEffect(() => {
-    const filtered = DEFAULT_PAYMENT_METHODS.filter((method) => {
-      // Check if gateway is enabled in store config
-      if (
-        storeConfig?.enabledGateways &&
-        !storeConfig.enabledGateways.includes(method.gateway)
-      ) {
-        return false;
-      }
-
-      // Check if payment method type is enabled
-      if (
-        storeConfig?.paymentMethods &&
-        !storeConfig.paymentMethods.includes(method.type)
-      ) {
-        return false;
-      }
-
-      // Check if method is globally enabled
-      if (!method.enabled) {
-        return false;
-      }
-
-      // Check amount limits
-      if (method.minAmount && orderAmount < method.minAmount) {
-        return false;
-      }
-
-      if (method.maxAmount && orderAmount > method.maxAmount) {
-        return false;
-      }
-
-      return true;
-    });
-
-    setAvailableMethods(filtered);
-
-    // Validate current selection
     const errors: string[] = [];
-    if (selectedMethod && filtered.length > 0) {
-      const isValidSelection = filtered.some(
+    if (selectedMethod && availableMethods.length > 0) {
+      const isValidSelection = availableMethods.some(
         (method) =>
           method.type === selectedMethod.type &&
           method.gateway === selectedMethod.gateway
@@ -177,39 +151,6 @@ export function PaymentMethodSelector({
     return `${selectedMethod.type}-${selectedMethod.gateway}`;
   };
 
-  const getMethodDetails = (method: PaymentMethod) => {
-    switch (method.type) {
-      case "card":
-        return {
-          details: [
-            "You'll be redirected to secure payment page",
-            "We accept Visa, Mastercard, and American Express",
-            "Your payment information is encrypted and secure",
-            "Payment is processed instantly upon confirmation",
-          ],
-        };
-      case "bank_transfer":
-        return {
-          details: [
-            "You'll receive bank details after placing your order",
-            "Transfer the exact amount within 24 hours",
-            "Your order will be processed once payment is confirmed",
-            "Processing time: 1-2 business days",
-          ],
-        };
-      case "wallet":
-        return {
-          details: [
-            "Connect your crypto wallet via BasePay",
-            "Supported cryptocurrencies: ETH, BTC, USDC, USDT",
-            "Network fees will be calculated at checkout",
-            "Payment confirmation: 5-15 minutes",
-          ],
-        };
-      default:
-        return { details: [] };
-    }
-  };
 
   if (availableMethods.length === 0) {
     return (
@@ -240,7 +181,7 @@ export function PaymentMethodSelector({
           Payment Method
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          Choose how you'd like to pay for your order.
+          Choose how you&apos;d like to pay for your order.
         </p>
       </div>
 
@@ -272,13 +213,12 @@ export function PaymentMethodSelector({
             return (
               <div
                 key={methodKey}
-                className={`flex items-start space-x-3 p-4 border rounded-lg transition-colors ${
-                  disabled
-                    ? "opacity-50 cursor-not-allowed"
-                    : isSelected
+                className={`flex items-start space-x-3 p-4 border rounded-lg transition-colors ${disabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : isSelected
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-200 hover:border-gray-300 cursor-pointer"
-                }`}
+                  }`}
               >
                 <RadioGroupItem
                   value={methodKey}
@@ -293,9 +233,8 @@ export function PaymentMethodSelector({
                     <div>
                       <Label
                         htmlFor={methodKey}
-                        className={`font-medium ${
-                          disabled ? "cursor-not-allowed" : "cursor-pointer"
-                        }`}
+                        className={`font-medium ${disabled ? "cursor-not-allowed" : "cursor-pointer"
+                          }`}
                       >
                         {method.title}
                       </Label>
@@ -333,38 +272,9 @@ export function PaymentMethodSelector({
         </RadioGroup>
       </div>
 
-      {/* Payment Method Details */}
-      {selectedMethod && (
-        <div className="space-y-4">
-          {availableMethods
-            .filter(
-              (method) =>
-                method.type === selectedMethod.type &&
-                method.gateway === selectedMethod.gateway
-            )
-            .map((method) => {
-              const { details } = getMethodDetails(method);
-              return (
-                <div
-                  key={`${method.type}-${method.gateway}`}
-                  className="p-4 bg-gray-50 rounded-lg"
-                >
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    {method.title}
-                  </h4>
-                  <div className="text-sm text-gray-600 space-y-2">
-                    {details.map((detail, index) => (
-                      <p key={index}>• {detail}</p>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      )}
 
       {/* Security Information */}
-      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+      <div className="p-4 bg-green-50 border border-green-200 rounded-lg hidden">
         <div className="flex items-start space-x-3">
           <Shield className="h-5 w-5 text-green-600 mt-0.5" />
           <div>
@@ -390,7 +300,7 @@ export function PaymentMethodSelector({
       </div>
 
       {/* Payment Gateway Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-500">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-500 hidden">
         {availableMethods.some((m) => m.gateway === "paystack") && (
           <div className="p-3 bg-white border border-gray-200 rounded">
             <h5 className="font-medium text-gray-700 mb-1">Paystack</h5>

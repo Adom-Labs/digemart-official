@@ -196,6 +196,7 @@ export function StoreAuthModal({
       storeSubdomain: store.subdomain || store.storeSlug,
       storeName: store.storeName,
       redirectUrl: redirectUrl || window.location.href,
+      fullUrl: window.location.href,
     };
 
     // Set store context before OAuth redirect

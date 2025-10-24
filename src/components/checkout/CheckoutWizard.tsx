@@ -11,6 +11,11 @@ import { ShippingAddressStep } from "./steps/ShippingAddressStep";
 import { PaymentMethodStep } from "./steps/PaymentMethodStep";
 import { OrderReviewStep } from "./steps/OrderReviewStep";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { CartItem } from "@/lib/api/types";
+import { useStoreCart } from "@/lib/api/hooks";
+import { useSession } from "next-auth/react";
+import { BASE_URL } from "@/lib/api-request";
+import { PaymentModal } from "./PaymentModal";
 
 // Checkout form schema
 const checkoutSchema = z.object({
@@ -30,15 +35,13 @@ const checkoutSchema = z.object({
     address: z.string().min(1, "Address is required"),
     city: z.string().min(1, "City is required"),
     state: z.string().min(1, "State is required"),
-    postalCode: z.string().min(1, "Postal code is required"),
-    country: z.string().min(1, "Country is required"),
-    phone: z.string().optional(),
+    postalCode: z.string().min(1, "Postal code is required").optional(),
   }),
 
   // Payment Method
   paymentMethod: z.object({
-    type: z.enum(["card", "bank_transfer", "wallet"]),
-    gateway: z.enum(["paystack", "flutterwave", "basepay"]),
+    type: z.enum(["card", "bank_transfer", "wallet", "basepay"]),
+    gateway: z.enum(["paystack", "flutterwave", "basepay", "wallet"]),
   }),
 
   // Additional Options
@@ -76,9 +79,17 @@ const CHECKOUT_STEPS: CheckoutStep[] = [
 ];
 
 export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
+  const { data: session } = useSession()
+  const { data: storeCart } = useStoreCart(storeId || 0, { enabled: session?.user ? true : false });
+  const cart = storeCart?.data;
+  const items: CartItem[] = cart?.cartItems || [];
+
   const [currentStep, setCurrentStep] = useState("customer-info");
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderData, setOrderData] = useState<any>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<"card" | "bank_transfer" | "wallet" | "basepay">("card");
 
   const methods = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -97,8 +108,6 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
         city: "",
         state: "",
         postalCode: "",
-        country: "US",
-        phone: "",
       },
       paymentMethod: {
         type: "card",
@@ -143,6 +152,16 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
       }
     }
   }, [storeId, methods]);
+
+
+  if (!session?.user) {
+    return <h1>User not authenticated</h1>
+  }
+
+
+  if (!cart || cart.cartItems.length === 0) {
+    return <h1>No cart available to process</h1>
+  }
 
   const getCurrentStepIndex = () => {
     return CHECKOUT_STEPS.findIndex((step) => step.id === currentStep);
@@ -194,22 +213,85 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement actual order submission
       console.log("Submitting order:", data);
 
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Transform cart items to API format
+      const ct = items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice: item.product.price,
+      }));
+
+      // Map payment method type to enum
+      const paymentMethodTypeMap: Record<string, string> = {
+        card: "CARD",
+        bank_transfer: "BANK_TRANSFER",
+        wallet: "WALLET",
+        basepay: "BASEPAY",
+      };
+
+      // Prepare checkout data matching CompleteCheckoutDto
+      const checkoutData = {
+        storeId,
+        items: ct,
+        customerInfo: {
+          name: `${data.customerInfo.firstName} ${data.customerInfo.lastName}`,
+          email: data.customerInfo.email,
+          phone: data.customerInfo.phone,
+          isGuest: data.customerInfo.isGuest,
+        },
+        shippingAddress: {
+          fullName: data.shippingAddress.fullName,
+          address: data.shippingAddress.address,
+          city: data.shippingAddress.city,
+          state: data.shippingAddress.state,
+          postalCode: data.shippingAddress.postalCode || "",
+          country: "NG",
+        },
+        paymentMethod: {
+          type: paymentMethodTypeMap[data.paymentMethod.type],
+          gateway: data.paymentMethod.gateway,
+        },
+        specialInstructions: data.specialInstructions,
+      };
+
+      // Call checkout complete API
+      const response = await fetch(
+        `${BASE_URL}/checkout/complete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user}`,
+          },
+          body: JSON.stringify(checkoutData),
+        }
+      );
+
+      const result = await response.json();
+      console.log("Checkout API Response:", result.data);
+
+      // Store payment type
+      setSelectedPaymentType(data.paymentMethod.type);
+
+      // Set order data and show payment modal
+      setOrderData(result.data);
+      setShowPaymentModal(true);
 
       // Clear saved data on successful submission
       localStorage.removeItem(`checkout-${storeId}`);
-
-      // Redirect to order confirmation
-      // router.push(`/order-confirmation/${orderId}`);
     } catch (error) {
       console.error("Order submission failed:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePaymentComplete = () => {
+    // TODO: Handle payment completion
+    // For now, just close modal and maybe redirect
+    setShowPaymentModal(false);
+    console.log("Payment completed for order:", orderData?.orderId);
   };
 
   const renderCurrentStep = () => {
@@ -230,6 +312,8 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
   const currentIndex = getCurrentStepIndex();
   const isFirstStep = currentIndex === 0;
   const isLastStep = currentIndex === CHECKOUT_STEPS.length - 1;
+
+
 
   return (
     <FormProvider {...methods}>
@@ -280,6 +364,15 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
           )}
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        orderData={orderData}
+        paymentType={selectedPaymentType}
+        onPaymentComplete={handlePaymentComplete}
+      />
     </FormProvider>
   );
 }

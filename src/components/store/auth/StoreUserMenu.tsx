@@ -48,23 +48,23 @@ export function StoreUserMenu({ className }: StoreUserMenuProps) {
   };
 
   const navigateToAccount = () => {
-    router.push(`/store/${store.subdomain}/account`);
+    router.push(`/account`);
   };
 
   const navigateToOrders = () => {
-    router.push(`/store/${store.subdomain}/account/orders`);
+    router.push(`/account/orders`);
   };
 
   const navigateToPreferences = () => {
-    router.push(`/store/${store.subdomain}/account/preferences`);
+    router.push(`/account/preferences`);
   };
 
   const navigateToAddresses = () => {
-    router.push(`/store/${store.subdomain}/account/addresses`);
+    router.push(`/account/addresses`);
   };
 
   const navigateToWishlist = () => {
-    router.push(`/store/${store.subdomain}/wishlist`);
+    router.push(`/wishlist`);
   };
 
   const navigateToMainDashboard = () => {

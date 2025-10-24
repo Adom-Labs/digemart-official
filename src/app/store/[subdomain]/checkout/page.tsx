@@ -23,7 +23,6 @@ const CheckoutWizard = dynamic(
     })),
   {
     loading: () => <CheckoutWizardSkeleton />,
-    ssr: false, // Interactive component, can be client-side only
   }
 );
 
@@ -91,7 +90,6 @@ export async function generateMetadata({
 
 export default async function CheckoutPage({
   params,
-  searchParams,
 }: CheckoutPageProps) {
   try {
     const { subdomain } = await params;
@@ -101,10 +99,6 @@ export default async function CheckoutPage({
       notFound();
     }
 
-    // Validate store context for checkout
-    if (!store.verified) {
-      throw new Error("Store not verified for checkout");
-    }
 
     return (
       <CheckoutLayout store={store}>

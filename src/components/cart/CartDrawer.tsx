@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 import { getTotalGuestCartItems, getGuestCarts, getGuestCart, getGuestCartItemCount } from "@/lib/utils/guest-cart";
 
 interface MiniCartProps {
@@ -88,6 +89,8 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
     const { status } = useSession();
     const isAuthenticated = status === "authenticated";
     const [guestCarts, setGuestCarts] = useState<any[]>([]);
+    const router = useRouter();
+    const pathname = usePathname();
 
     // Use store-specific cart if storeId provided, otherwise get all carts
     const storeCartEnabled = isAuthenticated && open && !!storeId;
@@ -145,6 +148,46 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
         } catch (error) {
             toast.error("Failed to remove item");
         }
+    };
+
+    const handleProceedToCheckout = () => {
+        // Determine which store's cart we're checking out
+        let checkoutStoreId = storeId || cart?.storeId;
+
+        // For guest users, get the storeId from guest carts
+        if (!isAuthenticated && guestCarts.length > 0) {
+            checkoutStoreId = guestCarts[0].storeId;
+        }
+
+        if (!checkoutStoreId) {
+            toast.error("Unable to proceed to checkout. Please add items to your cart.");
+            return;
+        }
+
+        // Check if cart is empty
+        const hasItems = isAuthenticated
+            ? (cart?.cartItems?.length || 0) > 0
+            : guestCarts.some(c => c.items.length > 0);
+
+        if (!hasItems) {
+            toast.error("Your cart is empty");
+            return;
+        }
+
+        // Check if we're on a store subdomain
+        const isStoreSubdomain = pathname?.startsWith('/store/');
+
+        // Navigate to appropriate checkout page
+        if (isStoreSubdomain) {
+            // If on store subdomain, navigate to subdomain checkout
+            router.push(`${pathname.split('/').slice(0, 3).join('/')}/checkout`);
+        } else {
+            // Otherwise, navigate to general checkout with store parameter
+            router.push(`/checkout?storeId=${checkoutStoreId}&cart=${JSON.stringify(cart.id)}`);
+        }
+
+        // Close the drawer
+        onClose();
     };
 
     if (!open) return null;
@@ -287,7 +330,7 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
                     )}
                 </div>
 
-                {/* Footer with Totals */}
+                {/* Footer with Totals - Authenticated Users */}
                 {cart && cart.cartItems.length > 0 && (
                     <div className="border-t p-4 space-y-3">
                         <div className="space-y-2">
@@ -305,7 +348,25 @@ export function CartDrawer({ open, onClose, storeId }: CartDrawerProps) {
                             </div> */}
                         </div>
 
-                        <Button className="w-full" size="lg">
+                        <Button className="w-full" size="lg" onClick={handleProceedToCheckout}>
+                            Proceed to Checkout
+                        </Button>
+                        <Button variant="outline" className="w-full" onClick={onClose}>
+                            Continue Shopping
+                        </Button>
+                    </div>
+                )}
+
+                {/* Footer with Totals - Guest Users */}
+                {!isAuthenticated && guestCarts.length > 0 && guestCarts.some(c => c.items.length > 0) && (
+                    <div className="border-t p-4 space-y-3">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+                            <p className="text-sm text-amber-800">
+                                Sign in to save your cart and complete your purchase
+                            </p>
+                        </div>
+
+                        <Button className="w-full" size="lg" onClick={handleProceedToCheckout}>
                             Proceed to Checkout
                         </Button>
                         <Button variant="outline" className="w-full" onClick={onClose}>

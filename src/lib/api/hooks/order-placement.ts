@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { apiClient } from "../client";
+import apiClient from "../client";
 
 // Types
 export interface OrderItem {
@@ -27,13 +27,11 @@ export interface ShippingAddress {
   city: string;
   state: string;
   postalCode: string;
-  country: string;
-  phone?: string;
 }
 
 export interface PaymentMethod {
-  type: "card" | "bank_transfer" | "wallet";
-  gateway: "paystack" | "flutterwave" | "basepay";
+  type: "card" | "bank_transfer" | "wallet" | "basepay";
+  gateway: "paystack" | "flutterwave" | "basepay" | "wallet";
 }
 
 export interface CreateOrderData {

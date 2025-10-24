@@ -74,19 +74,21 @@ export function OrderReview({
   };
 
   const formatPaymentMethod = (method: CheckoutFormData["paymentMethod"]) => {
-    const methodNames = {
-      card: "Credit/Debit Card",
-      bank_transfer: "Bank Transfer",
-      wallet: "Crypto Wallet",
-    };
+    // const _methodNames = {
+    //   card: "Credit/Debit Card",
+    //   bank_transfer: "Bank Transfer",
+    //   wallet: "Crypto Wallet",
+    //   basepay: "BasePay",
+    // };
 
     const gatewayNames = {
       paystack: "Paystack",
       flutterwave: "Flutterwave",
       basepay: "BasePay",
+      wallet: "Digemart SmartContract",
     };
 
-    return `${methodNames[method.type]} via ${gatewayNames[method.gateway]}`;
+    return `${gatewayNames[method.gateway]}`;
   };
 
   const displayItems = showAllItems ? items : items.slice(0, 3);
@@ -241,12 +243,6 @@ export function OrderReview({
               {formData.shippingAddress.city}, {formData.shippingAddress.state}{" "}
               {formData.shippingAddress.postalCode}
             </p>
-            <p className="text-gray-700">{formData.shippingAddress.country}</p>
-            {formData.shippingAddress.phone && (
-              <p className="text-gray-700 mt-1">
-                {formData.shippingAddress.phone}
-              </p>
-            )}
           </div>
         </div>
       </div>
@@ -380,7 +376,7 @@ export function OrderReview({
       {formData.marketingOptIn && (
         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-green-800">
-            ✓ You've opted in to receive marketing updates and exclusive offers.
+            ✓ You&apos;ve opted in to receive marketing updates and exclusive offers.
           </p>
         </div>
       )}
@@ -399,7 +395,7 @@ export function OrderReview({
         <div className="text-center space-y-4">
           <h3 className="text-lg font-semibold">Ready to Place Your Order?</h3>
           <p className="text-gray-300 text-sm">
-            Once you click "Place Order", we'll process your payment and begin
+            Once you click &quot;Place Order&quot;, we&apos;ll process your payment and begin
             preparing your items for shipment.
           </p>
 

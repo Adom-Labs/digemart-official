@@ -7,10 +7,9 @@ import { User, Mail, Phone, Edit3, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckoutFormData } from "./CheckoutWizard";
-import { cn } from "@/lib/utils";
+import { useUserProfile } from "@/lib/api/hooks";
 
 interface AuthenticatedUserInfoProps {
   onSignOutClick?: () => void;
@@ -20,6 +19,9 @@ export function AuthenticatedUserInfo({
   onSignOutClick,
 }: AuthenticatedUserInfoProps) {
   const { data: session } = useSession();
+  const { data: profile } = useUserProfile();
+
+
   const {
     register,
     formState: { errors },
@@ -35,7 +37,10 @@ export function AuthenticatedUserInfo({
     phone: "",
   });
 
-  const marketingOptIn = watch("marketingOptIn");
+  // const marketingOptIn = watch("marketingOptIn");
+  const isEmailIds = profile && profile?.identities.filter((id) => id.provider === "EMAIL")
+  const hasEmail = isEmailIds && isEmailIds.length > 0
+  const emailId = hasEmail ? isEmailIds![0] : null
 
   // Pre-populate form with user data
   useEffect(() => {
@@ -50,8 +55,8 @@ export function AuthenticatedUserInfo({
       const userInfo = {
         firstName,
         lastName,
-        email: user.email || "",
-        phone: "", // Phone might not be available from session
+        email: hasEmail ? emailId?.email || "" : "",
+        phone: profile?.user.phone || "", // Phone might not be available from session
       };
 
       // Set form values
@@ -64,8 +69,9 @@ export function AuthenticatedUserInfo({
 
       // Set edited info for local editing
       setEditedInfo(userInfo);
+      setIsEditing(!hasEmail)
     }
-  }, [session, setValue]);
+  }, [session, setValue, profile, hasEmail, emailId]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -129,12 +135,12 @@ export function AuthenticatedUserInfo({
           Customer Information
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          Your account information will be used for this order.
+          {hasEmail ? "Your account information will be used for this order." : "You have no email saved, checkout requires your email."}
         </p>
       </div>
 
       {/* User Account Card */}
-      <Card className="border-green-200 bg-green-50">
+      <Card className="">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center justify-between">
             <div className="flex items-center">
@@ -295,32 +301,32 @@ export function AuthenticatedUserInfo({
         errors.customerInfo?.lastName ||
         errors.customerInfo?.email ||
         errors.customerInfo?.phone) && (
-        <div className="space-y-2">
-          {errors.customerInfo?.firstName && (
-            <p className="text-sm text-red-600">
-              {errors.customerInfo.firstName.message}
-            </p>
-          )}
-          {errors.customerInfo?.lastName && (
-            <p className="text-sm text-red-600">
-              {errors.customerInfo.lastName.message}
-            </p>
-          )}
-          {errors.customerInfo?.email && (
-            <p className="text-sm text-red-600">
-              {errors.customerInfo.email.message}
-            </p>
-          )}
-          {errors.customerInfo?.phone && (
-            <p className="text-sm text-red-600">
-              {errors.customerInfo.phone.message}
-            </p>
-          )}
-        </div>
-      )}
+          <div className="space-y-2">
+            {errors.customerInfo?.firstName && (
+              <p className="text-sm text-red-600">
+                {errors.customerInfo.firstName.message}
+              </p>
+            )}
+            {errors.customerInfo?.lastName && (
+              <p className="text-sm text-red-600">
+                {errors.customerInfo.lastName.message}
+              </p>
+            )}
+            {errors.customerInfo?.email && (
+              <p className="text-sm text-red-600">
+                {errors.customerInfo.email.message}
+              </p>
+            )}
+            {errors.customerInfo?.phone && (
+              <p className="text-sm text-red-600">
+                {errors.customerInfo.phone.message}
+              </p>
+            )}
+          </div>
+        )}
 
       {/* Marketing Opt-in */}
-      <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
+      {/* <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
         <Checkbox
           id="marketingOptIn"
           checked={marketingOptIn}
@@ -338,10 +344,10 @@ export function AuthenticatedUserInfo({
             You can unsubscribe at any time. We respect your privacy.
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Account Actions */}
-      <div className="text-center pt-4 border-t border-gray-200">
+      {/* <div className="text-center pt-4 border-t border-gray-200">
         <p className="text-sm text-gray-600">
           Not you?{" "}
           {onSignOutClick && (
@@ -354,7 +360,7 @@ export function AuthenticatedUserInfo({
             </Button>
           )}
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
