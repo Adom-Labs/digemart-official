@@ -130,7 +130,7 @@ export default function StoresClientPage() {
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 flex-1">
                 {/* Category Filter */}
-                <select
+                {/* <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[150px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -141,7 +141,7 @@ export default function StoresClientPage() {
                       {category.name} ({category.storeCount})
                     </option>
                   ))}
-                </select>
+                </select> */}
 
                 {/* Sort Filter */}
                 <select

@@ -7,7 +7,6 @@ import {
   CheckCircle,
   Clock,
   MapPin,
-  Calendar,
   ExternalLink,
   RefreshCw,
   AlertCircle,
@@ -17,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -258,33 +256,30 @@ export function OrderStatusTracker({
                 return (
                   <div
                     key={status.key}
-                    className={`flex flex-col items-center space-y-2 p-3 rounded-lg transition-colors ${
-                      isCurrent
+                    className={`flex flex-col items-center space-y-2 p-3 rounded-lg transition-colors ${isCurrent
                         ? "bg-blue-50 border-2 border-blue-200"
                         : isActive
-                        ? "bg-green-50"
-                        : "bg-gray-50"
-                    }`}
+                          ? "bg-green-50"
+                          : "bg-gray-50"
+                      }`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isCurrent
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${isCurrent
                           ? "bg-blue-600 text-white"
                           : isActive
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-300 text-gray-600"
-                      }`}
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-300 text-gray-600"
+                        }`}
                     >
                       <Icon className="h-5 w-5" />
                     </div>
                     <span
-                      className={`text-xs font-medium text-center ${
-                        isCurrent
+                      className={`text-xs font-medium text-center ${isCurrent
                           ? "text-blue-900"
                           : isActive
-                          ? "text-green-900"
-                          : "text-gray-600"
-                      }`}
+                            ? "text-green-900"
+                            : "text-gray-600"
+                        }`}
                     >
                       {status.label}
                     </span>
@@ -375,9 +370,8 @@ export function OrderStatusTracker({
                 <div key={event.id} className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
                     <div
-                      className={`w-3 h-3 rounded-full mt-2 ${
-                        index === 0 ? "bg-blue-600" : "bg-gray-300"
-                      }`}
+                      className={`w-3 h-3 rounded-full mt-2 ${index === 0 ? "bg-blue-600" : "bg-gray-300"
+                        }`}
                     />
                     {index < orderData.trackingEvents.length - 1 && (
                       <div className="w-px h-8 bg-gray-200 ml-1 mt-1" />

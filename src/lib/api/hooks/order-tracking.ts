@@ -58,9 +58,6 @@ export interface CreateTrackingData {
   estimatedDelivery?: string;
   notes?: string;
 }
-
-export interface UpdateTrackingData extends Partial<CreateTrackingData> {}
-
 export interface GuestTrackingRequest {
   orderId: number;
   email: string;
@@ -117,7 +114,7 @@ export function useUpdateOrderTracking() {
       data,
     }: {
       trackingId: number;
-      data: UpdateTrackingData;
+      data: Partial<CreateTrackingData>;
     }) => orderTrackingApi.updateOrderTracking(trackingId, data),
     onSuccess: (data) => {
       // Invalidate and refetch order tracking

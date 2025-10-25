@@ -38,7 +38,6 @@ export interface PaymentMethodSelectorProps {
     minOrderAmount?: number;
     maxOrderAmount?: number;
   };
-  orderAmount: number;
   error?: string;
   disabled?: boolean;
 }
@@ -85,7 +84,7 @@ const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     icon: Smartphone,
     fees: "Network fees apply",
     processingTime: "5-15 minutes",
-    enabled: true,
+    enabled: false,
     minAmount: 50,
     maxAmount: 100000,
   },
@@ -107,7 +106,6 @@ export function PaymentMethodSelector({
   selectedMethod,
   onMethodSelect,
   storeConfig,
-  orderAmount,
   error,
   disabled = false,
 }: PaymentMethodSelectorProps) {
@@ -130,7 +128,7 @@ export function PaymentMethodSelector({
     }
 
     setValidationErrors(errors);
-  }, [storeConfig, orderAmount, selectedMethod]);
+  }, [storeConfig, selectedMethod]);
 
   const handleMethodSelect = (methodKey: string) => {
     if (disabled) return;

@@ -133,7 +133,8 @@ export function PaymentModal({
             }
         } catch (error) {
             console.error('Payment failed:', error);
-            alert(`Payment failed: ${error.message}`);
+            const message = error instanceof Error ? error : new Error('Unknown error occurred during payment');
+            alert(`Payment failed: ${message}`);
         } finally {
             setIsProcessing(false);
         }
@@ -249,7 +250,7 @@ export function PaymentModal({
                             <BasePayButton
                                 colorScheme="light"
                                 onClick={handlePayment}
-                                disabled={isProcessing}
+                            // disabled={isProcessing}
                             />
                         ) : (
                             <Button

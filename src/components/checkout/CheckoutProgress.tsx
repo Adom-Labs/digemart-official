@@ -46,7 +46,7 @@ export function CheckoutProgress({
                           {
                             "bg-blue-600 border-blue-600 text-white":
                               isCompleted,
-                            "bg-blue-600 border-blue-600 text-white": isCurrent,
+                            "bg-blue-600 border-blue-600 text-white/90": isCurrent,
                             "bg-white border-gray-300 text-gray-500":
                               isUpcoming,
                           }

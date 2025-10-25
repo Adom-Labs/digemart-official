@@ -67,7 +67,7 @@ export function CheckoutSidebar({ storeId, className }: CheckoutSidebarProps) {
             <div key={item.id} className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <img
-                  src={item.product.images[0] || "/api/placeholder/60/60"}
+                  src={item.product.images[0] ? item.product.images[0].url : "/api/placeholder/60/60"}
                   alt={item.product.name}
                   className="w-15 h-15 rounded-md object-cover"
                 />

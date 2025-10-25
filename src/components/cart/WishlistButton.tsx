@@ -26,6 +26,7 @@ export function WishlistButton({
 
     const { data: wishlistStatus } = useIsInWishlist(type, itemId, {
         enabled: isAuthenticated,
+        queryKey: ['wishlist-status', type, itemId],
     });
     const addToWishlist = useAddToWishlist();
     const removeFromWishlist = useRemoveFromWishlist();

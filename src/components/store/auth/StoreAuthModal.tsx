@@ -30,11 +30,6 @@ import { useStore } from "../StoreProvider";
 import LoginWithWallet from "@/components/Authentication/LoginWithWallet";
 import { setStoreAuthContext } from "@/lib/utils/store-auth-context";
 
-// Import debug utilities in development
-if (process.env.NODE_ENV === "development") {
-  import("@/lib/utils/debug-store-auth");
-}
-
 interface StoreAuthModalProps {
   isOpen: boolean;
   onClose: () => void;

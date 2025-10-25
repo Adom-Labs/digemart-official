@@ -57,9 +57,7 @@ export function CustomerInfoForm({
 
   const handleCreateAccountChange = (checked: boolean) => {
     setValue("customerInfo.createAccount", checked);
-    if (checked) {
-      clearErrors("customerInfo.password");
-    }
+
   };
 
   return (
@@ -70,7 +68,7 @@ export function CustomerInfoForm({
           Customer Information
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          We'll use this information to process your order and send updates.
+          We&apos;ll use this information to process your order and send updates.
         </p>
       </div>
 
@@ -173,7 +171,7 @@ export function CustomerInfoForm({
         )}
 
         <p className="text-xs text-gray-500">
-          We'll send your order confirmation and updates to this email.
+          We&apos;ll send your order confirmation and updates to this email.
         </p>
       </div>
 
@@ -223,7 +221,7 @@ export function CustomerInfoForm({
               Create an account for faster future checkouts
             </Label>
             <p className="text-xs text-gray-500 mt-1">
-              We'll send you an email to set up your password after your order
+              We&apos;ll send you an email to set up your password after your order
               is complete.
             </p>
           </div>

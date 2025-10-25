@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -184,35 +183,6 @@ export const useVerifyPayment = () => {
   });
 };
 
-export const usePaymentStatus = (
-  reference: string,
-  enabled: boolean = true
-) => {
-  return useQuery({
-    queryKey: ["payment", "status", reference],
-    queryFn: () => getPaymentStatus(reference),
-    enabled: enabled && !!reference,
-    refetchInterval: (data) => {
-      // Stop polling if payment is completed or failed
-      if (
-        data?.status === "success" ||
-        data?.status === "failed" ||
-        data?.status === "cancelled"
-      ) {
-        return false;
-      }
-      // Poll every 5 seconds for pending/processing payments
-      return 5000;
-    },
-    retry: (failureCount, error) => {
-      // Don't retry if payment not found
-      if (error.message.includes("not found")) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
-};
 
 export const useRetryPayment = () => {
   const queryClient = useQueryClient();
@@ -246,41 +216,11 @@ export const useSupportedPaymentMethods = () => {
     queryKey: ["payments", "methods"],
     queryFn: getSupportedPaymentMethods,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
-// Utility hooks
-export const usePaymentPolling = (
-  reference: string,
-  onStatusChange?: (status: PaymentStatusResponse) => void
-) => {
-  const {
-    data: paymentStatus,
-    isLoading,
-    error,
-  } = usePaymentStatus(reference, !!reference);
 
-  // Call callback when status changes
-  React.useEffect(() => {
-    if (paymentStatus && onStatusChange) {
-      onStatusChange(paymentStatus);
-    }
-  }, [paymentStatus, onStatusChange]);
 
-  return {
-    paymentStatus,
-    isLoading,
-    error,
-    isCompleted: paymentStatus?.status === "success",
-    isFailed:
-      paymentStatus?.status === "failed" ||
-      paymentStatus?.status === "cancelled",
-    isPending:
-      paymentStatus?.status === "pending" ||
-      paymentStatus?.status === "processing",
-  };
-};
 
 // Payment gateway specific hooks
 export const usePaystackPayment = () => {
