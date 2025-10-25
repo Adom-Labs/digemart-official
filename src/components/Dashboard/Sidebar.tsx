@@ -85,8 +85,8 @@ export function Sidebar({
     ];
 
     const quickActions = [
-        ...(showEcommerce ? [{ icon: PlusIcon, label: 'Create Store', path: '/findyourplug/dashboard/stores/new' }] : []),
-        ...(showListings ? [{ icon: FileTextIcon, label: 'New Listing', path: '/findyourplug/dashboard/listings/new' }] : []),
+        ...(showEcommerce ? [{ icon: PlusIcon, label: 'Create Store', path: '/findyourplug/dashboard/stores/create' }] : []),
+        ...(showListings ? [{ icon: FileTextIcon, label: 'New Listing', path: '/findyourplug/dashboard/listings/create' }] : []),
     ];
 
     return (
