@@ -80,7 +80,7 @@ export function OrderHistoryList({ className }: OrderHistoryListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: orders, isLoading, error } = useOrderHistory();
 
-  const filteredOrders = ((orders as Order[]) || []).filter(
+  const filteredOrders = ((orders as unknown as Order[]) || []).filter(
     (order: Order) =>
       order.id.toString().includes(searchTerm) ||
       order.store.storeName.toLowerCase().includes(searchTerm.toLowerCase())

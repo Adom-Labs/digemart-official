@@ -51,6 +51,24 @@ const checkoutSchema = z.object({
 
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
+interface OrderResponse {
+  orderNumber: string;
+  paymentReference: string;
+  orderId: number;
+  orderStatus: string;
+  paymentStatus: string;
+  totals: {
+    subtotal: number;
+    taxAmount: number;
+    shippingAmount: number;
+    couponDiscount: number;
+    totalAmount: number;
+  };
+  trackingUrl: string;
+  createdAt: string;
+  metadata: Record<string, unknown>;
+}
+
 interface CheckoutWizardProps {
   storeId: number;
 }
@@ -87,7 +105,7 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
   const [currentStep, setCurrentStep] = useState("customer-info");
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orderData, setOrderData] = useState<OrderResponse | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentType, setSelectedPaymentType] = useState<"card" | "bank_transfer" | "wallet" | "basepay">("card");
 
@@ -287,13 +305,6 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
     }
   };
 
-  const handlePaymentComplete = () => {
-    // TODO: Handle payment completion
-    // For now, just close modal and maybe redirect
-    setShowPaymentModal(false);
-    console.log("Payment completed for order:", orderData?.orderId);
-  };
-
   const renderCurrentStep = () => {
     switch (currentStep) {
       case "customer-info":
@@ -316,63 +327,69 @@ export function CheckoutWizard({ storeId }: CheckoutWizardProps) {
 
 
   return (
-    <FormProvider {...methods}>
-      <div className="space-y-8">
-        {/* Progress Indicator */}
-        <CheckoutProgress
-          steps={CHECKOUT_STEPS}
-          currentStep={currentStep}
-          completedSteps={completedSteps}
+    <>
+      {
+        showPaymentModal && <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={orderData}
+          paymentType={selectedPaymentType}
         />
+      }
 
-        {/* Step Content */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-          {renderCurrentStep()}
-        </div>
+      {!showPaymentModal && <FormProvider {...methods}>
+        <div className="space-y-8">
+          {/* Progress Indicator */}
+          <CheckoutProgress
+            steps={CHECKOUT_STEPS}
+            currentStep={currentStep}
+            completedSteps={completedSteps}
+          />
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goToPreviousStep}
-            disabled={isFirstStep}
-            className="flex items-center justify-center space-x-2 w-full sm:w-auto"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Previous</span>
-          </Button>
+          {/* Step Content */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+            {renderCurrentStep()}
+          </div>
 
-          {!isLastStep ? (
+          {/* Navigation Buttons */}
+          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
             <Button
               type="button"
-              onClick={goToNextStep}
+              variant="outline"
+              onClick={goToPreviousStep}
+              disabled={isFirstStep}
               className="flex items-center justify-center space-x-2 w-full sm:w-auto"
             >
-              <span>Continue</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" />
+              <span>Previous</span>
             </Button>
-          ) : (
-            <Button
-              type="submit"
-              onClick={methods.handleSubmit(handleSubmitOrder)}
-              disabled={isSubmitting}
-              className="flex items-center justify-center space-x-2 w-full sm:w-auto bg-green-600 hover:bg-green-700"
-            >
-              <span>{isSubmitting ? "Processing..." : "Place Order"}</span>
-            </Button>
-          )}
-        </div>
-      </div>
 
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        orderData={orderData}
-        paymentType={selectedPaymentType}
-        onPaymentComplete={handlePaymentComplete}
-      />
-    </FormProvider>
+            {!isLastStep ? (
+              <Button
+                type="button"
+                onClick={goToNextStep}
+                className="flex items-center justify-center space-x-2 w-full sm:w-auto"
+              >
+                <span>Continue</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                onClick={methods.handleSubmit(handleSubmitOrder)}
+                disabled={isSubmitting}
+                className="flex items-center justify-center space-x-2 w-full sm:w-auto bg-green-600 hover:bg-green-700"
+              >
+                <span>{isSubmitting ? "Processing..." : "Place Order"}</span>
+              </Button>
+            )}
+          </div>
+        </div>
+
+
+      </FormProvider>}
+
+    </>
+
   );
 }

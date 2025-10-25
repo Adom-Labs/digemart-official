@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { CheckoutFormData } from "../CheckoutWizard";
 
 interface OrderReviewStepProps {
@@ -30,19 +29,20 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
   const formData = watch();
 
   const formatPaymentMethod = (method: CheckoutFormData["paymentMethod"]) => {
-    const methodNames = {
-      card: "Credit/Debit Card",
-      bank_transfer: "Bank Transfer",
-      wallet: "Crypto Wallet",
-    };
+    // const methodNames: Record<string, string> = {
+    //   card: "Credit/Debit Card",
+    //   bank_transfer: "Bank Transfer",
+    //   wallet: "Crypto Wallet",
+    // };
 
-    const gatewayNames = {
+    const gatewayNames: Record<string, string> = {
       paystack: "Paystack",
       flutterwave: "Flutterwave",
       basepay: "BasePay",
+      wallet: "Digemart Contract",
     };
 
-    return `${methodNames[method.type]} via ${gatewayNames[method.gateway]}`;
+    return `${gatewayNames[method.gateway]}`;
   };
 
   return (
@@ -130,12 +130,7 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
               {formData.shippingAddress.city}, {formData.shippingAddress.state}{" "}
               {formData.shippingAddress.postalCode}
             </p>
-            <p className="text-gray-700">{formData.shippingAddress.country}</p>
-            {formData.shippingAddress.phone && (
-              <p className="text-gray-700 mt-1">
-                {formData.shippingAddress.phone}
-              </p>
-            )}
+
           </div>
         </div>
       </div>
@@ -213,21 +208,14 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
         </div>
       </div>
 
-      {/* Marketing Opt-in Display */}
-      {formData.marketingOptIn && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800">
-            ✓ You've opted in to receive marketing updates and exclusive offers.
-          </p>
-        </div>
-      )}
+
 
       {/* Final Confirmation */}
       <div className="p-6 bg-gray-900 text-white rounded-lg">
         <div className="text-center space-y-4">
           <h3 className="text-lg font-semibold">Ready to Place Your Order?</h3>
           <p className="text-gray-300 text-sm">
-            Once you click "Place Order", we'll process your payment and begin
+            Once you click &quot;Place Order&quot;, we&quot;ll process your payment and begin
             preparing your items for shipment.
           </p>
 

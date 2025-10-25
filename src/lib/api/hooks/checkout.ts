@@ -2,15 +2,12 @@
 
 import React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-import { apiClient } from "../client";
+import apiClient from "../client";
 import { queryKeys } from "../query-keys";
 import {
-  getGuestCart,
   clearGuestCart,
-  getGuestCartForSync,
 } from "@/lib/utils/guest-cart";
 
 // Types
@@ -177,32 +174,6 @@ const getStoreCheckoutConfig = async (storeId: number) => {
   return response.data;
 };
 
-// Cart synchronization for checkout
-const syncCartForCheckout = async (
-  storeId: number
-): Promise<CheckoutItem[]> => {
-  const { data: session } = useSession();
-
-  if (session?.user) {
-    // Authenticated user - get cart from API
-    const response = await apiClient.get(`/cart/store/${storeId}`);
-    return response.data.items.map((item: any) => ({
-      productId: item.productId,
-      variantId: item.variantId,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-    }));
-  } else {
-    // Guest user - get cart from localStorage
-    const guestCart = getGuestCart(storeId);
-    return guestCart.items.map((item) => ({
-      productId: item.productId,
-      variantId: item.variantId,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice || 0, // Will be calculated on backend
-    }));
-  }
-};
 
 // React Query hooks
 
@@ -353,89 +324,7 @@ export const useStoreCheckoutConfig = (
   });
 };
 
-/**
- * Sync cart data for checkout initialization
- */
-export const useSyncCartForCheckout = () => {
-  return useMutation({
-    mutationFn: syncCartForCheckout,
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message || "Failed to sync cart for checkout"
-      );
-    },
-  });
-};
 
-// Composite hooks for checkout flow
-
-/**
- * Initialize checkout with cart synchronization and validation
- */
-export const useInitializeCheckout = () => {
-  const syncCart = useSyncCartForCheckout();
-  const createSession = useCreateCheckoutSession();
-  const validateCheckout = useValidateCheckout();
-  const calculateTotals = useCalculateCheckoutTotals();
-
-  const initializeCheckout = async (storeId: number) => {
-    try {
-      // Step 1: Sync cart items
-      const items = await syncCart.mutateAsync(storeId);
-
-      if (items.length === 0) {
-        throw new Error("Cart is empty");
-      }
-
-      // Step 2: Validate items and inventory
-      const validation = await validateCheckout.mutateAsync({
-        storeId,
-        items,
-      });
-
-      if (!validation.isValid) {
-        throw new Error(
-          `Checkout validation failed: ${validation.errors.join(", ")}`
-        );
-      }
-
-      // Step 3: Calculate initial totals
-      const totals = await calculateTotals.mutateAsync({
-        storeId,
-        items,
-      });
-
-      // Step 4: Create checkout session
-      const session = await createSession.mutateAsync({
-        storeId,
-        items,
-      });
-
-      return {
-        session,
-        items,
-        totals,
-        validation,
-      };
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  return {
-    initializeCheckout,
-    isLoading:
-      syncCart.isPending ||
-      createSession.isPending ||
-      validateCheckout.isPending ||
-      calculateTotals.isPending,
-    error:
-      syncCart.error ||
-      createSession.error ||
-      validateCheckout.error ||
-      calculateTotals.error,
-  };
-};
 
 /**
  * Validate and calculate totals for checkout step
@@ -493,47 +382,5 @@ export const useCheckoutCompletion = () => {
     completeCheckoutFlow,
     isLoading: completeCheckout.isPending || updateSession.isPending,
     error: completeCheckout.error || updateSession.error,
-  };
-};
-
-/**
- * Real-time checkout session management
- */
-export const useCheckoutSessionManager = (sessionId: string) => {
-  const queryClient = useQueryClient();
-  const updateSession = useUpdateCheckoutSession();
-  const { data: session, isLoading, error } = useCheckoutSession(sessionId);
-
-  const updateSessionData = async (data: Partial<CheckoutData>) => {
-    return updateSession.mutateAsync({ sessionId, data });
-  };
-
-  const updateStep = async (step: CheckoutSession["step"]) => {
-    return updateSession.mutateAsync({
-      sessionId,
-      data: { step } as unknown,
-    });
-  };
-
-  // Auto-save session data periodically
-  const autoSave = React.useCallback(
-    (data: Partial<CheckoutData>) => {
-      const timeoutId = setTimeout(() => {
-        updateSessionData(data);
-      }, 1000); // Debounce auto-save by 1 second
-
-      return () => clearTimeout(timeoutId);
-    },
-    [sessionId]
-  );
-
-  return {
-    session,
-    isLoading: isLoading || updateSession.isPending,
-    error: error || updateSession.error,
-    updateSessionData,
-    updateStep,
-    autoSave,
-    isExpired: session ? new Date(session.expiresAt) < new Date() : false,
   };
 };

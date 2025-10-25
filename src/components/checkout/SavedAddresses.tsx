@@ -112,8 +112,7 @@ export function SavedAddresses({
     setValue("shippingAddress.city", address.city);
     setValue("shippingAddress.state", address.state);
     setValue("shippingAddress.postalCode", address.postalCode);
-    setValue("shippingAddress.country", address.country);
-    setValue("shippingAddress.phone", address.phone || "");
+
   };
 
   const handleDeleteClick = async (addressId: string) => {
@@ -132,8 +131,7 @@ export function SavedAddresses({
         setValue("shippingAddress.city", "");
         setValue("shippingAddress.state", "");
         setValue("shippingAddress.postalCode", "");
-        setValue("shippingAddress.country", "");
-        setValue("shippingAddress.phone", "");
+
       }
 
       onDeleteAddress(addressId);

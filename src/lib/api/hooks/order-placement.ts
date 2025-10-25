@@ -331,11 +331,7 @@ export const useOrderTracking = (
     queryKey: ["orders", "tracking", orderNumber],
     queryFn: () => getOrderTracking(orderNumber),
     enabled: enabled && !!orderNumber,
-    refetchInterval: (data) => {
-      // Stop polling if order is delivered or cancelled
-      if (data?.status === "DELIVERED" || data?.status === "CANCELLED") {
-        return false;
-      }
+    refetchInterval: () => {
       // Poll every 30 seconds for active orders
       return 30 * 1000;
     },
@@ -459,12 +455,6 @@ export const useOrderStatusPolling = (
 ) => {
   const { data: order, isLoading, error } = useOrder(orderId, !!orderId);
 
-  // Call callback when status changes
-  React.useEffect(() => {
-    if (order && onStatusChange) {
-      onStatusChange(order);
-    }
-  }, [order?.status, onStatusChange]);
 
   return {
     order,

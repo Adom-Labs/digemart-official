@@ -12,11 +12,10 @@ export function PaymentMethodStep() {
   } = useFormContext<CheckoutFormData>();
 
   const paymentMethod = watch("paymentMethod");
-  const orderTotal = watch("orderSummary.total") || 0;
 
   const handleMethodSelect = (method: { type: string; gateway: string }) => {
-    setValue("paymentMethod.type", method.type as any);
-    setValue("paymentMethod.gateway", method.gateway as any);
+    setValue("paymentMethod.type", method.type as 'card' | 'bank_transfer' | 'wallet' | 'basepay');
+    setValue("paymentMethod.gateway", method.gateway as 'paystack' | 'flutterwave' | 'basepay' | 'wallet');
   };
 
   // TODO: Get store configuration from context or props
@@ -33,7 +32,6 @@ export function PaymentMethodStep() {
       selectedMethod={paymentMethod}
       onMethodSelect={handleMethodSelect}
       storeConfig={storeConfig}
-      orderAmount={orderTotal}
       error={errors.paymentMethod?.message}
     />
   );

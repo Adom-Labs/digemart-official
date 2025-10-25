@@ -58,9 +58,6 @@ export interface CreateTrackingData {
   estimatedDelivery?: string;
   notes?: string;
 }
-
-export interface UpdateTrackingData extends Partial<CreateTrackingData> {}
-
 export interface GuestTrackingRequest {
   orderId: number;
   email: string;
@@ -103,30 +100,6 @@ export function useAddOrderTracking() {
         queryKey: QUERY_KEYS.orderTracking(orderId),
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.order(orderId) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders() });
-    },
-  });
-}
-
-export function useUpdateOrderTracking() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      trackingId,
-      data,
-    }: {
-      trackingId: number;
-      data: UpdateTrackingData;
-    }) => orderTrackingApi.updateOrderTracking(trackingId, data),
-    onSuccess: (data) => {
-      // Invalidate and refetch order tracking
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.orderTracking(data.orderId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.order(data.orderId),
-      });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders() });
     },
   });

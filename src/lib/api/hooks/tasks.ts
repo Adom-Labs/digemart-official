@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseMutationOptions } from '@tanstack/react-query';
-import { getTasks, getTaskStats, getTask, completeTask, deleteTask, Task, TaskStats, TasksResponse, TaskQueryParams } from '../tasks';
+import { getTasks, getTaskStats, getTask, completeTask, deleteTask, Task, TaskQueryParams } from '../tasks';
 import { toast } from 'sonner';
 
 // Query Keys
@@ -65,15 +65,12 @@ export function useCompleteTask(
 
             toast.success('Task completed successfully!');
 
-            // Call custom onSuccess if provided
-            options?.onSuccess?.(data, taskId, undefined);
         },
-        onError: (error, taskId) => {
+        onError: (error) => {
             console.error('Failed to complete task:', error);
             toast.error('Failed to complete task. Please try again.');
 
-            // Call custom onError if provided
-            options?.onError?.(error, taskId, undefined);
+
         },
         ...options,
     });
@@ -99,15 +96,13 @@ export function useDeleteTask(
 
             toast.success('Task deleted successfully!');
 
-            // Call custom onSuccess if provided
-            options?.onSuccess?.(data, taskId, undefined);
+
         },
         onError: (error, taskId) => {
             console.error('Failed to delete task:', error);
             toast.error('Failed to delete task. Please try again.');
 
-            // Call custom onError if provided
-            options?.onError?.(error, taskId, undefined);
+
         },
         ...options,
     });
