@@ -105,30 +105,6 @@ export function useAddOrderTracking() {
   });
 }
 
-export function useUpdateOrderTracking() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      trackingId,
-      data,
-    }: {
-      trackingId: number;
-      data: Partial<CreateTrackingData>;
-    }) => orderTrackingApi.updateOrderTracking(trackingId, data),
-    onSuccess: (data) => {
-      // Invalidate and refetch order tracking
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.orderTracking(data.orderId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.order(data.orderId),
-      });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders() });
-    },
-  });
-}
-
 // Hooks for guest users
 export function useGuestOrderTracking(
   request: GuestTrackingRequest,

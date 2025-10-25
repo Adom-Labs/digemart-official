@@ -2,7 +2,6 @@ import client from "./client";
 import type {
   OrderTrackingTimeline,
   CreateTrackingData,
-  UpdateTrackingData,
   GuestTrackingRequest,
   OrderTrackingEvent,
 } from "./hooks/order-tracking";
@@ -26,7 +25,7 @@ export const orderTrackingApi = {
   // Update tracking information (store owners/admins)
   async updateOrderTracking(
     trackingId: number,
-    data: UpdateTrackingData
+    data: CreateTrackingData
   ): Promise<OrderTrackingEvent> {
     const response = await client.patch(`/orders/tracking/${trackingId}`, data);
     return response.data;

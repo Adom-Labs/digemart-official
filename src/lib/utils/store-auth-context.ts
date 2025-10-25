@@ -174,7 +174,7 @@ export const hasStoreAuthContext = (): boolean =>
  */
 export const getStoreRedirectUrl = (fallbackUrl?: string): string => {
   const context = getStoreAuthContext();
-  if (context.fullUrl) return context.fullUrl;
+  if (context?.fullUrl) return context.fullUrl;
   if (context?.redirectUrl) return context.redirectUrl;
   if (context?.storeSubdomain) return `/store/${context.storeSubdomain}`;
   return fallbackUrl || "/findyourplug/dashboard";
