@@ -39,6 +39,7 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
       paystack: "Paystack",
       flutterwave: "Flutterwave",
       basepay: "BasePay",
+      wallet: "Digemart Contract",
     };
 
     return `${gatewayNames[method.gateway]}`;
