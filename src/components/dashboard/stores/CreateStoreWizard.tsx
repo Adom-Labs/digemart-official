@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  CheckCircle2, 
-  Store, 
-  MapPin, 
-  Palette, 
+import {
+  CheckCircle2,
+  Store,
+  MapPin,
+  Palette,
   Rocket,
   ArrowLeft,
   ArrowRight,
@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -82,7 +82,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
   };
 
   const handleStoreNameChange = (name: string) => {
-    updateFormData({ 
+    updateFormData({
       storeName: name,
       subdomain: generateSubdomain(name)
     });
@@ -139,13 +139,13 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
       };
 
       const store = await createStoreMutation.mutateAsync(storeData);
-      
+
       toast.success('Store created successfully!');
-      
+
       if (onComplete) {
         onComplete(store.id);
       } else {
-        router.push(`/findyourplug/dashboard/stores/${store.id}`);
+        router.push(`/findyourplug/dashboard/stores`);
       }
     } catch (error) {
       console.error('Failed to create store:', error);
@@ -161,13 +161,12 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
           <div key={step.number} className="flex items-center flex-1">
             <div className="flex flex-col items-center">
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                  step.number < currentStep
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${step.number < currentStep
                     ? 'bg-green-500 text-white'
                     : step.number === currentStep
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
               >
                 {step.number < currentStep ? (
                   <CheckCircle2 className="h-6 w-6" />
@@ -175,17 +174,15 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
                   <StepIcon className="h-6 w-6" />
                 )}
               </div>
-              <p className={`mt-2 text-sm ${
-                step.number === currentStep ? 'text-blue-600 font-medium' : 'text-gray-500'
-              }`}>
+              <p className={`mt-2 text-sm ${step.number === currentStep ? 'text-blue-600 font-medium' : 'text-gray-500'
+                }`}>
                 {step.title}
               </p>
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`h-1 flex-1 mx-4 ${
-                  step.number < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                }`}
+                className={`h-1 flex-1 mx-4 ${step.number < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                  }`}
               />
             )}
           </div>
@@ -238,8 +235,8 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
 
         <div>
           <Label>Store Type *</Label>
-          <RadioGroup 
-            value={formData.storeType} 
+          <RadioGroup
+            value={formData.storeType}
             onValueChange={(value) => updateFormData({ storeType: value as 'INTERNAL' | 'EXTERNAL' })}
             className="mt-3"
           >
