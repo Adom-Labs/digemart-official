@@ -17,7 +17,24 @@ import {
   TrendingQueryParams,
   EntryPageQueryParams,
   DashboardOverviewDto,
+  UpdateProfileDto,
+  ChangePasswordDto,
+  Identity,
+  IdentityRemovalResponse,
+  RemovalConfirmationResponse,
   Store,
+  UserProfile,
+  Cart,
+  AddToCartDto,
+  UpdateCartItemDto,
+  ShareCartDto,
+  CartShareResponse,
+  WishlistType,
+  WishlistResponse,
+  WishlistItem,
+  AddToWishlistDto,
+  IsInWishlistResponse,
+  MoveToCartDto,
 } from './types';
 
 // Discovery API Services
@@ -72,7 +89,7 @@ export const entryPageApi = {
 export const categoryApi = {
   getAll: async (
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<CategoryResponseDto[]>> => {
+  ): Promise<ApiResponse<{ data: CategoryResponseDto[] }>> => {
     const response = await apiClient.get('/categories', { params });
     return response.data;
   },
@@ -174,6 +191,252 @@ export const storeApi = {
 export const dashboardApi = {
   getOverview: async (): Promise<ApiResponse<DashboardOverviewDto>> => {
     const response = await apiClient.post('/dashboard/overview');
+    return response.data;
+  },
+};
+
+// Product Management API Services
+export const productApi = {
+  /**
+   * Toggle product status (active/inactive)
+   */
+  toggleProductStatus: async (storeId: number, productId: number, active: boolean): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}/status`, { active });
+    return response.data;
+  },
+
+  /**
+   * Toggle product featured status
+   */
+  toggleFeaturedStatus: async (storeId: number, productId: number, featured: boolean): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}/featured`, { featured });
+    return response.data;
+  },
+
+  /**
+   * Delete product
+   */
+  deleteProduct: async (storeId: number, productId: number): Promise<ApiResponse<any>> => {
+    const response = await apiClient.delete(`/stores/${storeId}/products/${productId}`);
+    return response.data;
+  },
+
+  /**
+   * Get single product
+   */
+  getProduct: async (storeId: number, productId: number): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(`/stores/${storeId}/products/${productId}`);
+    return response.data;
+  },
+
+  /**
+   * Update product
+   */
+  updateProduct: async (storeId: number, productId: number, data: any): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}`, data);
+    return response.data;
+  },
+};
+
+// Audit Log API Services
+export const auditApi = {
+  /**
+   * Get recent store activities
+   */
+  getStoreRecentActivity: async (storeId: number, limit: number = 10): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(`/audit/store/${storeId}/recent`, {
+      params: { limit },
+    });
+    return response.data;
+  },
+};
+
+// Settings API Services
+export const settingsApi = {
+  /**
+   * Get user profile
+   */
+  getUserProfile: async () => {
+    const response = await apiClient.get<{ data: UserProfile }>('/auth/profile');
+    return response.data.data
+  },
+
+  /**
+   * Update user profile
+   */
+  updateProfile: async (data: UpdateProfileDto) => {
+    const response = await apiClient.patch('/auth/profile', data);
+    return response.data;
+  },  /**
+   * Change user password
+   */
+  changePassword: async (data: ChangePasswordDto) => {
+    const response = await apiClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  /**
+   * Get user identities
+   */
+  getUserIdentities: async (): Promise<Identity[]> => {
+    const response = await apiClient.get('/auth/identities');
+    return response.data.data.identities
+  },
+
+  /**
+   * Request identity removal (sends confirmation email)
+   */
+  requestRemoveIdentity: async (identityId: number): Promise<IdentityRemovalResponse> => {
+    const response = await apiClient.delete(`/auth/identity/${identityId}`);
+    return response.data;
+  },
+
+  /**
+   * Confirm identity removal with token from email
+   */
+  confirmRemoveIdentity: async (verificationToken: string): Promise<RemovalConfirmationResponse> => {
+    const response = await apiClient.post('/auth/identity/confirm-removal', { verificationToken });
+    return response.data;
+  },
+
+  /**
+   * Set primary identity
+   */
+  setPrimaryIdentity: async (identityId: number) => {
+    const response = await apiClient.patch(`/auth/identity/${identityId}/set-primary`);
+    return response.data;
+  },
+};
+
+// ============================================
+// CART API SERVICES
+// ============================================
+
+export const cartApi = {
+  /**
+   * Get all user carts across stores
+   */
+  getUserCarts: async (): Promise<ApiResponse<Cart[]>> => {
+    const response = await apiClient.get('/cart');
+    // Backend returns array directly, not wrapped
+    return { success: true, data: Array.isArray(response.data) ? response.data : [] };
+  },
+
+  /**
+   * Get cart for specific store
+   */
+  getStoreCart: async (storeId: number): Promise<ApiResponse<Cart>> => {
+    const response = await apiClient.get(`/cart/store/${storeId}`);
+    return { success: true, data: response.data };
+  },
+
+  /**
+   * Add item to cart
+   */
+  addToCart: async (storeId: number, data: AddToCartDto): Promise<ApiResponse<Cart>> => {
+    const response = await apiClient.post(`/cart/store/${storeId}/items`, data);
+    return response.data;
+  },
+
+  /**
+   * Update cart item quantity
+   */
+  updateCartItem: async (itemId: number, data: UpdateCartItemDto): Promise<ApiResponse<Cart>> => {
+    const response = await apiClient.put(`/cart/items/${itemId}`, data);
+    return response.data;
+  },
+
+  /**
+   * Remove item from cart
+   */
+  removeFromCart: async (itemId: number): Promise<ApiResponse<void>> => {
+    const response = await apiClient.delete(`/cart/items/${itemId}`);
+    return response.data;
+  },
+
+  /**
+   * Clear entire cart
+   */
+  clearCart: async (cartId: number): Promise<ApiResponse<{ message: string }>> => {
+    const response = await apiClient.delete(`/cart/${cartId}`);
+    return response.data;
+  },
+
+  /**
+   * Share cart via link
+   */
+  shareCart: async (cartId: number, data: ShareCartDto): Promise<ApiResponse<CartShareResponse>> => {
+    const response = await apiClient.post(`/cart/${cartId}/share`, data);
+    return response.data;
+  },
+
+  /**
+   * Get shared cart (public)
+   */
+  getSharedCart: async (shareId: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(`/cart/shared/${shareId}`);
+    return response.data;
+  },
+
+  /**
+   * Merge guest cart to user cart
+   */
+  mergeGuestCart: async (guestCartData: any[]): Promise<ApiResponse<Cart[]>> => {
+    const response = await apiClient.post('/cart/merge-guest', guestCartData);
+    return response.data;
+  },
+};
+
+// ============================================
+// WISHLIST API SERVICES
+// ============================================
+
+export const wishlistApi = {
+  /**
+   * Get user wishlist
+   */
+  getWishlist: async (type?: WishlistType): Promise<ApiResponse<WishlistResponse>> => {
+    const response = await apiClient.get('/wishlist', { params: { type } });
+    return response.data;
+  },
+
+  /**
+   * Get wishlist count
+   */
+  getWishlistCount: async (): Promise<ApiResponse<{ count: number }>> => {
+    const response = await apiClient.get('/wishlist/count');
+    return response.data;
+  },
+
+  /**
+   * Check if item is in wishlist
+   */
+  isInWishlist: async (type: WishlistType, itemId: number): Promise<ApiResponse<IsInWishlistResponse>> => {
+    const response = await apiClient.get('/wishlist/check', { params: { type, itemId } });
+    return response.data;
+  },
+
+  /**
+   * Add item to wishlist
+   */
+  addToWishlist: async (data: AddToWishlistDto): Promise<ApiResponse<WishlistItem>> => {
+    const response = await apiClient.post('/wishlist', data);
+    return response.data;
+  },
+
+  /**
+   * Remove item from wishlist
+   */
+  removeFromWishlist: async (wishlistId: number): Promise<ApiResponse<{ message: string }>> => {
+    const response = await apiClient.delete(`/wishlist/${wishlistId}`);
+    return response.data;
+  },
+
+  /**
+   * Move wishlist items to cart
+   */
+  moveToCart: async (data: MoveToCartDto): Promise<ApiResponse<any>> => {
+    const response = await apiClient.post('/wishlist/move-to-cart', data);
     return response.data;
   },
 };

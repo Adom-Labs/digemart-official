@@ -62,6 +62,8 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized - session expired or invalid
       console.error('[API] Unauthorized - session may have expired');
+      console.log(window.location.pathname);
+
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth')) {
         // Call NextAuth signOut to clear session properly
         await signOut({
