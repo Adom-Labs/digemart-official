@@ -1,24 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Pagination } from "@/components/ui/pagination";
 import { useTasks } from "@/lib/api/hooks/tasks";
 import { TaskItem } from "./TaskItem";
 import Loader from "@/components/Loader";
 import { CheckCircle2Icon } from "lucide-react";
 
 export function TasksList() {
+  const [page, setPage] = useState(1);
+  const limit = 20;
+
   const {
     data: tasksData,
     isLoading: tasksLoading,
     error: tasksError,
   } = useTasks({
-    page: 1,
-    limit: 100,
+    page,
+    limit,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
-
-  console.log(tasksData);
 
   if (tasksLoading) {
     return (
@@ -60,7 +63,7 @@ export function TasksList() {
       </div>
 
       {/* Tasks List */}
-      <div>
+      <div className="space-y-4">
         {tasks.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
@@ -74,11 +77,25 @@ export function TasksList() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
-            {tasks.map((task) => (
-              <TaskItem key={task.id} task={task} />
-            ))}
-          </div>
+          <>
+            <div className="space-y-3">
+              {tasks.map((task) => (
+                <TaskItem key={task.id} task={task} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {tasksData?.pagination && (
+              <Pagination
+                currentPage={tasksData.pagination.page}
+                totalPages={tasksData.pagination.pages}
+                totalItems={tasksData.pagination.total}
+                itemsPerPage={tasksData.pagination.limit}
+                onPageChange={setPage}
+                itemLabel="tasks"
+              />
+            )}
+          </>
         )}
       </div>
     </div>
