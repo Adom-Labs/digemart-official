@@ -91,12 +91,7 @@ export function Sidebar({
           },
         ]
       : []),
-    {
-      icon: CheckSquareIcon,
-      label: "Tasks",
-      path: "/findyourplug/dashboard/tasks",
-      badge: pendingTasksCount,
-    },
+
     {
       icon: BellIcon,
       label: "Notifications",

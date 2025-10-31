@@ -1,8 +1,9 @@
 "use client";
-import Task from "@/components/Tasks/Task";
+
+import { TasksList } from "@/components/Tasks/TasksList";
 
 const TaskPage = () => {
-  return <Task />;
+  return <TasksList />;
 };
 
 export default TaskPage;
