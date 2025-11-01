@@ -5,6 +5,11 @@ import { CredentialsSignin, type User } from 'next-auth';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axios from 'axios';
 
+const cookieConfig = {
+  domain: process.env.COOKIE_DOMAIN || 'digemart.com',
+  localDomain: process.env.LOCAL_COOKIE_DOMAIN || 'digemart.test',
+};
+
 // Custom error classes
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid identifier or password";
@@ -179,8 +184,6 @@ const authOptions = {
             const userData = res as unknown as WalletVerificationResponse;
 
             if (!userData) return null;
-            console.log(userData);
-
 
             return {
               ...userData.user,
@@ -205,6 +208,51 @@ const authOptions = {
     // No NextAuth Google provider needed
   ],
 
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? `__Secure-authjs.session-token`
+        : `authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production'
+          ? `.${cookieConfig.domain}`
+          : `.${cookieConfig.localDomain}`
+      }
+    }
+  },
+  callbackUrl: {
+    name: process.env.NODE_ENV === 'production'
+      ? `__Secure-authjs.callback-url`
+      : `authjs.callback-url`,
+    options: {
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      domain: process.env.NODE_ENV === 'production'
+        ? `.${cookieConfig.domain}`
+        : `.${cookieConfig.localDomain}`
+    }
+  },
+  csrfToken: {
+    name: process.env.NODE_ENV === 'production'
+      ? `__Host-authjs.csrf-token`
+      : `authjs.csrf-token`,
+    options: {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      // Note: __Host- prefix requires domain to be omitted
+      ...(process.env.NODE_ENV !== 'production' && {
+        domain: `.${cookieConfig.localDomain}`
+      })
+    }
+  }
+  ,
   callbacks: {
     async signIn() {
       // Google OAuth is handled by backend, no special handling needed here

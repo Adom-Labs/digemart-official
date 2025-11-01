@@ -7,6 +7,8 @@ import { X } from "lucide-react";
 import EmailForm from "./EmailForm";
 import SocialButtons from "./SocialButtons";
 import { signIn } from "next-auth/react"
+import { get } from "http";
+import { getStoreAuthContext } from "@/lib/utils/store-auth-context";
 
 
 const getErrorMessage = (error: string) => {
@@ -56,6 +58,8 @@ const LoginForm = ({
     "email-sign-in",
   ]);
   const router = useRouter();
+  const savedAuthContext = getStoreAuthContext();
+
   const dismissError = () => {
     setError(undefined);
     if (initialError) {
@@ -70,9 +74,12 @@ const LoginForm = ({
     const callbackUrl = redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD;
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
+    const f_url = savedAuthContext ? savedAuthContext.fullUrl : encodedCallbackUrl;
+
     // Redirect to backend Google OAuth endpoint with callback URL
-    window.location.href = `${backendUrl}/auth/google?callbackUrl=${encodedCallbackUrl}`;
+    window.location.href = `${backendUrl}/auth/google?callbackUrl=${f_url}`;
   };
+
 
   const handleEmailSignIn = async (email: string, password: string) => {
     const callbackUrl =
@@ -86,11 +93,8 @@ const LoginForm = ({
         email,
         password,
         redirect: false,
-        callbackUrl,
+        callbackUrl: savedAuthContext ? savedAuthContext.fullUrl : callbackUrl,
       });
-
-      console.log(result);
-
 
       if (result?.error) {
         console.log(result.error);
@@ -106,6 +110,8 @@ const LoginForm = ({
       stopLoading("email-sign-in");
     }
   };
+
+
 
   return (
     <div className="flex min-h-screen w-full">
@@ -135,14 +141,11 @@ const LoginForm = ({
                 </div>
                 <div>
                   <p className="text-gray-600">No online store yet?</p>
-                  <a
-                    href="https://vendor.digemart.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <span
                     className="text-primary text-sm hover:underline"
                   >
                     Create your free e-commerce store →
-                  </a>
+                  </span>
                 </div>
               </div>
             </div>
@@ -163,7 +166,8 @@ const LoginForm = ({
           <div>
             <h2 className="text-2xl font-semibold mb-1">Welcome Back!</h2>
             <p className="text-gray-600">
-              Sign in to access your dashboard and manage your accounts.
+              {savedAuthContext ? <span>Continue signing in to <i>{savedAuthContext.storeName}</i></span> : ' Sign in to access your dashboard and manage your accounts.'}
+
             </p>
           </div>
 
@@ -206,7 +210,7 @@ const LoginForm = ({
           <SocialButtons
             onGoogleClick={handleGoogleSignIn}
             isLoading={isLoading("google-sign-in")}
-            redirectUrl={redirectUrl}
+            redirectUrl={savedAuthContext ? savedAuthContext.fullUrl : redirectUrl}
           />
 
           <div className="text-center">

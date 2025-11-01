@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, HelpCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Search, ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -58,10 +58,10 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-4 mb-12"
         >
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
+          {/* <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
             <HelpCircle className="w-4 h-4" />
             <span>Support Center</span>
-          </div>
+          </div> */}
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
             Frequently Asked Questions
           </h2>
@@ -88,11 +88,10 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === category
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === category
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
@@ -139,21 +138,19 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
                           </span>
                           <button
                             onClick={() => handleFeedback(faq.id, true)}
-                            className={`p-2 rounded-full transition-colors ${
-                              helpfulFaqs.has(faq.id)
+                            className={`p-2 rounded-full transition-colors ${helpfulFaqs.has(faq.id)
                                 ? "bg-green-100 text-green-600"
                                 : "hover:bg-gray-100 text-gray-400"
-                            }`}
+                              }`}
                           >
                             <ThumbsUp className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleFeedback(faq.id, false)}
-                            className={`p-2 rounded-full transition-colors ${
-                              !helpfulFaqs.has(faq.id)
+                            className={`p-2 rounded-full transition-colors ${!helpfulFaqs.has(faq.id)
                                 ? "bg-red-100 text-red-600"
                                 : "hover:bg-gray-100 text-gray-400"
-                            }`}
+                              }`}
                           >
                             <ThumbsDown className="w-4 h-4" />
                           </button>

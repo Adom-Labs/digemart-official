@@ -3,12 +3,12 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ReactNode, useState } from "react";
 import { WagmiProvider } from "wagmi";
-import { base } from "wagmi/chains";
+import { base, baseSepolia } from "wagmi/chains";
 
 const config = getDefaultConfig({
   appName: "Digemart",
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '683e017bfc5a1d5c24a88589bf38316e',
-  chains: [base],
+  chains: [baseSepolia, base],
   ssr: true,
   appUrl: process.env.NEXT_PUBLIC_APP_URL!,
 });

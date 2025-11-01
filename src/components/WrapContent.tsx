@@ -8,7 +8,7 @@ const WrapContent = ({
   style?: React.CSSProperties;
 }): React.JSX.Element => {
   return (
-    <div className="lg:px-8 px-5 ui-mx-auto" id="wrapper" style={style}>
+    <div className="lg:px-8 px-5 ui-mx-auto h-full" id="wrapper" style={style}>
       {children}
     </div>
   );

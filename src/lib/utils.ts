@@ -50,7 +50,6 @@ export const getStoreUrl = (
   type: "EXTERNAL" | "INTERNAL" = "INTERNAL"
 ) => {
   if (type === "EXTERNAL") {
-    console.log(``);
     return `${ROUTES.FINDYOURPLUG}/${storeUrl}`;
   }
   return `/${storeUrl}`;
