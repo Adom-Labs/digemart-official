@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, Loader2, X, ChevronRight, Check } from "lucide-react";
+import { Send, Sparkles, Loader2, X, ChevronRight, Check, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useConversationalBuilder } from "./hooks/useConversationalBuilder";
 import { getInputPlaceholder } from "./utils";
@@ -24,6 +24,7 @@ import { ConversationalBuilderProps } from "./types";
 export const ConversationalStoreBuilder = ({
   initialStoreType = null,
   onComplete,
+  onSwitchToForm,
 }: ConversationalBuilderProps) => {
   const {
     messages,
@@ -44,6 +45,7 @@ export const ConversationalStoreBuilder = ({
     setValidationError,
     handleStoreTypeSelect,
     handleConfirmType,
+    handleChangeType,
     handleSubmit,
     handleLocationSubmit,
     handleHoursSubmit,
@@ -54,7 +56,8 @@ export const ConversationalStoreBuilder = ({
     handleImageUploadComplete,
     handleSkipImage,
     handleThemeSelect,
-  } = useConversationalBuilder(initialStoreType);
+    onSwitchToForm: hookOnSwitchToForm,
+  } = useConversationalBuilder(initialStoreType, onSwitchToForm);
 
   // Fetch categories and themes
   const { data: categoriesData } = useCategories({ categoryType: "STORE" });
@@ -69,6 +72,9 @@ export const ConversationalStoreBuilder = ({
       onComplete(storeData);
     }
   };
+
+  // Check if this is the first message (greeting message)
+  const isFirstMessage = messages.length === 1 && messages[0].type === "bot";
 
   return (
     <div className="flex h-screen max-h-screen gap-4 p-4 bg-muted/30">
@@ -111,19 +117,28 @@ export const ConversationalStoreBuilder = ({
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-start"
             >
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button onClick={handleConfirmType} size="sm" className="gap-2">
                   Yes, let&apos;s go! <ChevronRight className="w-4 h-4" />
                 </Button>
                 <Button
-                  onClick={() => {
-                    setValidationError("");
-                  }}
+                  onClick={handleChangeType}
                   variant="outline"
                   size="sm"
                 >
-                  Change type
+                  Change Type
                 </Button>
+                {onSwitchToForm && (
+                  <Button
+                    onClick={onSwitchToForm}
+                    variant="secondary"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Use Form Instead
+                  </Button>
+                )}
               </div>
             </motion.div>
           )}
@@ -314,7 +329,7 @@ export const ConversationalStoreBuilder = ({
 
           <div className="flex gap-2">
             {currentStep === "store-description" ||
-            currentStep === "hero-tagline" ? (
+              currentStep === "hero-tagline" ? (
               <Textarea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -346,8 +361,8 @@ export const ConversationalStoreBuilder = ({
                   currentStep === "store-email"
                     ? "email"
                     : currentStep === "store-phone"
-                    ? "tel"
-                    : "text"
+                      ? "tel"
+                      : "text"
                 }
                 className="flex-1 h-11 focus-visible:ring-2"
               />

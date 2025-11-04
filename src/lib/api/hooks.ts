@@ -41,7 +41,6 @@ import {
   DashboardOverviewDto,
   Store,
   UserProfile,
-  Cart,
   AddToCartDto,
   UpdateCartItemDto,
   ShareCartDto,

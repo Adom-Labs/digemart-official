@@ -83,4 +83,5 @@ export interface HoursFormData {
 export interface ConversationalBuilderProps {
   initialStoreType?: StoreType | null;
   onComplete?: (data: StoreData) => void;
+  onSwitchToForm?: () => void;
 }
