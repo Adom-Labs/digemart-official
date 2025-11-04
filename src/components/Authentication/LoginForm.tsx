@@ -6,10 +6,9 @@ import { useLoading } from "@/app/hooks/useLoading";
 import { X } from "lucide-react";
 import EmailForm from "./EmailForm";
 import SocialButtons from "./SocialButtons";
-import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react";
 import { get } from "http";
 import { getStoreAuthContext } from "@/lib/utils/store-auth-context";
-
 
 const getErrorMessage = (error: string) => {
   const errorMessages: Record<string, string> = {
@@ -26,11 +25,16 @@ const getErrorMessage = (error: string) => {
       "Connection timed out. Please check your internet connection and try again.",
     Review: "You must be logged in to post a review.",
     // Custom error codes from our auth config
-    "Invalid identifier or password": "Invalid email or password. Please check your credentials and try again.",
-    "Request timed out. Please try again.": "Connection timed out. Please check your internet connection and try again.",
-    "Invalid response from server": "Something went wrong with the authentication. Please try again.",
-    "Invalid wallet address": "Wallet address verification failed. Please try again.",
-    credentials: "Invalid email or password. Please check your credentials and try again.",
+    "Invalid identifier or password":
+      "Invalid email or password. Please check your credentials and try again.",
+    "Request timed out. Please try again.":
+      "Connection timed out. Please check your internet connection and try again.",
+    "Invalid response from server":
+      "Something went wrong with the authentication. Please try again.",
+    "Invalid wallet address":
+      "Wallet address verification failed. Please try again.",
+    credentials:
+      "Invalid email or password. Please check your credentials and try again.",
   };
   return errorMessages[error] || errorMessages.default;
 };
@@ -70,16 +74,18 @@ const LoginForm = ({
   };
   const handleGoogleSignIn = async () => {
     // Redirect to backend OAuth endpoint
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5050';
+    const backendUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050";
     const callbackUrl = redirectUrl || ROUTES.FINDYOURPLUG_DASHBOARD;
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
 
-    const f_url = savedAuthContext ? savedAuthContext.fullUrl : encodedCallbackUrl;
+    const f_url = savedAuthContext
+      ? savedAuthContext.fullUrl
+      : encodedCallbackUrl;
 
     // Redirect to backend Google OAuth endpoint with callback URL
     window.location.href = `${backendUrl}/auth/google?callbackUrl=${f_url}`;
   };
-
 
   const handleEmailSignIn = async (email: string, password: string) => {
     const callbackUrl =
@@ -111,8 +117,6 @@ const LoginForm = ({
     }
   };
 
-
-
   return (
     <div className="flex min-h-screen w-full">
       {/* Left */}
@@ -137,13 +141,11 @@ const LoginForm = ({
               ))}
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
-                  <span className="text-blue-600 text-sm">+</span>
+                  <span className="text-primary text-sm">+</span>
                 </div>
                 <div>
                   <p className="text-gray-600">No online store yet?</p>
-                  <span
-                    className="text-primary text-sm hover:underline"
-                  >
+                  <span className="text-primary text-sm hover:underline">
                     Create your free e-commerce store →
                   </span>
                 </div>
@@ -166,8 +168,13 @@ const LoginForm = ({
           <div>
             <h2 className="text-2xl font-semibold mb-1">Welcome Back!</h2>
             <p className="text-gray-600">
-              {savedAuthContext ? <span>Continue signing in to <i>{savedAuthContext.storeName}</i></span> : ' Sign in to access your dashboard and manage your accounts.'}
-
+              {savedAuthContext ? (
+                <span>
+                  Continue signing in to <i>{savedAuthContext.storeName}</i>
+                </span>
+              ) : (
+                " Sign in to access your dashboard and manage your accounts."
+              )}
             </p>
           </div>
 
@@ -210,7 +217,9 @@ const LoginForm = ({
           <SocialButtons
             onGoogleClick={handleGoogleSignIn}
             isLoading={isLoading("google-sign-in")}
-            redirectUrl={savedAuthContext ? savedAuthContext.fullUrl : redirectUrl}
+            redirectUrl={
+              savedAuthContext ? savedAuthContext.fullUrl : redirectUrl
+            }
           />
 
           <div className="text-center">

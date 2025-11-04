@@ -3,8 +3,13 @@
  * Following TanStack Query best practices with proper error handling and caching
  */
 
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { queryKeys } from './query-keys';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { queryKeys } from "./query-keys";
 import {
   discoveryApi,
   entryPageApi,
@@ -17,8 +22,9 @@ import {
   wishlistApi,
   productApi,
   auditApi,
-} from './services';
-import { searchApi } from './search';
+  notificationApi,
+} from "./services";
+import { searchApi } from "./search";
 import {
   StoreDiscoveryDto,
   TrendingStoreDto,
@@ -44,7 +50,10 @@ import {
   AddToWishlistDto,
   IsInWishlistResponse,
   MoveToCartDto,
-} from './types';
+  NotificationQueryParams,
+  NotificationListResponse,
+  NotificationDto,
+} from "./types";
 
 // Discovery Hooks
 export const useFeaturedStores = (
@@ -306,7 +315,7 @@ export const useDashboardOverview = (
     refetchOnWindowFocus: true,
     retry: (failureCount, error) => {
       // Don't retry on auth errors (401, 403)
-      if (error?.message?.includes('401') || error?.message?.includes('403')) {
+      if (error?.message?.includes("401") || error?.message?.includes("403")) {
         return false;
       }
       return failureCount < 3;
@@ -320,7 +329,9 @@ export const useDashboardOverview = (
 /**
  * Hook to get user profile
  */
-export const useUserProfile = (options?: UseQueryOptions<UserProfile, Error>) => {
+export const useUserProfile = (
+  options?: UseQueryOptions<UserProfile, Error>
+) => {
   return useQuery({
     queryKey: queryKeys.auth.profile(),
     queryFn: settingsApi.getUserProfile,
@@ -343,7 +354,7 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.settings.profile() });
     },
     onError: (error) => {
-      console.error('Profile update error:', error);
+      console.error("Profile update error:", error);
     },
   });
 };
@@ -387,7 +398,9 @@ export const useConfirmRemoveIdentity = () => {
     mutationFn: settingsApi.confirmRemoveIdentity,
     onSuccess: () => {
       // Invalidate identities cache
-      queryClient.invalidateQueries({ queryKey: queryKeys.settings.identities() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.settings.identities(),
+      });
     },
   });
 };
@@ -401,7 +414,9 @@ export const useSetPrimaryIdentity = () => {
   return useMutation({
     mutationFn: settingsApi.setPrimaryIdentity,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.settings.identities() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.settings.identities(),
+      });
     },
   });
 };
@@ -436,7 +451,7 @@ export const useStoreCart = (
     queryKey: queryKeys.cart.storeCart(storeId),
     queryFn: () => cartApi.getStoreCart(storeId).then((res) => res.data),
     staleTime: 30 * 1000, // 30 seconds
-    enabled: !!storeId && (options?.enabled !== false),
+    enabled: !!storeId && options?.enabled !== false,
     retry: false, // Don't retry on auth failures
   });
 };
@@ -452,7 +467,9 @@ export const useAddToCart = () => {
       cartApi.addToCart(storeId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart.storeCart(variables.storeId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.cart.storeCart(variables.storeId),
+      });
     },
   });
 };
@@ -464,8 +481,13 @@ export const useUpdateCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ itemId, data }: { itemId: number; data: UpdateCartItemDto }) =>
-      cartApi.updateCartItem(itemId, data),
+    mutationFn: ({
+      itemId,
+      data,
+    }: {
+      itemId: number;
+      data: UpdateCartItemDto;
+    }) => cartApi.updateCartItem(itemId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
     },
@@ -566,7 +588,9 @@ export const useWishlist = (
  * Get wishlist count
  * Only fetches if user is authenticated
  */
-export const useWishlistCount = (options?: UseQueryOptions<{ count: number }, Error> & { enabled?: boolean }) => {
+export const useWishlistCount = (
+  options?: UseQueryOptions<{ count: number }, Error> & { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: queryKeys.wishlist.count(),
     queryFn: () => wishlistApi.getWishlistCount().then((res) => res.data),
@@ -588,8 +612,9 @@ export const useIsInWishlist = (
 ) => {
   return useQuery({
     queryKey: queryKeys.wishlist.check(type, itemId),
-    queryFn: () => wishlistApi.isInWishlist(type, itemId).then((res) => res.data),
-    enabled: !!itemId && (options?.enabled !== false),
+    queryFn: () =>
+      wishlistApi.isInWishlist(type, itemId).then((res) => res.data),
+    enabled: !!itemId && options?.enabled !== false,
     retry: false, // Don't retry on auth failures
     ...options,
   });
@@ -617,7 +642,8 @@ export const useRemoveFromWishlist = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (wishlistId: number) => wishlistApi.removeFromWishlist(wishlistId),
+    mutationFn: (wishlistId: number) =>
+      wishlistApi.removeFromWishlist(wishlistId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.wishlist.count() });
@@ -651,10 +677,19 @@ export const useToggleProductStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ storeId, productId, active }: { storeId: number; productId: number; active: boolean }) =>
-      productApi.toggleProductStatus(storeId, productId, active),
+    mutationFn: ({
+      storeId,
+      productId,
+      active,
+    }: {
+      storeId: number;
+      productId: number;
+      active: boolean;
+    }) => productApi.toggleProductStatus(storeId, productId, active),
     onSuccess: (_, { storeId }) => {
-      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+      queryClient.invalidateQueries({
+        queryKey: ["stores", storeId, "products"],
+      });
     },
   });
 };
@@ -666,10 +701,19 @@ export const useToggleFeaturedStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ storeId, productId, featured }: { storeId: number; productId: number; featured: boolean }) =>
-      productApi.toggleFeaturedStatus(storeId, productId, featured),
+    mutationFn: ({
+      storeId,
+      productId,
+      featured,
+    }: {
+      storeId: number;
+      productId: number;
+      featured: boolean;
+    }) => productApi.toggleFeaturedStatus(storeId, productId, featured),
     onSuccess: (_, { storeId }) => {
-      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+      queryClient.invalidateQueries({
+        queryKey: ["stores", storeId, "products"],
+      });
     },
   });
 };
@@ -681,10 +725,17 @@ export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ storeId, productId }: { storeId: number; productId: number }) =>
-      productApi.deleteProduct(storeId, productId),
+    mutationFn: ({
+      storeId,
+      productId,
+    }: {
+      storeId: number;
+      productId: number;
+    }) => productApi.deleteProduct(storeId, productId),
     onSuccess: (_, { storeId }) => {
-      queryClient.invalidateQueries({ queryKey: ['stores', storeId, 'products'] });
+      queryClient.invalidateQueries({
+        queryKey: ["stores", storeId, "products"],
+      });
     },
   });
 };
@@ -698,8 +749,9 @@ export const useProduct = (
   options?: UseQueryOptions<any, Error>
 ) => {
   return useQuery({
-    queryKey: ['stores', storeId, 'products', productId],
-    queryFn: () => productApi.getProduct(storeId, productId).then((res) => res.data),
+    queryKey: ["stores", storeId, "products", productId],
+    queryFn: () =>
+      productApi.getProduct(storeId, productId).then((res) => res.data),
     enabled: !!storeId && !!productId,
     ...options,
   });
@@ -712,13 +764,29 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ storeId, productId, data }: { storeId: number; productId: number; data: any }) =>
-      productApi.updateProduct(storeId, productId, data),
+    mutationFn: ({
+      storeId,
+      productId,
+      data,
+    }: {
+      storeId: number;
+      productId: number;
+      data: any;
+    }) => productApi.updateProduct(storeId, productId, data),
     onSuccess: (_, variables) => {
       // Invalidate product query
-      queryClient.invalidateQueries({ queryKey: ['stores', variables.storeId, 'products', variables.productId] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "stores",
+          variables.storeId,
+          "products",
+          variables.productId,
+        ],
+      });
       // Invalidate store products list
-      queryClient.invalidateQueries({ queryKey: ['stores', variables.storeId, 'products'] });
+      queryClient.invalidateQueries({
+        queryKey: ["stores", variables.storeId, "products"],
+      });
     },
   });
 };
@@ -736,10 +804,118 @@ export const useStoreRecentActivity = (
   options?: UseQueryOptions<any, Error>
 ) => {
   return useQuery({
-    queryKey: ['audit', 'store', storeId, 'recent', limit],
-    queryFn: () => auditApi.getStoreRecentActivity(storeId, limit).then((res) => res),
+    queryKey: ["audit", "store", storeId, "recent", limit],
+    queryFn: () =>
+      auditApi.getStoreRecentActivity(storeId, limit).then((res) => res),
     enabled: !!storeId,
     staleTime: 30 * 1000, // 30 seconds - activities should be fairly fresh
     ...options,
+  });
+};
+
+// ============================================================================
+// Notification Hooks
+// ============================================================================
+
+/**
+ * Get user notifications with pagination and filtering
+ */
+export const useNotifications = (
+  params?: NotificationQueryParams,
+  options?: UseQueryOptions<NotificationListResponse, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.notifications.list(params),
+    queryFn: () => notificationApi.getAll(params).then((res) => res.data),
+    staleTime: 30 * 1000, // 30 seconds
+    ...options,
+  });
+};
+
+/**
+ * Get unread notification count
+ */
+export const useUnreadNotificationCount = (
+  options?: UseQueryOptions<{ unreadCount: number }, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.notifications.unreadCount(),
+    queryFn: () => notificationApi.getUnreadCount().then((res) => res.data),
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 60 * 1000, // Refetch every minute
+    ...options,
+  });
+};
+
+/**
+ * Get single notification by ID
+ */
+export const useNotification = (
+  id: number,
+  options?: UseQueryOptions<NotificationDto, Error>
+) => {
+  return useQuery({
+    queryKey: queryKeys.notifications.byId(id),
+    queryFn: () => notificationApi.getById(id).then((res) => res.data),
+    enabled: !!id,
+    ...options,
+  });
+};
+
+/**
+ * Mark notification as read
+ */
+export const useMarkNotificationAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => notificationApi.markAsRead(id),
+    onSuccess: () => {
+      // Invalidate notifications list and unread count
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.overview });
+    },
+  });
+};
+
+/**
+ * Mark all notifications as read
+ */
+export const useMarkAllNotificationsAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => notificationApi.markAllAsRead(),
+    onSuccess: () => {
+      // Invalidate all notification queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.overview });
+    },
+  });
+};
+
+/**
+ * Delete notification
+ */
+export const useDeleteNotification = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => notificationApi.deleteNotification(id),
+    onSuccess: () => {
+      // Invalidate notifications list and unread count
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notifications.unreadCount(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.overview });
+    },
   });
 };

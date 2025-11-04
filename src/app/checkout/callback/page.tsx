@@ -127,7 +127,7 @@ export default function PaymentCallbackPage() {
   const getStatusIcon = () => {
     switch (status) {
       case "loading":
-        return <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />;
+        return <Loader2 className="h-8 w-8 text-primary animate-spin" />;
       case "success":
         return <CheckCircle className="h-8 w-8 text-green-600" />;
       case "failed":
@@ -135,7 +135,7 @@ export default function PaymentCallbackPage() {
       case "cancelled":
         return <AlertTriangle className="h-8 w-8 text-amber-600" />;
       default:
-        return <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />;
+        return <Loader2 className="h-8 w-8 text-primary animate-spin" />;
     }
   };
 

@@ -83,7 +83,6 @@ export interface CreateStoreData {
   storeHeroImage?: string;
 }
 
-
 export interface StoreQuery {
   search?: string;
   storeType?: "INTERNAL" | "EXTERNAL";
@@ -177,7 +176,13 @@ export function useUpdateStore() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<CreateStoreData> }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: Partial<CreateStoreData>;
+    }) => {
       const response = await client.patch(`/stores/${id}`, data);
       return response.data as Store;
     },
@@ -200,4 +205,31 @@ export function useDeleteStore() {
       queryClient.invalidateQueries({ queryKey: storeKeys.lists() });
     },
   });
+}
+
+// Get all user stores (simplified, no params)
+export function useUserStores() {
+  return useQuery({
+    queryKey: storeKeys.myStores(),
+    queryFn: async () => {
+      const response = await client.get("/stores/my-stores");
+      return response.data.data.stores as Store[];
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+}
+
+// Get store statistics by type
+export function useStoreTypeStats() {
+  const { data: stores } = useUserStores();
+
+  if (!stores) {
+    return { total: 0, ecommerce: 0, listings: 0 };
+  }
+
+  return {
+    total: stores.length,
+    ecommerce: stores.filter((s) => s.storeType === "EXTERNAL").length,
+    listings: stores.filter((s) => s.storeType === "INTERNAL").length,
+  };
 }

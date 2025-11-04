@@ -126,7 +126,7 @@ export function StoreCustomerAnalytics({
               <p className="text-sm font-medium text-gray-600">
                 Total Customers
               </p>
-              <Users className="h-4 w-4 text-blue-600" />
+              <Users className="h-4 w-4 text-primary" />
             </div>
             <div className="flex items-baseline gap-2">
               <h2 className="text-3xl font-bold text-gray-900">
@@ -213,7 +213,7 @@ export function StoreCustomerAnalytics({
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-2xl font-bold text-primary">
                   {metrics.totalCustomers}
                 </p>
                 <p className="text-sm text-gray-600">Total Customers</p>

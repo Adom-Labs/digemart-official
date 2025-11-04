@@ -43,14 +43,11 @@ const RegisterPage = () => {
       setError(undefined);
       startLoading("register");
 
-      const {
-        confirmPassword,
-        acceptTerms,
-        ...userData
-      } = data; confirmPassword;
+      const { confirmPassword, acceptTerms, ...userData } = data;
+      confirmPassword;
 
       const _c = confirmPassword;
-      const _a = acceptTerms
+      const _a = acceptTerms;
       await registerUser(userData);
 
       const redirectParam = redirectUrl
@@ -97,7 +94,7 @@ const RegisterPage = () => {
               ))}
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-1">
-                  <span className="text-blue-600 text-sm">+</span>
+                  <span className="text-primary text-sm">+</span>
                 </div>
                 <div>
                   <p className="text-gray-600">No online store yet?</p>
@@ -114,7 +111,9 @@ const RegisterPage = () => {
             </div>
           </div>
         </div>
-        <div className="text-sm text-gray-500">© 2025 Digemart. All rights reserved.</div>
+        <div className="text-sm text-gray-500">
+          © 2025 Digemart. All rights reserved.
+        </div>
       </div>
 
       {/* Right - form */}
@@ -144,7 +143,9 @@ const RegisterPage = () => {
               <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -159,8 +160,6 @@ const RegisterPage = () => {
             onSubmit={handleRegister}
             isLoading={isLoading("register") || status === "loading"}
           />
-
-
         </div>
       </div>
     </div>

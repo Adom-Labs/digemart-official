@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   Store,
@@ -10,27 +10,34 @@ import {
   Rocket,
   ArrowLeft,
   ArrowRight,
-  Loader2
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+  Loader2,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ThemeTemplateSelector } from './ThemeTemplateSelector';
-import { useCreateStore, CreateStoreData } from '@/lib/api/hooks/stores';
-import { ThemeTemplate } from '@/lib/api/theme-templates';
-import { toast } from 'react-hot-toast';
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ThemeTemplateSelector } from "./ThemeTemplateSelector";
+import { useCreateStore, CreateStoreData } from "@/lib/api/hooks/stores";
+import { ThemeTemplate } from "@/lib/api/theme-templates";
+import { toast } from "react-hot-toast";
 
 interface CreateStoreWizardProps {
+  storeType?: "EXTERNAL" | "INTERNAL";
   onComplete?: (storeId: number) => void;
   onCancel?: () => void;
 }
@@ -39,52 +46,56 @@ interface StoreFormData extends CreateStoreData {
   selectedTheme?: ThemeTemplate;
 }
 
-export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardProps) {
+export function CreateStoreWizard({
+  storeType = "INTERNAL",
+  onComplete,
+  onCancel,
+}: CreateStoreWizardProps) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<StoreFormData>({
-    storeName: '',
-    email: '',
-    phone: '',
-    storeAddress: '',
-    storeLocationState: '',
-    storeLocationCity: '',
-    storeDescription: '',
-    storeType: 'INTERNAL',
-    subdomain: '',
-    storeTimeOpen: '09:00',
-    storeTimeClose: '18:00',
-    storeWeekOpen: 'Monday',
-    storeWeekClose: 'Saturday',
+    storeName: "",
+    email: "",
+    phone: "",
+    storeAddress: "",
+    storeLocationState: "",
+    storeLocationCity: "",
+    storeDescription: "",
+    storeType: storeType,
+    subdomain: "",
+    storeTimeOpen: "09:00",
+    storeTimeClose: "18:00",
+    storeWeekOpen: "Monday",
+    storeWeekClose: "Saturday",
   });
 
   const createStoreMutation = useCreateStore();
   const totalSteps = 4;
 
   const steps = [
-    { number: 1, title: 'Store Setup', icon: Store },
-    { number: 2, title: 'Location & Hours', icon: MapPin },
-    { number: 3, title: 'Theme Selection', icon: Palette },
-    { number: 4, title: 'Review & Launch', icon: Rocket },
+    { number: 1, title: "Store Setup", icon: Store },
+    { number: 2, title: "Location & Hours", icon: MapPin },
+    { number: 3, title: "Theme Selection", icon: Palette },
+    { number: 4, title: "Review & Launch", icon: Rocket },
   ];
 
   const updateFormData = (updates: Partial<StoreFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+    setFormData((prev) => ({ ...prev, ...updates }));
   };
 
   const generateSubdomain = (storeName: string) => {
     return storeName
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
   };
 
   const handleStoreNameChange = (name: string) => {
     updateFormData({
       storeName: name,
-      subdomain: generateSubdomain(name)
+      subdomain: generateSubdomain(name),
     });
   };
 
@@ -93,7 +104,11 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
       case 1:
         return !!(formData.storeName && formData.email && formData.storeType);
       case 2:
-        return !!(formData.storeAddress && formData.storeLocationState && formData.storeLocationCity);
+        return !!(
+          formData.storeAddress &&
+          formData.storeLocationState &&
+          formData.storeLocationCity
+        );
       case 3:
         return !!formData.selectedTheme;
       case 4:
@@ -107,7 +122,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
     if (validateStep(currentStep)) {
       setCurrentStep(Math.min(totalSteps, currentStep + 1));
     } else {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
     }
   };
 
@@ -117,7 +132,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
 
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) {
-      toast.error('Please complete all required fields');
+      toast.error("Please complete all required fields");
       return;
     }
 
@@ -140,7 +155,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
 
       const store = await createStoreMutation.mutateAsync(storeData);
 
-      toast.success('Store created successfully!');
+      toast.success("Store created successfully!");
 
       if (onComplete) {
         onComplete(store.id);
@@ -148,8 +163,8 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
         router.push(`/findyourplug/dashboard/stores`);
       }
     } catch (error) {
-      console.error('Failed to create store:', error);
-      toast.error('Failed to create store. Please try again.');
+      console.error("Failed to create store:", error);
+      toast.error("Failed to create store. Please try again.");
     }
   };
 
@@ -161,12 +176,13 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
           <div key={step.number} className="flex items-center flex-1">
             <div className="flex flex-col items-center">
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center ${step.number < currentStep
-                    ? 'bg-green-500 text-white'
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  step.number < currentStep
+                    ? "bg-green-500 text-white"
                     : step.number === currentStep
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-500'
-                  }`}
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-500"
+                }`}
               >
                 {step.number < currentStep ? (
                   <CheckCircle2 className="h-6 w-6" />
@@ -174,15 +190,21 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
                   <StepIcon className="h-6 w-6" />
                 )}
               </div>
-              <p className={`mt-2 text-sm ${step.number === currentStep ? 'text-blue-600 font-medium' : 'text-gray-500'
-                }`}>
+              <p
+                className={`mt-2 text-sm ${
+                  step.number === currentStep
+                    ? "text-primary font-medium"
+                    : "text-gray-500"
+                }`}
+              >
                 {step.title}
               </p>
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`h-1 flex-1 mx-4 ${step.number < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                  }`}
+                className={`h-1 flex-1 mx-4 ${
+                  step.number < currentStep ? "bg-green-500" : "bg-gray-200"
+                }`}
               />
             )}
           </div>
@@ -237,7 +259,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
           <Label>Store Type *</Label>
           <RadioGroup
             value={formData.storeType}
-            onValueChange={(value) => updateFormData({ storeType: value as 'INTERNAL' | 'EXTERNAL' })}
+            onValueChange={(value) =>
+              updateFormData({ storeType: value as "INTERNAL" | "EXTERNAL" })
+            }
             className="mt-3"
           >
             <div className="flex items-center space-x-2 p-4 border rounded-lg">
@@ -268,7 +292,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             placeholder="Tell customers about your store..."
             rows={4}
             value={formData.storeDescription}
-            onChange={(e) => updateFormData({ storeDescription: e.target.value })}
+            onChange={(e) =>
+              updateFormData({ storeDescription: e.target.value })
+            }
             className="mt-1.5"
           />
         </div>
@@ -288,7 +314,8 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             </span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Your store will be accessible at {formData.subdomain || 'yourstore'}.digemart.com
+            Your store will be accessible at {formData.subdomain || "yourstore"}
+            .digemart.com
           </p>
         </div>
       </CardContent>
@@ -299,7 +326,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
     <Card>
       <CardHeader>
         <CardTitle>Location & Business Hours</CardTitle>
-        <CardDescription>Where is your business located and when are you open?</CardDescription>
+        <CardDescription>
+          Where is your business located and when are you open?
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -320,7 +349,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
               id="city"
               placeholder="New York"
               value={formData.storeLocationCity}
-              onChange={(e) => updateFormData({ storeLocationCity: e.target.value })}
+              onChange={(e) =>
+                updateFormData({ storeLocationCity: e.target.value })
+              }
               className="mt-1.5"
             />
           </div>
@@ -330,7 +361,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
               id="state"
               placeholder="NY"
               value={formData.storeLocationState}
-              onChange={(e) => updateFormData({ storeLocationState: e.target.value })}
+              onChange={(e) =>
+                updateFormData({ storeLocationState: e.target.value })
+              }
               className="mt-1.5"
             />
           </div>
@@ -340,22 +373,30 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
           <Label>Business Hours</Label>
           <div className="grid grid-cols-2 gap-4 mt-2">
             <div>
-              <Label htmlFor="timeOpen" className="text-sm">Opening Time</Label>
+              <Label htmlFor="timeOpen" className="text-sm">
+                Opening Time
+              </Label>
               <Input
                 id="timeOpen"
                 type="time"
                 value={formData.storeTimeOpen}
-                onChange={(e) => updateFormData({ storeTimeOpen: e.target.value })}
+                onChange={(e) =>
+                  updateFormData({ storeTimeOpen: e.target.value })
+                }
                 className="mt-1"
               />
             </div>
             <div>
-              <Label htmlFor="timeClose" className="text-sm">Closing Time</Label>
+              <Label htmlFor="timeClose" className="text-sm">
+                Closing Time
+              </Label>
               <Input
                 id="timeClose"
                 type="time"
                 value={formData.storeTimeClose}
-                onChange={(e) => updateFormData({ storeTimeClose: e.target.value })}
+                onChange={(e) =>
+                  updateFormData({ storeTimeClose: e.target.value })
+                }
                 className="mt-1"
               />
             </div>
@@ -365,26 +406,56 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="weekOpen">Open From</Label>
-            <Select value={formData.storeWeekOpen} onValueChange={(value) => updateFormData({ storeWeekOpen: value })}>
+            <Select
+              value={formData.storeWeekOpen}
+              onValueChange={(value) =>
+                updateFormData({ storeWeekOpen: value })
+              }
+            >
               <SelectTrigger className="mt-1.5">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                  <SelectItem key={day} value={day}>{day}</SelectItem>
+                {[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div>
             <Label htmlFor="weekClose">Open Until</Label>
-            <Select value={formData.storeWeekClose} onValueChange={(value) => updateFormData({ storeWeekClose: value })}>
+            <Select
+              value={formData.storeWeekClose}
+              onValueChange={(value) =>
+                updateFormData({ storeWeekClose: value })
+              }
+            >
               <SelectTrigger className="mt-1.5">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                  <SelectItem key={day} value={day}>{day}</SelectItem>
+                {[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -418,7 +489,8 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             Ready to Launch!
           </h3>
           <p className="text-blue-800">
-            Your store is configured and ready to go live. Review the details below and launch when ready.
+            Your store is configured and ready to go live. Review the details
+            below and launch when ready.
           </p>
         </CardContent>
       </Card>
@@ -443,7 +515,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             </div>
             <div>
               <span className="font-medium">Phone:</span>
-              <p>{formData.phone || 'Not provided'}</p>
+              <p>{formData.phone || "Not provided"}</p>
             </div>
             <div>
               <span className="font-medium">Address:</span>
@@ -451,7 +523,9 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             </div>
             <div>
               <span className="font-medium">Location:</span>
-              <p>{formData.storeLocationCity}, {formData.storeLocationState}</p>
+              <p>
+                {formData.storeLocationCity}, {formData.storeLocationState}
+              </p>
             </div>
             <div>
               <span className="font-medium">Subdomain:</span>
@@ -459,7 +533,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
             </div>
             <div>
               <span className="font-medium">Selected Theme:</span>
-              <p>{formData.selectedTheme?.name || 'None selected'}</p>
+              <p>{formData.selectedTheme?.name || "None selected"}</p>
             </div>
           </div>
         </CardContent>
@@ -486,7 +560,7 @@ export function CreateStoreWizard({ onComplete, onCancel }: CreateStoreWizardPro
           disabled={createStoreMutation.isPending}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          {currentStep === 1 ? 'Cancel' : 'Previous'}
+          {currentStep === 1 ? "Cancel" : "Previous"}
         </Button>
 
         <Button

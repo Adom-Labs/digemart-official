@@ -74,7 +74,7 @@ export function ResponsivePreview({
               {section.props.subtitle || "Hero subtitle"}
             </div>
             <div className="mt-2">
-              <div className="inline-block bg-white text-blue-600 px-2 py-1 rounded text-xs">
+              <div className="inline-block bg-white text-primary px-2 py-1 rounded text-xs">
                 {section.props.ctaText || "Button"}
               </div>
             </div>

@@ -28,13 +28,26 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Save, ArrowLeft, Upload, X, Plus, Loader2, ImagePlus, Star, Trash2 } from "lucide-react";
+import {
+  Save,
+  ArrowLeft,
+  Upload,
+  X,
+  Plus,
+  Loader2,
+  ImagePlus,
+  Star,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useCreateProduct } from "@/lib/api/hooks/products";
 import { type CreateProductData } from "@/lib/api/products";
 import { Store } from "@/lib/api/hooks/stores";
 import { useCategories } from "@/lib/api/hooks";
-import { uploadToCloudinary, type CloudinaryUploadResponse } from "@/lib/cloudinary";
+import {
+  uploadToCloudinary,
+  type CloudinaryUploadResponse,
+} from "@/lib/cloudinary";
 import toast from "react-hot-toast";
 
 // Helper function to generate URL-friendly slug
@@ -99,9 +112,13 @@ interface CreateProductFormProps {
 export function CreateProductForm({ store }: CreateProductFormProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("basic");
-  const [images, setImages] = useState<Array<CloudinaryUploadResponse & { isPrimary?: boolean }>>([]);
+  const [images, setImages] = useState<
+    Array<CloudinaryUploadResponse & { isPrimary?: boolean }>
+  >([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
   const [manualSlug, setManualSlug] = useState(false);
   const [manualMetaTitle, setManualMetaTitle] = useState(false);
   const [manualMetaDescription, setManualMetaDescription] = useState(false);
@@ -114,7 +131,6 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
   });
 
   console.log(categories);
-
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -168,11 +184,15 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
       }
 
       const finalMetaDesc = truncateText(metaDesc, 160);
-      form.setValue("metaDescription", finalMetaDesc, { shouldValidate: false });
+      form.setValue("metaDescription", finalMetaDesc, {
+        shouldValidate: false,
+      });
     }
   }, [watchName, watchDescription, watchPrice, manualMetaDescription, form]);
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
@@ -184,7 +204,7 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
 
         return uploadToCloudinary(file, {
           folder: `products/${store.id}/temp`,
-          tags: [`store_${store.id}`, 'product_temp'],
+          tags: [`store_${store.id}`, "product_temp"],
           onProgress: (progress) => {
             setUploadProgress((prev) => ({ ...prev, [fileId]: progress }));
           },
@@ -203,8 +223,8 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
       setUploadProgress({});
       toast.success(`${uploadedImages.length} image(s) uploaded successfully`);
     } catch (error) {
-      console.error('Error uploading images:', error);
-      toast.error('Failed to upload images. Please try again.');
+      console.error("Error uploading images:", error);
+      toast.error("Failed to upload images. Please try again.");
     } finally {
       setIsUploadingImage(false);
     }
@@ -255,12 +275,12 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
         // Combine dimensions into object
         ...(data.dimensionLength || data.dimensionWidth || data.dimensionHeight
           ? {
-            dimensions: {
-              length: data.dimensionLength,
-              width: data.dimensionWidth,
-              height: data.dimensionHeight,
-            },
-          }
+              dimensions: {
+                length: data.dimensionLength,
+                width: data.dimensionWidth,
+                height: data.dimensionHeight,
+              },
+            }
           : {}),
       };
 
@@ -455,22 +475,26 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                         {/* Upload Progress */}
                         {Object.keys(uploadProgress).length > 0 && (
                           <div className="space-y-2">
-                            {Object.entries(uploadProgress).map(([fileId, progress]) => (
-                              <div key={fileId} className="space-y-1">
-                                <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600">
-                                    {fileId.split('-')[0]}
-                                  </span>
-                                  <span className="text-gray-600">{progress}%</span>
+                            {Object.entries(uploadProgress).map(
+                              ([fileId, progress]) => (
+                                <div key={fileId} className="space-y-1">
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">
+                                      {fileId.split("-")[0]}
+                                    </span>
+                                    <span className="text-gray-600">
+                                      {progress}%
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-primary h-2 rounded-full transition-all"
+                                      style={{ width: `${progress}%` }}
+                                    />
+                                  </div>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className="bg-blue-600 h-2 rounded-full transition-all"
-                                    style={{ width: `${progress}%` }}
-                                  />
-                                </div>
-                              </div>
-                            ))}
+                              )
+                            )}
                           </div>
                         )}
 
@@ -478,10 +502,16 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                         {images.length > 0 && (
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {images.map((image, index) => (
-                              <div key={image.public_id} className="relative group">
+                              <div
+                                key={image.public_id}
+                                className="relative group"
+                              >
                                 <img
                                   src={image.secure_url}
-                                  alt={image.original_filename || `Image ${index + 1}`}
+                                  alt={
+                                    image.original_filename ||
+                                    `Image ${index + 1}`
+                                  }
                                   className="w-full h-32 object-cover rounded border"
                                 />
 
@@ -489,15 +519,18 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <Button
                                     type="button"
-                                    variant={image.isPrimary ? "default" : "secondary"}
+                                    variant={
+                                      image.isPrimary ? "default" : "secondary"
+                                    }
                                     size="sm"
                                     className="h-7 w-7 p-0"
                                     onClick={() => handleSetPrimaryImage(index)}
                                     title="Set as primary image"
                                   >
                                     <Star
-                                      className={`w-3.5 h-3.5 ${image.isPrimary ? "fill-current" : ""
-                                        }`}
+                                      className={`w-3.5 h-3.5 ${
+                                        image.isPrimary ? "fill-current" : ""
+                                      }`}
                                     />
                                   </Button>
                                   <Button
@@ -514,7 +547,7 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
 
                                 {/* Primary Badge */}
                                 {image.isPrimary && (
-                                  <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                                  <div className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
                                     <Star className="w-3 h-3 fill-current" />
                                     Primary
                                   </div>
@@ -531,7 +564,8 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
 
                         {images.length === 0 && !isUploadingImage && (
                           <p className="text-sm text-gray-500 text-center py-4">
-                            No images uploaded yet. Add at least one image to showcase your product.
+                            No images uploaded yet. Add at least one image to
+                            showcase your product.
                           </p>
                         )}
                       </div>
@@ -859,7 +893,8 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                               />
                             </FormControl>
                             <FormDescription>
-                              URL-friendly version of the product name (auto-generated)
+                              URL-friendly version of the product name
+                              (auto-generated)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -883,7 +918,8 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                               />
                             </FormControl>
                             <FormDescription>
-                              {field.value?.length || 0}/60 characters (auto-generated from product name)
+                              {field.value?.length || 0}/60 characters
+                              (auto-generated from product name)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -908,7 +944,8 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                               />
                             </FormControl>
                             <FormDescription>
-                              {field.value?.length || 0}/160 characters (auto-generated from product details)
+                              {field.value?.length || 0}/160 characters
+                              (auto-generated from product details)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -1008,7 +1045,13 @@ export function CreateProductForm({ store }: CreateProductFormProps) {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Select category"} />
+                              <SelectValue
+                                placeholder={
+                                  categoriesLoading
+                                    ? "Loading categories..."
+                                    : "Select category"
+                                }
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

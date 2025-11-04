@@ -3,7 +3,7 @@
  * Following the repository pattern for clean separation of concerns
  */
 
-import apiClient from './client';
+import apiClient from "./client";
 import {
   ApiResponse,
   StoreDiscoveryDto,
@@ -35,14 +35,17 @@ import {
   AddToWishlistDto,
   IsInWishlistResponse,
   MoveToCartDto,
-} from './types';
+  NotificationDto,
+  NotificationQueryParams,
+  NotificationListResponse,
+} from "./types";
 
 // Discovery API Services
 export const discoveryApi = {
   getFeaturedStores: async (
     params?: DiscoveryQueryParams
   ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
-    const response = await apiClient.get('/discovery/featured-stores', {
+    const response = await apiClient.get("/discovery/featured-stores", {
       params,
     });
     return response.data;
@@ -51,7 +54,7 @@ export const discoveryApi = {
   getTrendingStores: async (
     params?: TrendingQueryParams
   ): Promise<ApiResponse<TrendingStoreDto[]>> => {
-    const response = await apiClient.get('/discovery/trending-stores', {
+    const response = await apiClient.get("/discovery/trending-stores", {
       params,
     });
     return response.data;
@@ -60,12 +63,12 @@ export const discoveryApi = {
   getTopVendors: async (
     params?: DiscoveryQueryParams
   ): Promise<ApiResponse<TopVendorDto[]>> => {
-    const response = await apiClient.get('/discovery/top-vendors', { params });
+    const response = await apiClient.get("/discovery/top-vendors", { params });
     return response.data;
   },
 
   getMarketplaceStats: async (): Promise<ApiResponse<MarketplaceStatsDto>> => {
-    const response = await apiClient.get('/discovery/stats');
+    const response = await apiClient.get("/discovery/stats");
     return response.data;
   },
 };
@@ -75,12 +78,12 @@ export const entryPageApi = {
   getEntryPageData: async (
     params?: EntryPageQueryParams
   ): Promise<ApiResponse<EntryPageDataDto>> => {
-    const response = await apiClient.get('/entry-page', { params });
+    const response = await apiClient.get("/entry-page", { params });
     return response.data;
   },
 
   getMinimalEntryPageData: async (): Promise<ApiResponse<EntryPageDataDto>> => {
-    const response = await apiClient.get('/entry-page/minimal');
+    const response = await apiClient.get("/entry-page/minimal");
     return response.data;
   },
 };
@@ -90,21 +93,21 @@ export const categoryApi = {
   getAll: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<{ data: CategoryResponseDto[] }>> => {
-    const response = await apiClient.get('/categories', { params });
+    const response = await apiClient.get("/categories", { params });
     return response.data;
   },
 
   getFeatured: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<CategoryResponseDto[]>> => {
-    const response = await apiClient.get('/categories/featured', { params });
+    const response = await apiClient.get("/categories/featured", { params });
     return response.data;
   },
 
   getTrending: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<CategoryResponseDto[]>> => {
-    const response = await apiClient.get('/categories/trending', { params });
+    const response = await apiClient.get("/categories/trending", { params });
     return response.data;
   },
 
@@ -126,14 +129,14 @@ export const reviewApi = {
   getAll: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get('/reviews', { params });
+    const response = await apiClient.get("/reviews", { params });
     return response.data;
   },
 
   getRecent: async (
     limit?: number
   ): Promise<ApiResponse<ReviewResponseDto[]>> => {
-    const response = await apiClient.get('/reviews/recent', {
+    const response = await apiClient.get("/reviews/recent", {
       params: limit ? { limit } : undefined,
     });
     return response.data;
@@ -165,14 +168,14 @@ export const storeApi = {
   getAll: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<Store[]>> => {
-    const response = await apiClient.get('/stores', { params });
+    const response = await apiClient.get("/stores", { params });
     return response.data;
   },
 
   getFeatured: async (
     params?: Record<string, unknown>
   ): Promise<ApiResponse<StoreDiscoveryDto[]>> => {
-    const response = await apiClient.get('/stores/featured', { params });
+    const response = await apiClient.get("/stores/featured", { params });
     return response.data;
   },
 
@@ -185,12 +188,30 @@ export const storeApi = {
     const response = await apiClient.get(`/stores/slug/${slug}`);
     return response.data;
   },
+
+  /**
+   * Get all stores for authenticated user
+   */
+  getUserStores: async (): Promise<ApiResponse<Store[]>> => {
+    const response = await apiClient.get("/stores/my-stores");
+    return response.data;
+  },
+
+  /**
+   * Create a new store
+   */
+  create: async (
+    data: Record<string, unknown>
+  ): Promise<ApiResponse<Store>> => {
+    const response = await apiClient.post("/stores", data);
+    return response.data;
+  },
 };
 
 // Dashboard API Services
 export const dashboardApi = {
   getOverview: async (): Promise<ApiResponse<DashboardOverviewDto>> => {
-    const response = await apiClient.post('/dashboard/overview');
+    const response = await apiClient.post("/dashboard/overview");
     return response.data;
   },
 };
@@ -200,40 +221,71 @@ export const productApi = {
   /**
    * Toggle product status (active/inactive)
    */
-  toggleProductStatus: async (storeId: number, productId: number, active: boolean): Promise<ApiResponse<any>> => {
-    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}/status`, { active });
+  toggleProductStatus: async (
+    storeId: number,
+    productId: number,
+    active: boolean
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(
+      `/stores/${storeId}/products/${productId}/status`,
+      { active }
+    );
     return response.data;
   },
 
   /**
    * Toggle product featured status
    */
-  toggleFeaturedStatus: async (storeId: number, productId: number, featured: boolean): Promise<ApiResponse<any>> => {
-    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}/featured`, { featured });
+  toggleFeaturedStatus: async (
+    storeId: number,
+    productId: number,
+    featured: boolean
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(
+      `/stores/${storeId}/products/${productId}/featured`,
+      { featured }
+    );
     return response.data;
   },
 
   /**
    * Delete product
    */
-  deleteProduct: async (storeId: number, productId: number): Promise<ApiResponse<any>> => {
-    const response = await apiClient.delete(`/stores/${storeId}/products/${productId}`);
+  deleteProduct: async (
+    storeId: number,
+    productId: number
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.delete(
+      `/stores/${storeId}/products/${productId}`
+    );
     return response.data;
   },
 
   /**
    * Get single product
    */
-  getProduct: async (storeId: number, productId: number): Promise<ApiResponse<any>> => {
-    const response = await apiClient.get(`/stores/${storeId}/products/${productId}`);
+  getProduct: async (
+    storeId: number,
+    productId: number
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(
+      `/stores/${storeId}/products/${productId}`
+    );
     return response.data;
   },
 
   /**
    * Update product
    */
-  updateProduct: async (storeId: number, productId: number, data: any): Promise<ApiResponse<any>> => {
-    const response = await apiClient.patch(`/stores/${storeId}/products/${productId}`, data);
+  updateProduct: async (
+    storeId: number,
+    productId: number,
+    data: any
+  ): Promise<ApiResponse<any>> => {
+    const response = await apiClient.patch(
+      `/stores/${storeId}/products/${productId}`,
+      data
+    );
     return response.data;
   },
 };
@@ -243,7 +295,10 @@ export const auditApi = {
   /**
    * Get recent store activities
    */
-  getStoreRecentActivity: async (storeId: number, limit: number = 10): Promise<ApiResponse<any>> => {
+  getStoreRecentActivity: async (
+    storeId: number,
+    limit: number = 10
+  ): Promise<ApiResponse<any>> => {
     const response = await apiClient.get(`/audit/store/${storeId}/recent`, {
       params: { limit },
     });
@@ -257,21 +312,23 @@ export const settingsApi = {
    * Get user profile
    */
   getUserProfile: async () => {
-    const response = await apiClient.get<{ data: UserProfile }>('/auth/profile');
-    return response.data.data
+    const response = await apiClient.get<{ data: UserProfile }>(
+      "/auth/profile"
+    );
+    return response.data.data;
   },
 
   /**
    * Update user profile
    */
   updateProfile: async (data: UpdateProfileDto) => {
-    const response = await apiClient.patch('/auth/profile', data);
+    const response = await apiClient.patch("/auth/profile", data);
     return response.data;
-  },  /**
+  },
+  /**
    * Change user password
-   */
-  changePassword: async (data: ChangePasswordDto) => {
-    const response = await apiClient.post('/auth/change-password', data);
+   */ changePassword: async (data: ChangePasswordDto) => {
+    const response = await apiClient.post("/auth/change-password", data);
     return response.data;
   },
 
@@ -279,14 +336,16 @@ export const settingsApi = {
    * Get user identities
    */
   getUserIdentities: async (): Promise<Identity[]> => {
-    const response = await apiClient.get('/auth/identities');
-    return response.data.data.identities
+    const response = await apiClient.get("/auth/identities");
+    return response.data.data.identities;
   },
 
   /**
    * Request identity removal (sends confirmation email)
    */
-  requestRemoveIdentity: async (identityId: number): Promise<IdentityRemovalResponse> => {
+  requestRemoveIdentity: async (
+    identityId: number
+  ): Promise<IdentityRemovalResponse> => {
     const response = await apiClient.delete(`/auth/identity/${identityId}`);
     return response.data;
   },
@@ -294,8 +353,12 @@ export const settingsApi = {
   /**
    * Confirm identity removal with token from email
    */
-  confirmRemoveIdentity: async (verificationToken: string): Promise<RemovalConfirmationResponse> => {
-    const response = await apiClient.post('/auth/identity/confirm-removal', { verificationToken });
+  confirmRemoveIdentity: async (
+    verificationToken: string
+  ): Promise<RemovalConfirmationResponse> => {
+    const response = await apiClient.post("/auth/identity/confirm-removal", {
+      verificationToken,
+    });
     return response.data;
   },
 
@@ -303,7 +366,9 @@ export const settingsApi = {
    * Set primary identity
    */
   setPrimaryIdentity: async (identityId: number) => {
-    const response = await apiClient.patch(`/auth/identity/${identityId}/set-primary`);
+    const response = await apiClient.patch(
+      `/auth/identity/${identityId}/set-primary`
+    );
     return response.data;
   },
 };
@@ -317,9 +382,12 @@ export const cartApi = {
    * Get all user carts across stores
    */
   getUserCarts: async (): Promise<ApiResponse<Cart[]>> => {
-    const response = await apiClient.get('/cart');
+    const response = await apiClient.get("/cart");
     // Backend returns array directly, not wrapped
-    return { success: true, data: Array.isArray(response.data) ? response.data : [] };
+    return {
+      success: true,
+      data: Array.isArray(response.data) ? response.data : [],
+    };
   },
 
   /**
@@ -333,7 +401,10 @@ export const cartApi = {
   /**
    * Add item to cart
    */
-  addToCart: async (storeId: number, data: AddToCartDto): Promise<ApiResponse<Cart>> => {
+  addToCart: async (
+    storeId: number,
+    data: AddToCartDto
+  ): Promise<ApiResponse<Cart>> => {
     const response = await apiClient.post(`/cart/store/${storeId}/items`, data);
     return response.data;
   },
@@ -341,7 +412,10 @@ export const cartApi = {
   /**
    * Update cart item quantity
    */
-  updateCartItem: async (itemId: number, data: UpdateCartItemDto): Promise<ApiResponse<Cart>> => {
+  updateCartItem: async (
+    itemId: number,
+    data: UpdateCartItemDto
+  ): Promise<ApiResponse<Cart>> => {
     const response = await apiClient.put(`/cart/items/${itemId}`, data);
     return response.data;
   },
@@ -357,7 +431,9 @@ export const cartApi = {
   /**
    * Clear entire cart
    */
-  clearCart: async (cartId: number): Promise<ApiResponse<{ message: string }>> => {
+  clearCart: async (
+    cartId: number
+  ): Promise<ApiResponse<{ message: string }>> => {
     const response = await apiClient.delete(`/cart/${cartId}`);
     return response.data;
   },
@@ -365,7 +441,10 @@ export const cartApi = {
   /**
    * Share cart via link
    */
-  shareCart: async (cartId: number, data: ShareCartDto): Promise<ApiResponse<CartShareResponse>> => {
+  shareCart: async (
+    cartId: number,
+    data: ShareCartDto
+  ): Promise<ApiResponse<CartShareResponse>> => {
     const response = await apiClient.post(`/cart/${cartId}/share`, data);
     return response.data;
   },
@@ -381,8 +460,10 @@ export const cartApi = {
   /**
    * Merge guest cart to user cart
    */
-  mergeGuestCart: async (guestCartData: any[]): Promise<ApiResponse<Cart[]>> => {
-    const response = await apiClient.post('/cart/merge-guest', guestCartData);
+  mergeGuestCart: async (
+    guestCartData: any[]
+  ): Promise<ApiResponse<Cart[]>> => {
+    const response = await apiClient.post("/cart/merge-guest", guestCartData);
     return response.data;
   },
 };
@@ -395,8 +476,10 @@ export const wishlistApi = {
   /**
    * Get user wishlist
    */
-  getWishlist: async (type?: WishlistType): Promise<ApiResponse<WishlistResponse>> => {
-    const response = await apiClient.get('/wishlist', { params: { type } });
+  getWishlist: async (
+    type?: WishlistType
+  ): Promise<ApiResponse<WishlistResponse>> => {
+    const response = await apiClient.get("/wishlist", { params: { type } });
     return response.data;
   },
 
@@ -404,30 +487,39 @@ export const wishlistApi = {
    * Get wishlist count
    */
   getWishlistCount: async (): Promise<ApiResponse<{ count: number }>> => {
-    const response = await apiClient.get('/wishlist/count');
+    const response = await apiClient.get("/wishlist/count");
     return response.data;
   },
 
   /**
    * Check if item is in wishlist
    */
-  isInWishlist: async (type: WishlistType, itemId: number): Promise<ApiResponse<IsInWishlistResponse>> => {
-    const response = await apiClient.get('/wishlist/check', { params: { type, itemId } });
+  isInWishlist: async (
+    type: WishlistType,
+    itemId: number
+  ): Promise<ApiResponse<IsInWishlistResponse>> => {
+    const response = await apiClient.get("/wishlist/check", {
+      params: { type, itemId },
+    });
     return response.data;
   },
 
   /**
    * Add item to wishlist
    */
-  addToWishlist: async (data: AddToWishlistDto): Promise<ApiResponse<WishlistItem>> => {
-    const response = await apiClient.post('/wishlist', data);
+  addToWishlist: async (
+    data: AddToWishlistDto
+  ): Promise<ApiResponse<WishlistItem>> => {
+    const response = await apiClient.post("/wishlist", data);
     return response.data;
   },
 
   /**
    * Remove item from wishlist
    */
-  removeFromWishlist: async (wishlistId: number): Promise<ApiResponse<{ message: string }>> => {
+  removeFromWishlist: async (
+    wishlistId: number
+  ): Promise<ApiResponse<{ message: string }>> => {
     const response = await apiClient.delete(`/wishlist/${wishlistId}`);
     return response.data;
   },
@@ -436,7 +528,65 @@ export const wishlistApi = {
    * Move wishlist items to cart
    */
   moveToCart: async (data: MoveToCartDto): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post('/wishlist/move-to-cart', data);
+    const response = await apiClient.post("/wishlist/move-to-cart", data);
+    return response.data;
+  },
+};
+
+// ============================================
+// NOTIFICATION API SERVICES
+// ============================================
+
+export const notificationApi = {
+  /**
+   * Get user notifications with pagination and filtering
+   */
+  getAll: async (
+    params?: NotificationQueryParams
+  ): Promise<ApiResponse<NotificationListResponse>> => {
+    const response = await apiClient.get("/notifications", { params });
+    return response.data;
+  },
+
+  /**
+   * Get unread notification count
+   */
+  getUnreadCount: async (): Promise<ApiResponse<{ unreadCount: number }>> => {
+    const response = await apiClient.get("/notifications/unread-count");
+    return response.data;
+  },
+
+  /**
+   * Get single notification by ID
+   */
+  getById: async (id: number): Promise<ApiResponse<NotificationDto>> => {
+    const response = await apiClient.get(`/notifications/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Mark notification as read
+   */
+  markAsRead: async (id: number): Promise<ApiResponse<NotificationDto>> => {
+    const response = await apiClient.patch(`/notifications/${id}/read`);
+    return response.data;
+  },
+
+  /**
+   * Mark all notifications as read
+   */
+  markAllAsRead: async (): Promise<ApiResponse<{ count: number }>> => {
+    const response = await apiClient.post("/notifications/mark-all-read");
+    return response.data;
+  },
+
+  /**
+   * Delete notification (soft delete)
+   */
+  deleteNotification: async (
+    id: number
+  ): Promise<ApiResponse<NotificationDto>> => {
+    const response = await apiClient.delete(`/notifications/${id}`);
     return response.data;
   },
 };

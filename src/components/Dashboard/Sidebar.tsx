@@ -9,12 +9,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   LayoutDashboardIcon,
   StoreIcon,
-  ShoppingCartIcon,
   BarChart3Icon,
   SettingsIcon,
   HelpCircleIcon,
   PlusIcon,
-  FileTextIcon,
   BellIcon,
   CheckSquareIcon,
 } from "lucide-react";
@@ -49,9 +47,6 @@ export function Sidebar({
     onClose(); // Close mobile sidebar on navigation
   };
 
-  const showListings = viewMode === "all" || viewMode === "listings";
-  const showEcommerce = viewMode === "all" || viewMode === "ecommerce";
-
   const getIntentBadge = () => {
     switch (userIntent) {
       case "business-listings":
@@ -73,30 +68,22 @@ export function Sidebar({
       label: "Dashboard",
       path: "/findyourplug/dashboard",
     },
-    ...(showListings
-      ? [
-          {
-            icon: StoreIcon,
-            label: "Business Listings",
-            path: "/findyourplug/dashboard/listings",
-          },
-        ]
-      : []),
-    ...(showEcommerce
-      ? [
-          {
-            icon: ShoppingCartIcon,
-            label: "E-commerce Stores",
-            path: "/findyourplug/dashboard/stores",
-          },
-        ]
-      : []),
-
+    {
+      icon: StoreIcon,
+      label: "My Stores",
+      path: "/findyourplug/dashboard/stores",
+    },
     {
       icon: BellIcon,
       label: "Notifications",
       path: "/findyourplug/dashboard/notifications",
       badge: unreadNotificationsCount,
+    },
+    {
+      icon: CheckSquareIcon,
+      label: "Tasks",
+      path: "/findyourplug/dashboard/tasks",
+      badge: pendingTasksCount,
     },
     {
       icon: BarChart3Icon,
@@ -111,24 +98,11 @@ export function Sidebar({
   ];
 
   const quickActions = [
-    ...(showEcommerce
-      ? [
-          {
-            icon: PlusIcon,
-            label: "Create Store",
-            path: "/findyourplug/dashboard/stores/create",
-          },
-        ]
-      : []),
-    ...(showListings
-      ? [
-          {
-            icon: FileTextIcon,
-            label: "New Listing",
-            path: "/findyourplug/dashboard/listings/create",
-          },
-        ]
-      : []),
+    {
+      icon: PlusIcon,
+      label: "New Store",
+      path: "/findyourplug/dashboard/new-listing",
+    },
   ];
 
   return (

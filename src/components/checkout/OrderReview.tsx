@@ -118,7 +118,7 @@ export function OrderReview({
               variant="ghost"
               size="sm"
               onClick={() => setShowAllItems(!showAllItems)}
-              className="text-blue-600 hover:text-blue-800"
+              className="text-primary hover:text-blue-800"
             >
               {showAllItems ? "Show Less" : `Show All (${items.length})`}
             </Button>
@@ -179,7 +179,7 @@ export function OrderReview({
             variant="ghost"
             size="sm"
             onClick={() => onEditStep("customer-info")}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -226,7 +226,7 @@ export function OrderReview({
             variant="ghost"
             size="sm"
             onClick={() => onEditStep("shipping-address")}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -258,7 +258,7 @@ export function OrderReview({
             variant="ghost"
             size="sm"
             onClick={() => onEditStep("payment-method")}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -376,7 +376,8 @@ export function OrderReview({
       {formData.marketingOptIn && (
         <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-green-800">
-            ✓ You&apos;ve opted in to receive marketing updates and exclusive offers.
+            ✓ You&apos;ve opted in to receive marketing updates and exclusive
+            offers.
           </p>
         </div>
       )}
@@ -395,8 +396,8 @@ export function OrderReview({
         <div className="text-center space-y-4">
           <h3 className="text-lg font-semibold">Ready to Place Your Order?</h3>
           <p className="text-gray-300 text-sm">
-            Once you click &quot;Place Order&quot;, we&apos;ll process your payment and begin
-            preparing your items for shipment.
+            Once you click &quot;Place Order&quot;, we&apos;ll process your
+            payment and begin preparing your items for shipment.
           </p>
 
           <Button

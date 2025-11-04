@@ -202,12 +202,14 @@ export default function OrderTrackingPage() {
                     <div key={event.id} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div
-                          className={`p-2 rounded-full ${isLatest ? "bg-blue-100" : "bg-gray-100"
-                            }`}
+                          className={`p-2 rounded-full ${
+                            isLatest ? "bg-blue-100" : "bg-gray-100"
+                          }`}
                         >
                           <EventIcon
-                            className={`h-4 w-4 ${isLatest ? "text-blue-600" : "text-gray-600"
-                              }`}
+                            className={`h-4 w-4 ${
+                              isLatest ? "text-primary" : "text-gray-600"
+                            }`}
                           />
                         </div>
                         {index < tracking.timeline.length - 1 && (
@@ -217,8 +219,9 @@ export default function OrderTrackingPage() {
                       <div className="flex-1 pb-4">
                         <div className="flex items-center gap-2 mb-1">
                           <h3
-                            className={`font-medium ${isLatest ? "text-blue-600" : "text-gray-900"
-                              }`}
+                            className={`font-medium ${
+                              isLatest ? "text-primary" : "text-gray-900"
+                            }`}
                           >
                             {event.description}
                           </h3>

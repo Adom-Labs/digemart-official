@@ -44,9 +44,9 @@ export function CheckoutProgress({
                         className={cn(
                           "flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200",
                           {
-                            "bg-blue-600 border-blue-600 text-white":
-                              isCompleted,
-                            "bg-blue-600 border-blue-600 text-white/90": isCurrent,
+                            "bg-primary border-primary text-white": isCompleted,
+                            "bg-primary border-primary text-white/90":
+                              isCurrent,
                             "bg-white border-gray-300 text-gray-500":
                               isUpcoming,
                           }
@@ -68,7 +68,7 @@ export function CheckoutProgress({
                         className={cn(
                           "text-sm font-medium transition-colors duration-200",
                           {
-                            "text-blue-600": isCompleted || isCurrent,
+                            "text-primary": isCompleted || isCurrent,
                             "text-gray-500": isUpcoming,
                           }
                         )}
@@ -94,7 +94,7 @@ export function CheckoutProgress({
                         className={cn(
                           "absolute top-5 left-10 w-full h-0.5 transition-colors duration-200",
                           {
-                            "bg-blue-600": isCompleted,
+                            "bg-primary": isCompleted,
                             "bg-gray-300": !isCompleted,
                           }
                         )}
@@ -124,7 +124,7 @@ export function CheckoutProgress({
         {/* Progress bar */}
         <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+            className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
             style={{
               width: `${((currentStepIndex + 1) / steps.length) * 100}%`,
             }}

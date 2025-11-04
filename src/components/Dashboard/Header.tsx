@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { ViewModeToggle, ViewMode } from "./ViewModeToggle";
 import WrapContent from "../WrapContent";
+import { useUnreadNotificationCount } from "@/lib/api/hooks";
 
 interface HeaderProps {
   onMobileMenuToggle: () => void;
@@ -40,9 +41,10 @@ export function Header({
   const router = useRouter();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: unreadData } = useUnreadNotificationCount();
 
   const userName = session?.user?.name || "User";
-  const unreadNotificationsCount = 0; // TODO: get from API
+  const unreadNotificationsCount = unreadData?.unreadCount || 0;
 
   return (
     <header className="fixed top-0 right-0 h-16 bg-background border-b border-border z-40 left-0 lg:left-[280px]">

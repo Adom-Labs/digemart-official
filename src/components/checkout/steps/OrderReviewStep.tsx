@@ -67,7 +67,7 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -113,7 +113,7 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -130,7 +130,6 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
               {formData.shippingAddress.city}, {formData.shippingAddress.state}{" "}
               {formData.shippingAddress.postalCode}
             </p>
-
           </div>
         </div>
       </div>
@@ -145,7 +144,7 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:text-blue-800"
+            className="text-primary hover:text-blue-800"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -208,15 +207,13 @@ export function OrderReviewStep({ onSubmit }: OrderReviewStepProps) {
         </div>
       </div>
 
-
-
       {/* Final Confirmation */}
       <div className="p-6 bg-gray-900 text-white rounded-lg">
         <div className="text-center space-y-4">
           <h3 className="text-lg font-semibold">Ready to Place Your Order?</h3>
           <p className="text-gray-300 text-sm">
-            Once you click &quot;Place Order&quot;, we&quot;ll process your payment and begin
-            preparing your items for shipment.
+            Once you click &quot;Place Order&quot;, we&quot;ll process your
+            payment and begin preparing your items for shipment.
           </p>
 
           <Button

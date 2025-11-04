@@ -58,6 +58,7 @@ export const queryKeys = {
   stores: {
     all: <T = Record<string, unknown>>(params?: T) =>
       ["stores", "all", params] as const,
+    userStores: () => ["stores", "user"] as const,
     featured: <T = Record<string, unknown>>(params?: T) =>
       ["stores", "featured", params] as const,
     byId: (id: number) => ["stores", "by-id", id] as const,
@@ -227,6 +228,16 @@ export const queryKeys = {
 
     // Tracking events
     events: (orderId: number) => ["order-tracking", "events", orderId] as const,
+  },
+
+  // Notification queries
+  notifications: {
+    all: ["notifications"] as const,
+    lists: () => ["notifications", "list"] as const,
+    list: <T = Record<string, unknown>>(params?: T) =>
+      ["notifications", "list", params] as const,
+    unreadCount: () => ["notifications", "unread-count"] as const,
+    byId: (id: number) => ["notifications", id] as const,
   },
 
   // Store customer management queries
