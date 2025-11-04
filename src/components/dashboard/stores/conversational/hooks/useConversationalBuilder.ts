@@ -20,7 +20,8 @@ import { useRouter } from "next/navigation";
 import { uploadImage } from "@/lib/utils/imageUpload";
 
 export const useConversationalBuilder = (
-  initialStoreType?: StoreType | null
+  initialStoreType?: StoreType | null,
+  onSwitchToForm?: () => void
 ) => {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,6 +50,7 @@ export const useConversationalBuilder = (
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasInitialized = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,13 +66,14 @@ export const useConversationalBuilder = (
         initialStoreType === "EXTERNAL"
           ? "E-commerce Store"
           : "Business Listing";
-      return `Hi! 👋 I see you want to create a ${typeName}. Ready to get started?`;
+      return `Hi! 👋 I see you want to create a ${typeName}. If you'd prefer to create a listing only, click "Change Type". Ready to get started?`;
     }
     return "Hi! 👋 Welcome to the store builder. Let's create something amazing together! What type of store would you like to create?";
   };
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && !hasInitialized.current) {
+      hasInitialized.current = true;
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
@@ -156,6 +159,17 @@ export const useConversationalBuilder = (
       addBotMessage("Awesome! 🎯 What category best describes your store?");
       setCurrentStep("store-category");
     }, 800);
+  };
+
+  const handleChangeType = () => {
+    setValidationError("");
+    setStoreData({ ...storeData, storeType: undefined });
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      addBotMessage("No problem! What type of store would you like to create?");
+      setCurrentStep("select-type");
+    }, 500);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -528,6 +542,7 @@ export const useConversationalBuilder = (
     confirmImageUpload,
     handleStoreTypeSelect,
     handleConfirmType,
+    handleChangeType,
     handleSubmit,
     handleLocationSubmit,
     handleHoursSubmit,
@@ -541,5 +556,7 @@ export const useConversationalBuilder = (
     handleImageUploadComplete,
     handleSkipImage,
     handleThemeSelect,
+    // Callback
+    onSwitchToForm,
   };
 };
