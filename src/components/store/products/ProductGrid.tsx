@@ -132,7 +132,7 @@ export default function ProductGrid({
                         productId={product.id}
                         storeId={store.id}
                         size="sm"
-                        className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                        className="flex-1 bg-primary text-white hover:bg-blue-700"
                       >
                         Add to Cart
                       </AddToCartButton>

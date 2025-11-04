@@ -10,7 +10,7 @@ interface StoreGridProps {
   showViewAllButton?: boolean;
   viewAllUrl?: string;
   className?: string;
-  showTags?: 'none' | 'both' | 'featured' | 'verified';
+  showTags?: "none" | "both" | "featured" | "verified";
 }
 
 const StoreGrid = ({
@@ -20,7 +20,7 @@ const StoreGrid = ({
   showViewAllButton = false,
   viewAllUrl = "/findyourplug/plugs",
   className = "",
-  showTags = 'both'
+  showTags = "both",
 }: StoreGridProps) => {
   return (
     <section className={`pt-8 md:pt-16 ${className}`}>
@@ -39,7 +39,7 @@ const StoreGrid = ({
           {showViewAllButton && (
             <Link
               href={viewAllUrl}
-              className="ml-0 md:ml-auto w-fit sm:w-fit px-3 py-1.5 border border-blue-600 text-blue-700 rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base hover:bg-blue-50 transition-all"
+              className="ml-0 md:ml-auto w-fit sm:w-fit px-3 py-1.5 border border-primary text-blue-700 rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base hover:bg-blue-50 transition-all"
             >
               View All Stores{" "}
               <span className="ml-1">
@@ -71,16 +71,18 @@ const StoreGrid = ({
                 className="object-cover"
                 sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
               />
-              {store.featured && (showTags === 'both' || showTags === 'featured') && (
-                <span className="absolute top-2 left-2 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded font-semibold shadow">
-                  Featured
-                </span>
-              )}
-              {store.verified && (showTags === 'both' || showTags === 'verified') && (
-                <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold shadow">
-                  <CheckCircle size={14} /> Verified
-                </span>
-              )}
+              {store.featured &&
+                (showTags === "both" || showTags === "featured") && (
+                  <span className="absolute top-2 left-2 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded font-semibold shadow">
+                    Featured
+                  </span>
+                )}
+              {store.verified &&
+                (showTags === "both" || showTags === "verified") && (
+                  <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold shadow">
+                    <CheckCircle size={14} /> Verified
+                  </span>
+                )}
             </div>
             <div className="flex-1 flex flex-col p-4 gap-2">
               <div className="flex items-center gap-2 mb-1">

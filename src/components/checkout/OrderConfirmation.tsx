@@ -545,7 +545,7 @@ export function OrderConfirmation({
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-medium text-blue-600">1</span>
+                <span className="text-xs font-medium text-primary">1</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
@@ -560,7 +560,7 @@ export function OrderConfirmation({
 
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-medium text-blue-600">2</span>
+                <span className="text-xs font-medium text-primary">2</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
@@ -575,7 +575,7 @@ export function OrderConfirmation({
 
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-medium text-blue-600">3</span>
+                <span className="text-xs font-medium text-primary">3</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Delivery</p>

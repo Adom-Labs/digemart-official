@@ -112,7 +112,6 @@ export function SavedAddresses({
     setValue("shippingAddress.city", address.city);
     setValue("shippingAddress.state", address.state);
     setValue("shippingAddress.postalCode", address.postalCode);
-
   };
 
   const handleDeleteClick = async (addressId: string) => {
@@ -131,7 +130,6 @@ export function SavedAddresses({
         setValue("shippingAddress.city", "");
         setValue("shippingAddress.state", "");
         setValue("shippingAddress.postalCode", "");
-
       }
 
       onDeleteAddress(addressId);
@@ -249,7 +247,7 @@ export function SavedAddresses({
                           </Badge>
                         )}
                         {selectedAddressId === address.id && (
-                          <Check className="h-4 w-4 text-blue-600" />
+                          <Check className="h-4 w-4 text-primary" />
                         )}
                       </div>
 

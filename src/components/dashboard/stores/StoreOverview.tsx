@@ -183,7 +183,7 @@ export function StoreOverview({ storeId }: StoreOverviewProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm text-gray-600">Views</p>
-              <Eye className="h-4 w-4 text-blue-600" />
+              <Eye className="h-4 w-4 text-primary" />
             </div>
             <div className="flex items-baseline gap-2">
               <h2 className="text-2xl font-bold">
@@ -522,7 +522,7 @@ export function StoreOverview({ storeId }: StoreOverviewProps) {
                   <>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-primary">
                           {customerMetrics.totalCustomers}
                         </p>
                         <p className="text-sm text-gray-600">Total Customers</p>

@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/Dashboard/Sidebar";
 import { Header } from "@/components/Dashboard/Header";
 import { ViewMode } from "./ViewModeToggle";
 import WrapContent from "../WrapContent";
+import { useUnreadNotificationCount } from "@/lib/api/hooks";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -15,10 +16,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const { data: session } = useSession();
+  const { data: unreadData } = useUnreadNotificationCount();
 
   const userName = session?.user?.name || "User";
   const userIntent: "business-listings" | "ecommerce" | "mixed" | "new-user" =
     "mixed"; // TODO: get from user profile
+  const unreadNotificationsCount = unreadData?.unreadCount || 0;
 
   // Close mobile sidebar and restore body scroll
   const closeMobileSidebar = () => setMobileSidebarOpen(false);
@@ -52,7 +55,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         userName={userName}
         userIntent={userIntent}
         pendingTasksCount={0} // TODO: get from API
-        unreadNotificationsCount={0} // TODO: get from API
+        unreadNotificationsCount={unreadNotificationsCount}
         viewMode={viewMode}
       />
 

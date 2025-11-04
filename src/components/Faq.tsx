@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,8 +16,7 @@ import { ROUTES } from "@/lib/routes";
 function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [helpfulFaqs, setHelpfulFaqs] = useState<Set<string>>(new Set());
-
+  // const [helpfulFaqs, setHelpfulFaqs] = useState<Set<string>>(new Set());
   // Get unique categories from FAQ data
   const categories = useMemo(() => {
     const cats = new Set(faqData.map((faq: FaqItem) => faq.category));
@@ -37,17 +36,17 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
   }, [searchQuery, selectedCategory]);
 
   // Handle feedback
-  const handleFeedback = (faqId: string, isHelpful: boolean) => {
-    setHelpfulFaqs((prev) => {
-      const newSet = new Set(prev);
-      if (isHelpful) {
-        newSet.add(faqId);
-      } else {
-        newSet.delete(faqId);
-      }
-      return newSet;
-    });
-  };
+  // const handleFeedback = (faqId: string, isHelpful: boolean) => {
+  //   setHelpfulFaqs((prev) => {
+  //     const newSet = new Set(prev);
+  //     if (isHelpful) {
+  //       newSet.add(faqId);
+  //     } else {
+  //       newSet.delete(faqId);
+  //     }
+  //     return newSet;
+  //   });
+  // };
 
   return (
     <section className="relative w-full py-16 bg-linear-to-b from-white to-gray-50">
@@ -88,10 +87,11 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === category
-                    ? "bg-blue-600 text-white"
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategory === category
+                    ? "bg-primary text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
@@ -132,29 +132,31 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
                     <AccordionContent className="text-gray-600 pb-6 leading-relaxed">
                       <div className="space-y-4">
                         <p>{faq.answer}</p>
-                        <div className="flex items-center gap-4 pt-4 border-t border-gray-100 justify-end">
+                        {/* <div className="flex items-center gap-4 pt-4 border-t border-gray-100 justify-end">
                           <span className="text-sm text-gray-500">
                             Was this helpful?
                           </span>
                           <button
                             onClick={() => handleFeedback(faq.id, true)}
-                            className={`p-2 rounded-full transition-colors ${helpfulFaqs.has(faq.id)
+                            className={`p-2 rounded-full transition-colors ${
+                              helpfulFaqs.has(faq.id)
                                 ? "bg-green-100 text-green-600"
                                 : "hover:bg-gray-100 text-gray-400"
-                              }`}
+                            }`}
                           >
                             <ThumbsUp className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleFeedback(faq.id, false)}
-                            className={`p-2 rounded-full transition-colors ${!helpfulFaqs.has(faq.id)
+                            className={`p-2 rounded-full transition-colors ${
+                              !helpfulFaqs.has(faq.id)
                                 ? "bg-red-100 text-red-600"
                                 : "hover:bg-gray-100 text-gray-400"
-                              }`}
+                            }`}
                           >
                             <ThumbsDown className="w-4 h-4" />
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     </AccordionContent>
                   </AccordionItem>
@@ -188,7 +190,7 @@ function Faq({ showLink = true }: { showLink?: boolean }): JSX.Element {
             </p>
             <a
               href={ROUTES.CONTACT}
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white hover:bg-blue-700 transition-colors font-medium"
             >
               Contact Support
             </a>

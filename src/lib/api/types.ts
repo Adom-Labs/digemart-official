@@ -83,7 +83,6 @@ export interface TopVendorDto extends StoreDiscoveryDto {
   };
 }
 
-
 export interface Store {
   id: number;
   email: string;
@@ -107,10 +106,10 @@ export interface Store {
   storeMobileNav: string | null;
   storeDescription: string;
   storeUrl: string | null;
-  storeType: 'EXTERNAL' | 'INTERNAL';
+  storeType: "EXTERNAL" | "INTERNAL";
   createdAt: string;
   updatedAt: string;
-  mintingStatus: 'NOT_ATTEMPTED' | 'PENDING' | 'SUCCESS' | 'FAILED';
+  mintingStatus: "NOT_ATTEMPTED" | "PENDING" | "SUCCESS" | "FAILED";
   mintTransactionHash: string | null;
   mintedAt: string | null;
   nftContractAddress: string | null;
@@ -120,10 +119,10 @@ export interface Store {
   userImageId: string | null;
   verified: boolean;
   featured: boolean;
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   averageRating: number;
   totalRatings: number;
-  ratingBreakdown: Record<'1' | '2' | '3' | '4' | '5', number>;
+  ratingBreakdown: Record<"1" | "2" | "3" | "4" | "5", number>;
   views: number;
   lastActive: string;
   socialLinks: Record<string, string>;
@@ -163,7 +162,6 @@ export interface Store {
     reviews: number;
   };
 }
-
 
 export interface MarketplaceStatsDto {
   stores: {
@@ -205,7 +203,7 @@ export interface CategoryResponseDto {
   displayOrder: number;
   storeCount: number;
   productCount: number;
-  categoryType: 'STORE' | 'PRODUCT';
+  categoryType: "STORE" | "PRODUCT";
   createdAt: string;
   updatedAt: string;
 }
@@ -215,7 +213,7 @@ export interface SearchResultDto {
   id: string;
   name: string;
   description: string;
-  type: 'store' | 'product' | 'category';
+  type: "store" | "product" | "category";
   image?: string;
   url: string;
   rating?: number;
@@ -243,7 +241,7 @@ export interface SearchResponseDto {
 
 export interface SearchQueryParams {
   query: string;
-  entityType?: 'all' | 'store' | 'product' | 'category';
+  entityType?: "all" | "store" | "product" | "category";
   location?: string;
   categoryId?: number;
   storeId?: number;
@@ -252,7 +250,7 @@ export interface SearchQueryParams {
   limit?: number;
   offset?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 // Review Types
@@ -325,8 +323,8 @@ export interface EntryPageQueryParams {
 // Dashboard Types
 // Dashboard Types - Matching backend Prisma schema
 export enum StoreType {
-  INTERNAL = 'INTERNAL', // On-platform stores (business listings)
-  EXTERNAL = 'EXTERNAL', // External stores (e-commerce)
+  INTERNAL = "INTERNAL", // On-platform stores (business listings)
+  EXTERNAL = "EXTERNAL", // External stores (e-commerce)
 }
 
 export interface DashboardStoreDto {
@@ -381,6 +379,48 @@ export interface NotificationSummaryDto {
   actionUrl: string | null;
 }
 
+// Full Notification DTO
+export interface NotificationDto {
+  id: number;
+  title: string;
+  message: string;
+  type: string;
+  isRead: boolean;
+  isImportant: boolean;
+  metadata?: {
+    actionUrl?: string;
+    category?: string;
+    [key: string]: any;
+  };
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: number;
+    name: string;
+    phone: string;
+  };
+}
+
+export interface NotificationQueryParams {
+  page?: number;
+  limit?: number;
+  type?: string;
+  isRead?: boolean;
+  isImportant?: boolean;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface NotificationListResponse {
+  notifications: NotificationDto[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export interface DashboardOverviewDto {
   listings: DashboardStoreDto[];
   ecommerce: DashboardStoreDto[];
@@ -416,7 +456,7 @@ export interface RemoveIdentityDto {
 
 export interface Identity {
   id: number;
-  provider: 'EMAIL' | 'GOOGLE' | 'WALLET';
+  provider: "EMAIL" | "GOOGLE" | "WALLET";
   email: string;
   isPrimary: boolean;
   isVerified: boolean;
@@ -432,7 +472,6 @@ export interface RemovalConfirmationResponse {
   message: string;
   removedIdentityId: number;
 }
-
 
 export interface User {
   id: number;
@@ -537,7 +576,7 @@ export interface CartShareResponse {
   expiresAt: string;
 }
 
-export type WishlistType = 'PRODUCT' | 'STORE';
+export type WishlistType = "PRODUCT" | "STORE";
 
 export interface WishlistItem {
   id: number;

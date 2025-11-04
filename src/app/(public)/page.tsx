@@ -1,8 +1,9 @@
-import CallToAction from '@/components/CallToAction';
+import CallToAction from "@/components/CallToAction";
 // import ContactSection from '@/components/ContactSection';
-import Faq from '@/components/Faq';
-import Hero from '@/components/Hero';
-import Overview from '@/components/Overview';
+import Faq from "@/components/Faq";
+import Hero from "@/components/Hero";
+import { FeatureTabs } from "@/components/FeatureTabs";
+// import Overview from '@/components/Overview';
 // import Reviews from '@/components/Reviews';
 // import StoresSection from '@/components/StoreSection';
 // import TopSellersSection from '@/components/TopSellersSection';
@@ -14,7 +15,8 @@ export default async function Home() {
   return (
     <div>
       <Hero />
-      <Overview />
+      <FeatureTabs />
+      {/* <Overview /> */}
       {/* <StoresSection stores={featuredData?.data?.stores ?? []} />
       <TopSellersSection vendors={featuredData?.data?.vendors ?? []} />
       <Reviews /> */}

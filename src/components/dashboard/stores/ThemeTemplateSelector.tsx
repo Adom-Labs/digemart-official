@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Check, Crown, Star, Download, Eye } from 'lucide-react';
-import { useThemeTemplates, useIncrementThemeDownloads } from '@/lib/api/hooks/theme-templates';
-import { getThemeCategories, type ThemeTemplate } from '@/lib/api/theme-templates';
+import React, { useState } from "react";
+import { Check, Crown, Star, Download, Eye } from "lucide-react";
+import {
+  useThemeTemplates,
+  useIncrementThemeDownloads,
+} from "@/lib/api/hooks/theme-templates";
+import {
+  getThemeCategories,
+  type ThemeTemplate,
+} from "@/lib/api/theme-templates";
 
 interface ThemeTemplateSelectorProps {
   selectedThemeId?: number;
@@ -11,8 +17,12 @@ interface ThemeTemplateSelectorProps {
   className?: string;
 }
 
-export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, className = '' }: ThemeTemplateSelectorProps) {
-  const [selectedCategory, setSelectedCategory] = useState('');
+export function ThemeTemplateSelector({
+  selectedThemeId,
+  onThemeSelect,
+  className = "",
+}: ThemeTemplateSelectorProps) {
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [showPremiumOnly, setShowPremiumOnly] = useState(false);
 
   const { data: themesData, isLoading } = useThemeTemplates({
@@ -27,12 +37,12 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
 
   const handleThemeSelect = async (theme: ThemeTemplate) => {
     onThemeSelect(theme);
-    
+
     // Increment download count
     try {
       await incrementDownloadsMutation.mutateAsync(theme.id);
     } catch (error) {
-      console.error('Failed to increment download count:', error);
+      console.error("Failed to increment download count:", error);
     }
   };
 
@@ -55,8 +65,13 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Choose a Theme</h3>
-        <p className="text-gray-600">Select a pre-designed theme for your store. You can customize it later.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Choose a Theme
+        </h3>
+        <p className="text-gray-600">
+          Select a pre-designed theme for your store. You can customize it
+          later.
+        </p>
       </div>
 
       {/* Filters */}
@@ -79,7 +94,7 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
             type="checkbox"
             checked={showPremiumOnly}
             onChange={(e) => setShowPremiumOnly(e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="rounded border-gray-300 text-primary focus:ring-blue-500"
           />
           <span className="text-sm text-gray-700">Premium themes only</span>
         </label>
@@ -92,8 +107,8 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
             key={theme.id}
             className={`relative bg-white rounded-lg border-2 cursor-pointer transition-all hover:shadow-lg ${
               selectedThemeId === theme.id
-                ? 'border-blue-500 ring-2 ring-blue-200'
-                : 'border-gray-200 hover:border-gray-300'
+                ? "border-blue-500 ring-2 ring-blue-200"
+                : "border-gray-200 hover:border-gray-300"
             }`}
             onClick={() => handleThemeSelect(theme)}
           >
@@ -121,7 +136,7 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
               {/* Badges */}
               <div className="absolute top-2 left-2 flex gap-2">
                 {theme.isDefault && (
-                  <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                  <span className="px-2 py-1 bg-primary text-white text-xs rounded-full">
                     Default
                   </span>
                 )}
@@ -146,7 +161,9 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
             {/* Content */}
             <div className="p-4">
               <div className="flex items-start justify-between mb-2">
-                <h4 className="font-semibold text-gray-900 truncate">{theme.name}</h4>
+                <h4 className="font-semibold text-gray-900 truncate">
+                  {theme.name}
+                </h4>
                 <div className="flex items-center text-sm text-gray-500">
                   <Star className="w-3 h-3 mr-1 fill-current text-yellow-400" />
                   {theme.rating.toFixed(1)}
@@ -159,7 +176,8 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
 
               <div className="flex items-center justify-between mb-3">
                 <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
-                  {categories.find(c => c.value === theme.category)?.label || theme.category}
+                  {categories.find((c) => c.value === theme.category)?.label ||
+                    theme.category}
                 </span>
                 <div className="flex items-center text-sm text-gray-500">
                   <Download className="w-3 h-3 mr-1" />
@@ -200,7 +218,9 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
           <div className="text-gray-400 mb-4">
             <Eye className="w-12 h-12 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No themes found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No themes found
+          </h3>
           <p className="text-gray-600">
             Try adjusting your filters to see more theme options.
           </p>
@@ -211,13 +231,15 @@ export function ThemeTemplateSelector({ selectedThemeId, onThemeSelect, classNam
       {selectedThemeId && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center">
-            <Check className="w-5 h-5 text-blue-600 mr-2" />
+            <Check className="w-5 h-5 text-primary mr-2" />
             <span className="text-blue-800 font-medium">
-              Theme selected: {themesData?.data.find(t => t.id === selectedThemeId)?.name}
+              Theme selected:{" "}
+              {themesData?.data.find((t) => t.id === selectedThemeId)?.name}
             </span>
           </div>
           <p className="text-blue-700 text-sm mt-1">
-            You can customize colors, fonts, and layout after creating your store.
+            You can customize colors, fonts, and layout after creating your
+            store.
           </p>
         </div>
       )}

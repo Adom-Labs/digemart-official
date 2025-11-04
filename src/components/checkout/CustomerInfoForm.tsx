@@ -57,7 +57,6 @@ export function CustomerInfoForm({
 
   const handleCreateAccountChange = (checked: boolean) => {
     setValue("customerInfo.createAccount", checked);
-
   };
 
   return (
@@ -68,7 +67,8 @@ export function CustomerInfoForm({
           Customer Information
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          We&apos;ll use this information to process your order and send updates.
+          We&apos;ll use this information to process your order and send
+          updates.
         </p>
       </div>
 
@@ -141,7 +141,7 @@ export function CustomerInfoForm({
           />
           {isCheckingEmail && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
             </div>
           )}
         </div>
@@ -221,8 +221,8 @@ export function CustomerInfoForm({
               Create an account for faster future checkouts
             </Label>
             <p className="text-xs text-gray-500 mt-1">
-              We&apos;ll send you an email to set up your password after your order
-              is complete.
+              We&apos;ll send you an email to set up your password after your
+              order is complete.
             </p>
           </div>
         </div>
@@ -231,7 +231,7 @@ export function CustomerInfoForm({
         {createAccount && (
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-start space-x-2">
-              <UserCheck className="h-5 w-5 text-blue-600 mt-0.5" />
+              <UserCheck className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <h4 className="text-sm font-medium text-blue-900">
                   Account Benefits
@@ -275,7 +275,7 @@ export function CustomerInfoForm({
             Already have an account?{" "}
             <Button
               variant="link"
-              className="p-0 h-auto text-blue-600 hover:text-blue-800"
+              className="p-0 h-auto text-primary hover:text-blue-800"
               onClick={onSignInClick}
             >
               Sign in for faster checkout

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Plus, Search, Grid, List, Filter, SortAsc } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState } from "react";
+import { Plus, Search, Grid, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { StoreCard } from './StoreCard';
-import { useMyStores, Store } from '@/lib/api/hooks/stores';
-import Link from 'next/link';
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { StoreCard } from "./StoreCard";
+import { useMyStores, Store } from "@/lib/api/hooks/stores";
+import Link from "next/link";
 
 interface StoresListProps {
   onStoreEdit?: (store: Store) => void;
@@ -23,32 +23,36 @@ interface StoresListProps {
   onStoreAnalytics?: (store: Store) => void;
 }
 
-export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: StoresListProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [storeType, setStoreType] = useState<string>('all');
-  const [status, setStatus] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('recent');
+export function StoresList({ }: StoresListProps) {
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [storeType, setStoreType] = useState<string>("all");
+  const [status, setStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("recent");
 
   // Build query parameters
   const queryParams = {
     search: searchQuery || undefined,
-    storeType: storeType !== 'all' ? (storeType as 'INTERNAL' | 'EXTERNAL') : undefined,
-    status: status !== 'all' ? (status as 'ACTIVE' | 'PENDING' | 'SUSPENDED') : undefined,
-    sortBy: sortBy === 'recent' ? 'createdAt' : sortBy,
-    sortOrder: 'desc' as const,
+    storeType:
+      storeType !== "all" ? (storeType as "INTERNAL" | "EXTERNAL") : undefined,
+    status:
+      status !== "all"
+        ? (status as "ACTIVE" | "PENDING" | "SUSPENDED")
+        : undefined,
+    sortBy: sortBy === "recent" ? "createdAt" : sortBy,
+    sortOrder: "desc" as const,
   };
 
   const { data: stores = [], isLoading, error } = useMyStores(queryParams);
 
-  console.log(stores)
+  console.log(stores);
 
   // Calculate statistics
   const stats = {
     total: stores.length,
-    active: stores.filter(s => s.status === 'ACTIVE').length,
-    internal: stores.filter(s => s.storeType === 'INTERNAL').length,
-    external: stores.filter(s => s.storeType === 'EXTERNAL').length,
+    active: stores.filter((s) => s.status === "ACTIVE").length,
+    internal: stores.filter((s) => s.storeType === "INTERNAL").length,
+    external: stores.filter((s) => s.storeType === "EXTERNAL").length,
     totalViews: stores.reduce((sum, s) => sum + s.views, 0),
     totalLikes: stores.reduce((sum, s) => sum + s.likes, 0),
   };
@@ -74,9 +78,7 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
         <div className="text-red-600 mb-4">
           <p>Failed to load stores. Please try again.</p>
         </div>
-        <Button onClick={() => window.location.reload()}>
-          Retry
-        </Button>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }
@@ -88,7 +90,7 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
         <div>
           <h1 className="text-2xl font-bold text-gray-900">My Stores</h1>
           <p className="text-gray-600">
-            Manage your {stats.total} store{stats.total !== 1 ? 's' : ''}
+            Manage your {stats.total} store{stats.total !== 1 ? "s" : ""}
           </p>
         </div>
         <Button asChild>
@@ -103,37 +105,47 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+            <div className="text-2xl font-bold text-primary">{stats.total}</div>
             <div className="text-sm text-gray-600">Total Stores</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.active}
+            </div>
             <div className="text-sm text-gray-600">Active</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-purple-600">{stats.internal}</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.internal}
+            </div>
             <div className="text-sm text-gray-600">Internal</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-orange-600">{stats.external}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {stats.external}
+            </div>
             <div className="text-sm text-gray-600">External</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-indigo-600">{stats.totalViews.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-indigo-600">
+              {stats.totalViews.toLocaleString()}
+            </div>
             <div className="text-sm text-gray-600">Total Views</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-pink-600">{stats.totalLikes.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-pink-600">
+              {stats.totalLikes.toLocaleString()}
+            </div>
             <div className="text-sm text-gray-600">Total Likes</div>
           </CardContent>
         </Card>
@@ -190,7 +202,10 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
           </Select>
 
           {/* View Mode Toggle */}
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'grid' | 'list')}>
+          <Tabs
+            value={viewMode}
+            onValueChange={(v) => setViewMode(v as "grid" | "list")}
+          >
             <TabsList>
               <TabsTrigger value="grid">
                 <Grid className="h-4 w-4" />
@@ -209,11 +224,13 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
           <div className="text-gray-400 mb-4">
             <Plus className="w-12 h-12 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No stores found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No stores found
+          </h3>
           <p className="text-gray-600 mb-4">
-            {searchQuery || storeType !== 'all' || status !== 'all'
-              ? 'Try adjusting your filters to see more results.'
-              : 'Get started by creating your first store.'}
+            {searchQuery || storeType !== "all" || status !== "all"
+              ? "Try adjusting your filters to see more results."
+              : "Get started by creating your first store."}
           </p>
           <Button asChild>
             <Link href="/findyourplug/dashboard/stores/create">
@@ -223,18 +240,17 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
           </Button>
         </div>
       ) : (
-        <div className={
-          viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-            : 'space-y-4'
-        }>
+        <div
+          className={
+            viewMode === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              : "space-y-4"
+          }
+        >
           {stores.map((store) => (
             <StoreCard
               key={store.id}
               store={store}
-              onEdit={onStoreEdit}
-              onDelete={onStoreDelete}
-              onViewAnalytics={onStoreAnalytics}
             />
           ))}
         </div>
@@ -243,8 +259,9 @@ export function StoresList({ onStoreEdit, onStoreDelete, onStoreAnalytics }: Sto
       {/* Results Info */}
       {stores.length > 0 && (
         <div className="text-center text-sm text-gray-600">
-          Showing {stores.length} store{stores.length !== 1 ? 's' : ''}
-          {(searchQuery || storeType !== 'all' || status !== 'all') && ' matching your filters'}
+          Showing {stores.length} store{stores.length !== 1 ? "s" : ""}
+          {(searchQuery || storeType !== "all" || status !== "all") &&
+            " matching your filters"}
         </div>
       )}
     </div>

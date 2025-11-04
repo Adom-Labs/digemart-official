@@ -308,7 +308,7 @@ export function OrderActions({
               )}
 
               {canReturnThisOrder ? (
-                <div className="flex items-center space-x-2 text-blue-600">
+                <div className="flex items-center space-x-2 text-primary">
                   <Package className="h-4 w-4" />
                   <span>Items can be returned within 14 days of delivery</span>
                 </div>

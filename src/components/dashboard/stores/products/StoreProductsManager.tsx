@@ -44,7 +44,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import {
-
   useDeleteProduct,
   useToggleProductStatus,
   useToggleFeaturedStatus,
@@ -118,8 +117,14 @@ export function StoreProductsManager({ store }: StoreProductsManagerProps) {
   ) => {
     try {
       const active = currentStatus !== "active";
-      await toggleStatusMutation.mutateAsync({ storeId: store.id, productId, active });
-      toast.success(`Product ${active ? 'activated' : 'deactivated'} successfully`);
+      await toggleStatusMutation.mutateAsync({
+        storeId: store.id,
+        productId,
+        active,
+      });
+      toast.success(
+        `Product ${active ? "activated" : "deactivated"} successfully`
+      );
     } catch (error) {
       console.error("Failed to toggle status:", error);
       toast.error("Failed to update product status");
@@ -132,8 +137,14 @@ export function StoreProductsManager({ store }: StoreProductsManagerProps) {
   ) => {
     try {
       const featured = !currentFeatured;
-      await toggleFeaturedMutation.mutateAsync({ storeId: store.id, productId, featured });
-      toast.success(`Product ${featured ? 'featured' : 'unfeatured'} successfully`);
+      await toggleFeaturedMutation.mutateAsync({
+        storeId: store.id,
+        productId,
+        featured,
+      });
+      toast.success(
+        `Product ${featured ? "featured" : "unfeatured"} successfully`
+      );
     } catch (error) {
       console.error("Failed to toggle featured:", error);
       toast.error("Failed to update featured status");
@@ -419,9 +430,7 @@ export function StoreProductsManager({ store }: StoreProductsManagerProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">
-              {stats.total}
-            </div>
+            <div className="text-2xl font-bold text-primary">{stats.total}</div>
             <div className="text-sm text-gray-600">Total Products</div>
           </CardContent>
         </Card>

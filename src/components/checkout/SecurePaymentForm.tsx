@@ -334,7 +334,7 @@ export function SecurePaymentForm({
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div className="p-3 bg-white border border-gray-200 rounded">
             <div className="flex items-center space-x-2 mb-1">
-              <Shield className="h-3 w-3 text-blue-600" />
+              <Shield className="h-3 w-3 text-primary" />
               <span className="font-medium">Data Protection</span>
             </div>
             <p className="text-gray-600">
@@ -343,7 +343,7 @@ export function SecurePaymentForm({
           </div>
           <div className="p-3 bg-white border border-gray-200 rounded">
             <div className="flex items-center space-x-2 mb-1">
-              <Lock className="h-3 w-3 text-blue-600" />
+              <Lock className="h-3 w-3 text-primary" />
               <span className="font-medium">Secure Session</span>
             </div>
             <p className="text-gray-600">

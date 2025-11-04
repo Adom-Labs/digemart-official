@@ -193,7 +193,7 @@ export function PaymentErrorHandler({
                 ? "text-red-600"
                 : severity === "warning"
                 ? "text-amber-600"
-                : "text-blue-600"
+                : "text-primary"
             }`}
           />
           <span>Payment Failed</span>
@@ -258,7 +258,7 @@ export function PaymentErrorHandler({
         {canRetry && (
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <RefreshCw className="h-4 w-4 text-blue-600" />
+              <RefreshCw className="h-4 w-4 text-primary" />
               <span className="font-medium text-blue-900">Retry Available</span>
             </div>
             <p className="text-sm text-blue-700">

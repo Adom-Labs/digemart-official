@@ -143,9 +143,9 @@ export function StoreCustomersList({ storeId }: StoreCustomersListProps) {
       return <ArrowUpDown className="w-4 h-4 text-gray-400" />;
     }
     return sortOrder === "asc" ? (
-      <ArrowUp className="w-4 h-4 text-blue-600" />
+      <ArrowUp className="w-4 h-4 text-primary" />
     ) : (
-      <ArrowDown className="w-4 h-4 text-blue-600" />
+      <ArrowDown className="w-4 h-4 text-primary" />
     );
   };
 
@@ -616,7 +616,7 @@ function CustomerDetailsModal({ customer }: { customer: StoreCustomer }) {
       {/* Customer Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="text-center p-4 bg-blue-50 rounded-lg">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-primary">
             {customer.totalOrders}
           </div>
           <div className="text-sm text-blue-700">Total Orders</div>

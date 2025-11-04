@@ -21,7 +21,6 @@ export function AuthenticatedUserInfo({
   const { data: session } = useSession();
   const { data: profile } = useUserProfile();
 
-
   const {
     register,
     formState: { errors },
@@ -38,9 +37,10 @@ export function AuthenticatedUserInfo({
   });
 
   // const marketingOptIn = watch("marketingOptIn");
-  const isEmailIds = profile && profile?.identities.filter((id) => id.provider === "EMAIL")
-  const hasEmail = isEmailIds && isEmailIds.length > 0
-  const emailId = hasEmail ? isEmailIds![0] : null
+  const isEmailIds =
+    profile && profile?.identities.filter((id) => id.provider === "EMAIL");
+  const hasEmail = isEmailIds && isEmailIds.length > 0;
+  const emailId = hasEmail ? isEmailIds![0] : null;
 
   // Pre-populate form with user data
   useEffect(() => {
@@ -69,7 +69,7 @@ export function AuthenticatedUserInfo({
 
       // Set edited info for local editing
       setEditedInfo(userInfo);
-      setIsEditing(!hasEmail)
+      setIsEditing(!hasEmail);
     }
   }, [session, setValue, profile, hasEmail, emailId]);
 
@@ -135,7 +135,9 @@ export function AuthenticatedUserInfo({
           Customer Information
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          {hasEmail ? "Your account information will be used for this order." : "You have no email saved, checkout requires your email."}
+          {hasEmail
+            ? "Your account information will be used for this order."
+            : "You have no email saved, checkout requires your email."}
         </p>
       </div>
 
@@ -301,29 +303,29 @@ export function AuthenticatedUserInfo({
         errors.customerInfo?.lastName ||
         errors.customerInfo?.email ||
         errors.customerInfo?.phone) && (
-          <div className="space-y-2">
-            {errors.customerInfo?.firstName && (
-              <p className="text-sm text-red-600">
-                {errors.customerInfo.firstName.message}
-              </p>
-            )}
-            {errors.customerInfo?.lastName && (
-              <p className="text-sm text-red-600">
-                {errors.customerInfo.lastName.message}
-              </p>
-            )}
-            {errors.customerInfo?.email && (
-              <p className="text-sm text-red-600">
-                {errors.customerInfo.email.message}
-              </p>
-            )}
-            {errors.customerInfo?.phone && (
-              <p className="text-sm text-red-600">
-                {errors.customerInfo.phone.message}
-              </p>
-            )}
-          </div>
-        )}
+        <div className="space-y-2">
+          {errors.customerInfo?.firstName && (
+            <p className="text-sm text-red-600">
+              {errors.customerInfo.firstName.message}
+            </p>
+          )}
+          {errors.customerInfo?.lastName && (
+            <p className="text-sm text-red-600">
+              {errors.customerInfo.lastName.message}
+            </p>
+          )}
+          {errors.customerInfo?.email && (
+            <p className="text-sm text-red-600">
+              {errors.customerInfo.email.message}
+            </p>
+          )}
+          {errors.customerInfo?.phone && (
+            <p className="text-sm text-red-600">
+              {errors.customerInfo.phone.message}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Marketing Opt-in */}
       {/* <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
@@ -353,7 +355,7 @@ export function AuthenticatedUserInfo({
           {onSignOutClick && (
             <Button
               variant="link"
-              className="p-0 h-auto text-blue-600 hover:text-blue-800"
+              className="p-0 h-auto text-primary hover:text-blue-800"
               onClick={onSignOutClick}
             >
               Sign out and checkout as guest

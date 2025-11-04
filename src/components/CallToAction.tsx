@@ -32,7 +32,7 @@ export default function CallToAction() {
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
             href={ROUTES.SIGNUP}
-            className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-8 text-base font-semibold text-blue-600 hover:bg-white/90"
+            className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-8 text-base font-semibold text-primary hover:bg-white/90"
           >
             Get Started Now
           </Link>
