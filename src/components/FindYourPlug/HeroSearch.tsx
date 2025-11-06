@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { ROUTES } from '@/lib/routes';
 import { CategoryResponseDto, SearchResultDto } from '@/lib/api/types';
 import { searchApi } from '@/lib/api';
+import { ProductDrawer } from './ProductDrawer';
 
 const backgroundImages = [
     '_images/cafe.avif',
@@ -28,6 +29,33 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
     const [backgroundImage, setBackgroundImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [entityType, setEntityType] = useState<'all' | 'store' | 'product' | 'category'>('all');
+    const [selectedProduct, setSelectedProduct] = useState<SearchResultDto | null>(null);
+    const [isProductDrawerOpen, setIsProductDrawerOpen] = useState(false);
+
+    // Helper function to transform search result URLs to the correct frontend routes
+    const getResultUrl = (result: SearchResultDto): string => {
+        if (result.type === 'store') {
+            // Extract slug from backend URL and use our frontend route
+            const slug = result.url.split('/').pop();
+            return `/findyourplug/plugs/${slug}`;
+        }
+        // For products and categories, keep the original URL for now
+        return result.url;
+    };
+
+    // Handle product click
+    const handleProductClick = (e: React.MouseEvent, result: SearchResultDto) => {
+        e.preventDefault();
+        setSelectedProduct(result);
+        setIsProductDrawerOpen(true);
+        setIsSearchFocused(false); // Close search dropdown
+    };
+
+    // Handle closing the product drawer
+    const handleCloseProductDrawer = () => {
+        setIsProductDrawerOpen(false);
+        setSelectedProduct(null);
+    };
 
     // Set random background on mount
     useEffect(() => {
@@ -210,62 +238,120 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                                         ) : searchResults.length > 0 ? (
                                             <>
                                                 <div className="p-2">
-                                                    {searchResults.map((result) => (
-                                                        <Link
-                                                            key={`${result.type}-${result.id}`}
-                                                            href={result.url}
-                                                            className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
-                                                        >
-                                                            {result.image ? (
-                                                                <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 overflow-hidden relative">
-                                                                    <Image
-                                                                        src={result.image}
-                                                                        alt={result.name}
-                                                                        fill
-                                                                        className="object-cover"
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                                                                    {result.type === 'store' && <Store className="h-6 w-6 text-primary" />}
-                                                                    {result.type === 'product' && <ShoppingBag className="h-6 w-6 text-primary" />}
-                                                                    {result.type === 'category' && <Folder className="h-6 w-6 text-primary" />}
-                                                                </div>
-                                                            )}
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-start gap-2">
-                                                                    <h3 className="font-medium text-slate-900 truncate">
-                                                                        {result.name}
-                                                                    </h3>
-                                                                    {result.verified && (
-                                                                        <span className="text-primary">✓</span>
+                                                    {searchResults.map((result) => {
+                                                        // For products, use a div with click handler to open drawer
+                                                        if (result.type === 'product') {
+                                                            return (
+                                                                <div
+                                                                    key={`${result.type}-${result.id}`}
+                                                                    onClick={(e) => handleProductClick(e, result)}
+                                                                    className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
+                                                                >
+                                                                    {result.image ? (
+                                                                        <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 overflow-hidden relative">
+                                                                            <Image
+                                                                                src={result.image}
+                                                                                alt={result.name}
+                                                                                fill
+                                                                                className="object-cover"
+                                                                            />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                                                            <ShoppingBag className="h-6 w-6 text-primary" />
+                                                                        </div>
                                                                     )}
-                                                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                                                                        {result.type}
-                                                                    </span>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex items-start gap-2">
+                                                                            <h3 className="font-medium text-slate-900 truncate">
+                                                                                {result.name}
+                                                                            </h3>
+                                                                            {result.verified && (
+                                                                                <span className="text-primary">✓</span>
+                                                                            )}
+                                                                            <span className="text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                                                                {result.type}
+                                                                            </span>
+                                                                        </div>
+                                                                        <p className="text-sm text-slate-500">{result.category || result.description}</p>
+                                                                        {result.price && (
+                                                                            <p className="text-sm font-medium text-green-600">
+                                                                                {result.currency} {result.price}
+                                                                            </p>
+                                                                        )}
+                                                                        {result.location && (
+                                                                            <p className="text-xs text-slate-400 flex items-center gap-1">
+                                                                                <MapPin className="h-3 w-3" />
+                                                                                {result.location}
+                                                                            </p>
+                                                                        )}
+                                                                        {result.storeName && (
+                                                                            <p className="text-xs text-slate-400">
+                                                                                from {result.storeName}
+                                                                            </p>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <p className="text-sm text-slate-500">{result.category || result.description}</p>
-                                                                {result.type === 'product' && result.price && (
-                                                                    <p className="text-sm font-medium text-green-600">
-                                                                        {result.currency} {result.price}
-                                                                    </p>
+                                                            );
+                                                        }
+
+                                                        // For stores and categories, use Link as before
+                                                        return (
+                                                            <Link
+                                                                key={`${result.type}-${result.id}`}
+                                                                href={getResultUrl(result)}
+                                                                className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
+                                                            >
+                                                                {result.image ? (
+                                                                    <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 overflow-hidden relative">
+                                                                        <Image
+                                                                            src={result.image}
+                                                                            alt={result.name}
+                                                                            fill
+                                                                            className="object-cover"
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                                                        {result.type === 'store' && <Store className="h-6 w-6 text-primary" />}
+                                                                        {result.type === 'category' && <Folder className="h-6 w-6 text-primary" />}
+                                                                    </div>
                                                                 )}
-                                                                {result.location && (
-                                                                    <p className="text-xs text-slate-400 flex items-center gap-1">
-                                                                        <MapPin className="h-3 w-3" />
-                                                                        {result.location}
-                                                                    </p>
-                                                                )}
-                                                            </div>
-                                                            {result.type === 'store' && (
-                                                                <div className="flex items-start gap-1 text-sm">
-                                                                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                                                    <span className="font-medium">{Math.round(result.rating ?? 0)}</span>
-                                                                    <span className="text-slate-400">({result.reviewCount})</span>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-start gap-2">
+                                                                        <h3 className="font-medium text-slate-900 truncate">
+                                                                            {result.name}
+                                                                        </h3>
+                                                                        {result.verified && (
+                                                                            <span className="text-primary">✓</span>
+                                                                        )}
+                                                                        <span className="text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                                                            {result.type}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className="text-sm text-slate-500">{result.category || result.description}</p>
+                                                                    {result.location && (
+                                                                        <p className="text-xs text-slate-400 flex items-center gap-1">
+                                                                            <MapPin className="h-3 w-3" />
+                                                                            {result.location}
+                                                                        </p>
+                                                                    )}
+                                                                    {result.storeName && (
+                                                                        <p className="text-xs text-slate-400">
+                                                                            from {result.storeName}
+                                                                        </p>
+                                                                    )}
                                                                 </div>
-                                                            )}
-                                                        </Link>
-                                                    ))}
+                                                                {result.type === 'store' && (
+                                                                    <div className="flex items-start gap-1 text-sm">
+                                                                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                                                        <span className="font-medium">{Math.round(result.rating ?? 0)}</span>
+                                                                        <span className="text-slate-400">({result.reviewCount})</span>
+                                                                    </div>
+                                                                )}
+                                                            </Link>
+                                                        );
+                                                    })}
                                                 </div>
                                                 <div className="p-3 border-t border-slate-100 bg-slate-50 text-center">
                                                     <Link
@@ -307,6 +393,13 @@ export default function HeroSearch({ popularCategories }: HeroSearchProps) {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Product Drawer */}
+            <ProductDrawer
+                product={selectedProduct}
+                isOpen={isProductDrawerOpen}
+                onClose={handleCloseProductDrawer}
+            />
         </section>
     );
 }

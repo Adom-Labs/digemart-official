@@ -94,7 +94,7 @@ const Hero = () => {
 
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
             <Image
-              src="https://images.unsplash.com/photo-1658297063569-162817482fb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjBzaG9wcGluZyUyMG9ubGluZXxlbnwxfHx8fDE3NjE5OTMyMTF8MA&ixlib=rb-4.1.0&q=80&w=1080"
+              src="/images/hero-pc.png"
               alt="Platform preview"
               width={1080}
               height={720}

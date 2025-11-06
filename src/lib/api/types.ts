@@ -27,6 +27,21 @@ export interface StoreDiscoveryDto {
   storeLocationState: string;
   storeLocationCity: string;
   storeType: string;
+  // Extended fields from Store type
+  email?: string;
+  phone?: string;
+  storeTimeOpen?: string;
+  storeTimeClose?: string;
+  storeWeekOpen?: string;
+  storeWeekClose?: string;
+  logo?: string | null;
+  storeHeroHeadline?: string | null;
+  storeHeroTagline?: string | null;
+  storeHeroImage?: string | null;
+  storeCoverPhoto?: string | null;
+  storeUrl?: string | null;
+  subdomain?: string | null;
+  subdomainActive?: boolean;
   socialLinks?: {
     twitter?: string;
     facebook?: string;
@@ -45,6 +60,11 @@ export interface StoreDiscoveryDto {
     id: number;
     name: string;
     slug: string;
+  };
+  storeCategory?: {
+    id: number;
+    name: string;
+    slug?: string;
   };
   owner: {
     id: number;
