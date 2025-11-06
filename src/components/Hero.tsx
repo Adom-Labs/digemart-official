@@ -93,8 +93,9 @@ const Hero = () => {
           </div>
 
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <div className="h-full w-full absolute inset-0 bg-black opacity-20" />
             <Image
-              src="/images/hero-pc.png"
+              src="/_images/hero-pc.png"
               alt="Platform preview"
               width={1080}
               height={720}
